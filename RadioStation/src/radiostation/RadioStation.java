@@ -8,7 +8,8 @@ package radiostation;
 /**
  *
  * @author a.gounaris
- * tralala
+ * 
+ * by thanassis.
  */
 public class RadioStation {
 
