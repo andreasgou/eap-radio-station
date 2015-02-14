@@ -5,95 +5,200 @@
  */
 package radiostation;
 
-import java.util.ArrayList;
+import java.io.Serializable;
+import java.util.Collection;
 import java.util.Date;
-import java.util.Iterator;
+import javax.persistence.Basic;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
- * @author 
+ * @author user
  */
-public class Artist {
-    private String firstName;
-    private String lastName;
-    private String artisticName;
-    private String sex;
-    private Date birthDay;
-    private String birthPlace;
-    private ArrayList<MusicGroup> group;
-    private MusicGenre genre;
-    
-    public Artist(String firstName,String lastName,String artisticName,String sex,Date birthDay,String birthPlace){
-        this.firstName=firstName;
-        this.lastName=lastName;
-        this.artisticName=artisticName;
-        this.sex=sex;
-        this.birthDay=birthDay;
-        this.birthPlace=birthPlace;
+@Entity
+@Table(name = "ARTIST")
+@XmlRootElement
+@NamedQueries({
+    @NamedQuery(name = "Artist.findAll", query = "SELECT a FROM Artist a"),
+    @NamedQuery(name = "Artist.findById", query = "SELECT a FROM Artist a WHERE a.id = :id"),
+    @NamedQuery(name = "Artist.findByFirstname", query = "SELECT a FROM Artist a WHERE a.firstname = :firstname"),
+    @NamedQuery(name = "Artist.findByLastname", query = "SELECT a FROM Artist a WHERE a.lastname = :lastname"),
+    @NamedQuery(name = "Artist.findByArtisticname", query = "SELECT a FROM Artist a WHERE a.artisticname = :artisticname"),
+    @NamedQuery(name = "Artist.findBySex", query = "SELECT a FROM Artist a WHERE a.sex = :sex"),
+    @NamedQuery(name = "Artist.findByBirthday", query = "SELECT a FROM Artist a WHERE a.birthday = :birthday"),
+    @NamedQuery(name = "Artist.findByBirthplace", query = "SELECT a FROM Artist a WHERE a.birthplace = :birthplace")})
+public class Artist implements Serializable {
+    private static final long serialVersionUID = 1L;
+    @Id
+    @Basic(optional = false)
+    @Column(name = "ID")
+    private Integer id;
+    @Basic(optional = false)
+    @Column(name = "FIRSTNAME")
+    private String firstname;
+    @Basic(optional = false)
+    @Column(name = "LASTNAME")
+    private String lastname;
+    @Basic(optional = false)
+    @Column(name = "ARTISTICNAME")
+    private String artisticname;
+    @Basic(optional = false)
+    @Column(name = "SEX")
+    private Character sex;
+    @Basic(optional = false)
+    @Column(name = "BIRTHDAY")
+    @Temporal(TemporalType.DATE)
+    private Date birthday;
+    @Basic(optional = false)
+    @Column(name = "BIRTHPLACE")
+    private String birthplace;
+    @JoinTable(name = "ARTISTMUSICGROUP", joinColumns = {
+        @JoinColumn(name = "ARTIST_ID", referencedColumnName = "ID")}, inverseJoinColumns = {
+        @JoinColumn(name = "MUSICGROUP_ID", referencedColumnName = "ID")})
+    @ManyToMany
+    private Collection<Musicgroup> musicgroupCollection;
+    @JoinColumn(name = "GENRE", referencedColumnName = "GENRENAME")
+    @ManyToOne(optional = false)
+    private Musicgenre genre;
+    @OneToMany(mappedBy = "artistId")
+    private Collection<Album> albumCollection;
+
+    public Artist() {
     }
 
-    public String getFirstName() {
-        return firstName;
+    public Artist(Integer id) {
+        this.id = id;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
+    public Artist(Integer id, String firstname, String lastname, String artisticname, Character sex, Date birthday, String birthplace) {
+        this.id = id;
+        this.firstname = firstname;
+        this.lastname = lastname;
+        this.artisticname = artisticname;
+        this.sex = sex;
+        this.birthday = birthday;
+        this.birthplace = birthplace;
     }
 
-    public String getLastName() {
-        return lastName;
+    public Integer getId() {
+        return id;
     }
 
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
-    public String getArtisticName() {
-        return artisticName;
+    public String getFirstname() {
+        return firstname;
     }
 
-    public void setArtisticName(String artisticName) {
-        this.artisticName = artisticName;
+    public void setFirstname(String firstname) {
+        this.firstname = firstname;
     }
 
-    public String getSex() {
+    public String getLastname() {
+        return lastname;
+    }
+
+    public void setLastname(String lastname) {
+        this.lastname = lastname;
+    }
+
+    public String getArtisticname() {
+        return artisticname;
+    }
+
+    public void setArtisticname(String artisticname) {
+        this.artisticname = artisticname;
+    }
+
+    public Character getSex() {
         return sex;
     }
 
-    public void setSex(String sex) {
+    public void setSex(Character sex) {
         this.sex = sex;
     }
 
-    public Date getBirthDay() {
-        return birthDay;
+    public Date getBirthday() {
+        return birthday;
     }
 
-    public void setBirthDay(Date birthDay) {
-        this.birthDay = birthDay;
+    public void setBirthday(Date birthday) {
+        this.birthday = birthday;
     }
 
-    public String getBirthPlace() {
-        return birthPlace;
+    public String getBirthplace() {
+        return birthplace;
     }
 
-    public void setBirthPlace(String birthPlace) {
-        this.birthPlace = birthPlace;
+    public void setBirthplace(String birthplace) {
+        this.birthplace = birthplace;
     }
 
-    
-     public void add(MusicGroup groups){
-        group.add(groups);
-    }
-    
-    public Iterator<MusicGroup>getArtist(){
-        return group.iterator();
+    @XmlTransient
+    public Collection<Musicgroup> getMusicgroupCollection() {
+        return musicgroupCollection;
     }
 
-    public void setGenre(MusicGenre genre) {
+    public void setMusicgroupCollection(Collection<Musicgroup> musicgroupCollection) {
+        this.musicgroupCollection = musicgroupCollection;
+    }
+
+    public Musicgenre getGenre() {
+        return genre;
+    }
+
+    public void setGenre(Musicgenre genre) {
         this.genre = genre;
     }
-    
-    public String toString(){
-        return(firstName+lastName+group+genre);
+
+    @XmlTransient
+    public Collection<Album> getAlbumCollection() {
+        return albumCollection;
     }
+
+    public void setAlbumCollection(Collection<Album> albumCollection) {
+        this.albumCollection = albumCollection;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 0;
+        hash += (id != null ? id.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
+        if (!(object instanceof Artist)) {
+            return false;
+        }
+        Artist other = (Artist) object;
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "radiostation.Artist[ id=" + id + " ]";
+    }
+    
 }

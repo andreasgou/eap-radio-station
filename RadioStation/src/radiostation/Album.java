@@ -5,35 +5,84 @@
  */
 package radiostation;
 
-import java.util.ArrayList;
-import java.util.Date;
+import java.io.Serializable;
+import java.util.Collection;
+import javax.persistence.Basic;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
  * @author user
  */
-public class Album {
+@Entity
+@Table(name = "ALBUM")
+@XmlRootElement
+@NamedQueries({
+    @NamedQuery(name = "Album.findAll", query = "SELECT a FROM Album a"),
+    @NamedQuery(name = "Album.findById", query = "SELECT a FROM Album a WHERE a.id = :id"),
+    @NamedQuery(name = "Album.findByTitle", query = "SELECT a FROM Album a WHERE a.title = :title"),
+    @NamedQuery(name = "Album.findByType1", query = "SELECT a FROM Album a WHERE a.type1 = :type1"),
+    @NamedQuery(name = "Album.findByDisknumber", query = "SELECT a FROM Album a WHERE a.disknumber = :disknumber")})
+public class Album implements Serializable {
+    private static final long serialVersionUID = 1L;
+    @Id
+    @Basic(optional = false)
+    @Column(name = "ID")
+    private Integer id;
+    @Basic(optional = false)
+    @Column(name = "TITLE")
     private String title;
-    private Date releaseDate;
-    private String type;
-    private Integer diskNumber;
-    private ArrayList<Song>songs;
-    private ArrayList<MusicGroup>groups;
-    private ArrayList<Artist>artists;
-    private MusicProductionCompany company;
-    
-    public Album(String title,Date releaseDate,String type,Integer diskNumber){
-        this.title=title;
-        this.releaseDate=releaseDate;
-        this.type=type;
-        this.diskNumber=diskNumber;
-        songs=new ArrayList<Song>();
+    @Basic(optional = false)
+    @Column(name = "TYPE1")
+    private String type1;
+    @Basic(optional = false)
+    @Column(name = "DISKNUMBER")
+    private short disknumber;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "albumId")
+    private Collection<Song> songCollection;
+    @JoinColumn(name = "ARTIST_ID", referencedColumnName = "ID")
+    @ManyToOne
+    private Artist artistId;
+    @JoinColumn(name = "MUSICGROUP_ID", referencedColumnName = "ID")
+    @ManyToOne
+    private Musicgroup musicgroupId;
+    @JoinColumn(name = "COMPANY_ID", referencedColumnName = "ID")
+    @ManyToOne
+    private Musicproductioncompany companyId;
+
+    public Album() {
     }
 
-        public void add(Song song){
-        songs.add(song);
+    public Album(Integer id) {
+        this.id = id;
     }
-        
+
+    public Album(Integer id, String title, String type1, short disknumber) {
+        this.id = id;
+        this.title = title;
+        this.type1 = type1;
+        this.disknumber = disknumber;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
     public String getTitle() {
         return title;
     }
@@ -42,55 +91,78 @@ public class Album {
         this.title = title;
     }
 
-    public Date getReleaseDate() {
-        return releaseDate;
+    public String getType1() {
+        return type1;
     }
 
-    public void setReleaseDate(Date releaseDate) {
-        this.releaseDate = releaseDate;
+    public void setType1(String type1) {
+        this.type1 = type1;
     }
 
-    public String getType() {
-        return type;
+    public short getDisknumber() {
+        return disknumber;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setDisknumber(short disknumber) {
+        this.disknumber = disknumber;
     }
 
-    public Integer getDiskNumber() {
-        return diskNumber;
+    @XmlTransient
+    public Collection<Song> getSongCollection() {
+        return songCollection;
     }
 
-    public void setDiskNumber(Integer diskNumber) {
-        this.diskNumber = diskNumber;
+    public void setSongCollection(Collection<Song> songCollection) {
+        this.songCollection = songCollection;
     }
 
-    public ArrayList<MusicGroup> getGroups() {
-        return groups;
+    public Artist getArtistId() {
+        return artistId;
     }
 
-    public void setGroups(ArrayList<MusicGroup> groups) {
-        this.groups = groups;
+    public void setArtistId(Artist artistId) {
+        this.artistId = artistId;
     }
 
-    public ArrayList<Artist> getArtists() {
-        return artists;
+    public Musicgroup getMusicgroupId() {
+        return musicgroupId;
     }
 
-    public void setArtists(ArrayList<Artist> artists) {
-        this.artists = artists;
+    public void setMusicgroupId(Musicgroup musicgroupId) {
+        this.musicgroupId = musicgroupId;
     }
 
-    public MusicProductionCompany getCompany() {
-        return company;
+    public Musicproductioncompany getCompanyId() {
+        return companyId;
     }
 
-    public void setCompany(MusicProductionCompany company) {
-        this.company = company;
+    public void setCompanyId(Musicproductioncompany companyId) {
+        this.companyId = companyId;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 0;
+        hash += (id != null ? id.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
+        if (!(object instanceof Album)) {
+            return false;
+        }
+        Album other = (Album) object;
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "radiostation.Album[ id=" + id + " ]";
     }
     
-    public String toString(){
-        return(title+releaseDate+type+diskNumber);
-    }
 }
