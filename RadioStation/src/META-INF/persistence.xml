@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.1" xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
+  <persistence-unit name="RadioStationPU" transaction-type="RESOURCE_LOCAL">
+    <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+    <class>radiostation.Musicgroup</class>
+    <class>radiostation.Musicproductioncompany</class>
+    <class>radiostation.Musicgenre</class>
+    <class>radiostation.Artist</class>
+    <class>radiostation.Playlist</class>
+    <class>radiostation.Song</class>
+    <class>radiostation.Album</class>
+    <properties>
+      <property name="javax.persistence.jdbc.url" value="jdbc:derby://localhost:1527/RadioStationDB"/>
+      <property name="javax.persistence.jdbc.user" value="radiostation"/>
+      <property name="javax.persistence.jdbc.driver" value="org.apache.derby.jdbc.ClientDriver"/>
+      <property name="javax.persistence.jdbc.password" value="radiostation"/>
+    </properties>
+  </persistence-unit>
+</persistence>
