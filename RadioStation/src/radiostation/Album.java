@@ -56,10 +56,10 @@ public class Album implements Serializable {
     private Artist artistId;
     @JoinColumn(name = "MUSICGROUP_ID", referencedColumnName = "ID")
     @ManyToOne
-    private Musicgroup musicgroupId;
+    private MusicGroup musicgroupId;
     @JoinColumn(name = "COMPANY_ID", referencedColumnName = "ID")
     @ManyToOne
-    private Musicproductioncompany companyId;
+    private MusicProductionCompany companyId;
 
     public Album() {
     }
@@ -124,19 +124,19 @@ public class Album implements Serializable {
         this.artistId = artistId;
     }
 
-    public Musicgroup getMusicgroupId() {
+    public MusicGroup getMusicgroupId() {
         return musicgroupId;
     }
 
-    public void setMusicgroupId(Musicgroup musicgroupId) {
+    public void setMusicgroupId(MusicGroup musicgroupId) {
         this.musicgroupId = musicgroupId;
     }
 
-    public Musicproductioncompany getCompanyId() {
+    public MusicProductionCompany getCompanyId() {
         return companyId;
     }
 
-    public void setCompanyId(Musicproductioncompany companyId) {
+    public void setCompanyId(MusicProductionCompany companyId) {
         this.companyId = companyId;
     }
 
