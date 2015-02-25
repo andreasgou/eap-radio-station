@@ -20,7 +20,6 @@ public class RadioStation {
     public static void main(String[] args) {
         ApplicationForm form=new ApplicationForm();
         form.setVisible(true);
-
     }
     
 }
