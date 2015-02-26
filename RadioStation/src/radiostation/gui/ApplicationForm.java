@@ -770,10 +770,12 @@ public class ApplicationForm extends javax.swing.JFrame {
 
     private void jButton_DeleteArtistActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_DeleteArtistActionPerformed
         try {
-            int ans = JOptionPane.showConfirmDialog(msg, "Είσαι σίγουρος για τη διαγραφή?", "Question", JOptionPane.YES_NO_OPTION);
+            int ans = JOptionPane.showConfirmDialog(msg, artist1.getArtisticname() + "\n\nΕίσαι σίγουρος για τη διαγραφή?", "Διαγραφή Καλλιτέχνη", JOptionPane.YES_NO_OPTION);
             if (ans == 0) {
+                artistList.remove(artist1);
                 this.jpaArtist.destroy(artist1.getId());
                 JOptionPane.showMessageDialog(this, "Η διαγραφή ολοκληρώθηκε επιτυχώς!");
+                
             }
         } catch (NonexistentEntityException ex) {
             Logger.getLogger(ApplicationForm.class.getName()).log(Level.SEVERE, null, ex);
@@ -855,7 +857,6 @@ public class ApplicationForm extends javax.swing.JFrame {
     private void jTable_ArtistsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable_ArtistsMouseClicked
         if (jTable_Artists.getSelectedRowCount() != 0 )
             artist1 = artistList.get( jTable_Artists.getSelectedRow());
-       //JOptionPane.showMessageDialog(this, "Eggs are not supposed to be green.\n\n" + artist1.getArtisticname() + "\nemail: " + artist1.getBirthday());
     }//GEN-LAST:event_jTable_ArtistsMouseClicked
 
     private void jPanel_ArtistsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanel_ArtistsMouseClicked
@@ -863,6 +864,7 @@ public class ApplicationForm extends javax.swing.JFrame {
     }//GEN-LAST:event_jPanel_ArtistsMouseClicked
 
     private void jButton_AddArtistActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_AddArtistActionPerformed
+        //this.artist1 = artistList.get(jTable_Artists.getSelectedRowCount());
         artist1 = new Artist();
         artist1.setArtisticname("<New Artist>");
         artistList.add(artist1);
@@ -881,12 +883,17 @@ public class ApplicationForm extends javax.swing.JFrame {
     private void jButton_artistStoreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_artistStoreActionPerformed
         try {
             if (artist1.getId() == null) {
+                //artist1 = artistList.get( jTable_Artists.convertRowIndexToModel(jTable_Artists.getSelectedRowCount()));
                 artist1.setArtisticname(jTF_artist_artisticname.getText());
                 artist1.setFirstname(jTF_artist_firstname.getText());
                 artist1.setLastname(jTF_artist_lastname.getText());
                 artist1.setBirthday(Utility.parseToDate(jTF_artist_birthdate.getText()));
                 artist1.setGenre(Utility.getGenre(em, jTF_artist_genre.getText()));
                 this.jpaArtist.create(artist1);
+                //artistList.set(artistList.indexOf(artist1), artist1);
+                artistList.clear();
+                artistList.addAll(artistQuery.getResultList());
+                //jTable_AlbumArtists.repaint();
             } else
                 this.jpaArtist.edit(artist1);
             setEditableArtistForm(false, false);
@@ -909,7 +916,6 @@ public class ApplicationForm extends javax.swing.JFrame {
         // set jTable list
         jTable_Artists.setEnabled(!status);
         //jTable_Artists.setRowSelectionInterval(0,0);
-        jTable_Artists.clearSelection();
         // set panel title
         TitledBorder border = (TitledBorder)jPanel_ArtistPreview.getBorder();
         border.setTitle(status ? (isNew ? "Δημιουργία Εγγραφής" : "Επεξεργασία Στοιχείων"): "Επισκόπηση Στοιχείων");   
@@ -925,6 +931,7 @@ public class ApplicationForm extends javax.swing.JFrame {
         jTF_artist_genre.setEditable(status);
 
         if (status && isNew) {
+            jTable_Artists.clearSelection();
             jTF_artist_artisticname.setText(null);
             jTF_artist_firstname.setText(null);
             jTF_artist_lastname.setText(null);
