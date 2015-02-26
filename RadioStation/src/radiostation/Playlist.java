@@ -5,6 +5,8 @@
  */
 package radiostation;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.io.Serializable;
 import java.util.Collection;
 import javax.persistence.Basic;
@@ -19,6 +21,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -34,6 +37,8 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Playlist.findById", query = "SELECT p FROM Playlist p WHERE p.id = :id"),
     @NamedQuery(name = "Playlist.findByName", query = "SELECT p FROM Playlist p WHERE p.name = :name")})
 public class Playlist implements Serializable {
+    @Transient
+    private PropertyChangeSupport changeSupport = new PropertyChangeSupport(this);
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -60,7 +65,9 @@ public class Playlist implements Serializable {
     }
 
     public void setId(Integer id) {
+        Integer oldId = this.id;
         this.id = id;
+        changeSupport.firePropertyChange("id", oldId, id);
     }
 
     public String getName() {
@@ -68,7 +75,9 @@ public class Playlist implements Serializable {
     }
 
     public void setName(String name) {
+        String oldName = this.name;
         this.name = name;
+        changeSupport.firePropertyChange("name", oldName, name);
     }
 
     @XmlTransient
@@ -103,6 +112,14 @@ public class Playlist implements Serializable {
     @Override
     public String toString() {
         return "radiostation.Playlist[ id=" + id + " ]";
+    }
+
+    public void addPropertyChangeListener(PropertyChangeListener listener) {
+        changeSupport.addPropertyChangeListener(listener);
+    }
+
+    public void removePropertyChangeListener(PropertyChangeListener listener) {
+        changeSupport.removePropertyChangeListener(listener);
     }
     
 }
