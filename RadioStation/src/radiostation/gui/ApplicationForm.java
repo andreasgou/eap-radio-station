@@ -5,7 +5,17 @@
  */
 package radiostation.gui;
 
+import java.awt.Color;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.persistence.EntityManager;
+import javax.swing.JOptionPane;
+import javax.swing.border.TitledBorder;
+import radiostation.Artist;
+import radiostation.MusicGenre;
+import radiostation.jpa.ArtistJpaController;
 
 /**
  *
@@ -13,13 +23,16 @@ import javax.persistence.EntityManager;
  */
 public class ApplicationForm extends javax.swing.JFrame {
     private EntityManager em;
+    private ArtistJpaController jpaArtist;
 
     /**
      * Creates new form ArtistsForm
      */
     public ApplicationForm(EntityManager em) {
         this.em = em;
+        this.jpaArtist = new ArtistJpaController(em);
         initComponents();
+        setEditableArtistForm(false);
     }
 
     /**
@@ -37,6 +50,7 @@ public class ApplicationForm extends javax.swing.JFrame {
         artistList = java.beans.Beans.isDesignTime() ? java.util.Collections.emptyList() : artistQuery.getResultList();
         artistAlbumQuery = java.beans.Beans.isDesignTime() ? null : RadioStationPUEntityManager.createQuery("SELECT a FROM Album a WHERE a.type1 = 'artist'");
         artistAlbumList = java.beans.Beans.isDesignTime() ? java.util.Collections.emptyList() : artistAlbumQuery.getResultList();
+        artist1 = new radiostation.Artist();
         jPanel1 = new javax.swing.JPanel();
         jPanel_Menu = new javax.swing.JPanel();
         jButton_FileMgr = new javax.swing.JButton();
@@ -55,20 +69,25 @@ public class ApplicationForm extends javax.swing.JFrame {
         jTable_Artists = new javax.swing.JTable();
         jPanel_ArtistPreview = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
-        jTF_artists_artisticname = new javax.swing.JTextField();
+        jTF_artist_artisticname = new javax.swing.JTextField();
         jLabel5 = new javax.swing.JLabel();
-        jTF_artists_firstname = new javax.swing.JTextField();
+        jTF_artist_firstname = new javax.swing.JTextField();
         jLabel6 = new javax.swing.JLabel();
-        jTF_artists_lastname = new javax.swing.JTextField();
+        jTF_artist_lastname = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
-        jFTF_birthdate = new javax.swing.JFormattedTextField();
+        jTF_artist_birthdate = new javax.swing.JFormattedTextField();
         jLabel2 = new javax.swing.JLabel();
-        jTF_artists_city = new javax.swing.JTextField();
+        jTF_artist_birthplace = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
         jTF_artist_genre = new javax.swing.JTextField();
+        jPanel_artistCRUD_cmd = new javax.swing.JPanel();
+        jPanel_artistCRUD_edit1 = new javax.swing.JPanel();
         jButton_AddArtist = new javax.swing.JButton();
         jButton_EditArtist = new javax.swing.JButton();
         jButton_DeleteArtist = new javax.swing.JButton();
+        jPanel_artistCRUD_edit2 = new javax.swing.JPanel();
+        jButton_artistStore = new javax.swing.JButton();
+        jButton_artistCancel = new javax.swing.JButton();
         jPanel_ArtistsAlbums = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         jTable_AlbumArtists = new javax.swing.JTable();
@@ -88,6 +107,12 @@ public class ApplicationForm extends javax.swing.JFrame {
         jButton_AddArtist1 = new javax.swing.JButton();
         jButton_EditArtist1 = new javax.swing.JButton();
         jButton_DeleteArtist1 = new javax.swing.JButton();
+
+        artist1.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
+            public void propertyChange(java.beans.PropertyChangeEvent evt) {
+                artist1PropertyChange(evt);
+            }
+        });
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -282,65 +307,80 @@ public class ApplicationForm extends javax.swing.JFrame {
         jPanel_FileMgrContents.setLayout(new java.awt.CardLayout());
 
         jPanel_Artists.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Αρχείο Καλλιτεχνών", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Arial Narrow", 0, 24), new java.awt.Color(255, 0, 102))); // NOI18N
+        jPanel_Artists.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jPanel_ArtistsMouseClicked(evt);
+            }
+        });
 
         org.jdesktop.swingbinding.JTableBinding jTableBinding = org.jdesktop.swingbinding.SwingBindings.createJTableBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, artistList, jTable_Artists);
         org.jdesktop.swingbinding.JTableBinding.ColumnBinding columnBinding = jTableBinding.addColumnBinding(org.jdesktop.beansbinding.ELProperty.create("${artisticname}"));
-        columnBinding.setColumnName("Artisticname");
+        columnBinding.setColumnName("Ονομα Καλλιτέχνη");
         columnBinding.setColumnClass(String.class);
         bindingGroup.addBinding(jTableBinding);
         jTableBinding.bind();
+        jTable_Artists.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jTable_ArtistsMouseClicked(evt);
+            }
+        });
+        jTable_Artists.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
+            public void propertyChange(java.beans.PropertyChangeEvent evt) {
+                jTable_ArtistsPropertyChange(evt);
+            }
+        });
         jScrollPane1.setViewportView(jTable_Artists);
 
         jPanel_ArtistPreview.setBorder(javax.swing.BorderFactory.createTitledBorder("Επισκόπηση Στοιχείων Καλλιτέχνη"));
 
         jLabel1.setText("Καλλιτέχνης:");
 
-        org.jdesktop.beansbinding.Binding binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, jTable_Artists, org.jdesktop.beansbinding.ELProperty.create("${selectedElement.artisticname}"), jTF_artists_artisticname, org.jdesktop.beansbinding.BeanProperty.create("text"));
+        org.jdesktop.beansbinding.Binding binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, jTable_Artists, org.jdesktop.beansbinding.ELProperty.create("${selectedElement.artisticname}"), jTF_artist_artisticname, org.jdesktop.beansbinding.BeanProperty.create("text"));
         bindingGroup.addBinding(binding);
 
-        jTF_artists_artisticname.addActionListener(new java.awt.event.ActionListener() {
+        jTF_artist_artisticname.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTF_artists_artisticnameActionPerformed(evt);
+                jTF_artist_artisticnameActionPerformed(evt);
             }
         });
 
         jLabel5.setText("Ονομα:");
 
-        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, jTable_Artists, org.jdesktop.beansbinding.ELProperty.create("${selectedElement.firstname}"), jTF_artists_firstname, org.jdesktop.beansbinding.BeanProperty.create("text"));
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, jTable_Artists, org.jdesktop.beansbinding.ELProperty.create("${selectedElement.firstname}"), jTF_artist_firstname, org.jdesktop.beansbinding.BeanProperty.create("text"));
         bindingGroup.addBinding(binding);
 
-        jTF_artists_firstname.addActionListener(new java.awt.event.ActionListener() {
+        jTF_artist_firstname.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTF_artists_firstnameActionPerformed(evt);
+                jTF_artist_firstnameActionPerformed(evt);
             }
         });
 
         jLabel6.setText("Επίθετο:");
 
-        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, jTable_Artists, org.jdesktop.beansbinding.ELProperty.create("${selectedElement.lastname}"), jTF_artists_lastname, org.jdesktop.beansbinding.BeanProperty.create("text"));
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, jTable_Artists, org.jdesktop.beansbinding.ELProperty.create("${selectedElement.lastname}"), jTF_artist_lastname, org.jdesktop.beansbinding.BeanProperty.create("text"));
         bindingGroup.addBinding(binding);
 
-        jTF_artists_lastname.addActionListener(new java.awt.event.ActionListener() {
+        jTF_artist_lastname.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTF_artists_lastnameActionPerformed(evt);
+                jTF_artist_lastnameActionPerformed(evt);
             }
         });
 
         jLabel3.setText("Ημερ./νία Γέννησης:");
 
-        jFTF_birthdate.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.DateFormatter(java.text.DateFormat.getDateInstance(java.text.DateFormat.LONG))));
+        jTF_artist_birthdate.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.DateFormatter(java.text.DateFormat.getDateInstance(java.text.DateFormat.LONG))));
 
-        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, jTable_Artists, org.jdesktop.beansbinding.ELProperty.create("${selectedElement.birthday}"), jFTF_birthdate, org.jdesktop.beansbinding.BeanProperty.create("value"));
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, jTable_Artists, org.jdesktop.beansbinding.ELProperty.create("${selectedElement.birthday}"), jTF_artist_birthdate, org.jdesktop.beansbinding.BeanProperty.create("value"));
         bindingGroup.addBinding(binding);
 
         jLabel2.setText("Πόλη:");
 
-        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, jTable_Artists, org.jdesktop.beansbinding.ELProperty.create("${selectedElement.birthplace}"), jTF_artists_city, org.jdesktop.beansbinding.BeanProperty.create("text"));
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, jTable_Artists, org.jdesktop.beansbinding.ELProperty.create("${selectedElement.birthplace}"), jTF_artist_birthplace, org.jdesktop.beansbinding.BeanProperty.create("text"));
         bindingGroup.addBinding(binding);
 
-        jTF_artists_city.addActionListener(new java.awt.event.ActionListener() {
+        jTF_artist_birthplace.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTF_artists_cityActionPerformed(evt);
+                jTF_artist_birthplaceActionPerformed(evt);
             }
         });
 
@@ -372,15 +412,15 @@ public class ApplicationForm extends javax.swing.JFrame {
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel_ArtistPreviewLayout.createSequentialGroup()
                                 .addComponent(jLabel2)
                                 .addGap(1, 1, 1)
-                                .addComponent(jTF_artists_city, javax.swing.GroupLayout.PREFERRED_SIZE, 176, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(jTF_artist_birthplace, javax.swing.GroupLayout.PREFERRED_SIZE, 176, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel_ArtistPreviewLayout.createSequentialGroup()
                                 .addComponent(jLabel1)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jTF_artists_artisticname, javax.swing.GroupLayout.PREFERRED_SIZE, 276, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(jTF_artist_artisticname, javax.swing.GroupLayout.PREFERRED_SIZE, 276, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel_ArtistPreviewLayout.createSequentialGroup()
                                 .addComponent(jLabel5)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jTF_artists_firstname, javax.swing.GroupLayout.PREFERRED_SIZE, 176, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(jTF_artist_firstname, javax.swing.GroupLayout.PREFERRED_SIZE, 176, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel_ArtistPreviewLayout.createSequentialGroup()
                                 .addGroup(jPanel_ArtistPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel_ArtistPreviewLayout.createSequentialGroup()
@@ -390,8 +430,8 @@ public class ApplicationForm extends javax.swing.JFrame {
                                         .addComponent(jLabel3)
                                         .addGap(3, 3, 3)))
                                 .addGroup(jPanel_ArtistPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(jFTF_birthdate)
-                                    .addComponent(jTF_artists_lastname, javax.swing.GroupLayout.DEFAULT_SIZE, 176, Short.MAX_VALUE))))))
+                                    .addComponent(jTF_artist_birthdate)
+                                    .addComponent(jTF_artist_lastname, javax.swing.GroupLayout.DEFAULT_SIZE, 176, Short.MAX_VALUE))))))
                 .addContainerGap())
         );
         jPanel_ArtistPreviewLayout.setVerticalGroup(
@@ -400,25 +440,25 @@ public class ApplicationForm extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(jPanel_ArtistPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
-                    .addComponent(jTF_artists_artisticname, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jTF_artist_artisticname, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel_ArtistPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel_ArtistPreviewLayout.createSequentialGroup()
                         .addGroup(jPanel_ArtistPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel5)
-                            .addComponent(jTF_artists_firstname, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jTF_artist_firstname, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(31, 31, 31))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel_ArtistPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(jLabel6)
-                        .addComponent(jTF_artists_lastname, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(jTF_artist_lastname, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel_ArtistPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
-                    .addComponent(jFTF_birthdate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jTF_artist_birthdate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel_ArtistPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
-                    .addComponent(jTF_artists_city, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jTF_artist_birthplace, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel_ArtistPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jTF_artist_genre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -426,9 +466,23 @@ public class ApplicationForm extends javax.swing.JFrame {
                 .addContainerGap(40, Short.MAX_VALUE))
         );
 
+        jPanel_artistCRUD_cmd.setLayout(new java.awt.CardLayout());
+
         jButton_AddArtist.setText("Προσθήκη");
+        jButton_AddArtist.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton_AddArtistActionPerformed(evt);
+            }
+        });
+        jPanel_artistCRUD_edit1.add(jButton_AddArtist);
 
         jButton_EditArtist.setText("Επεξεργασία");
+        jButton_EditArtist.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton_EditArtistActionPerformed(evt);
+            }
+        });
+        jPanel_artistCRUD_edit1.add(jButton_EditArtist);
 
         jButton_DeleteArtist.setText("Διαγραφή");
         jButton_DeleteArtist.addActionListener(new java.awt.event.ActionListener() {
@@ -436,6 +490,27 @@ public class ApplicationForm extends javax.swing.JFrame {
                 jButton_DeleteArtistActionPerformed(evt);
             }
         });
+        jPanel_artistCRUD_edit1.add(jButton_DeleteArtist);
+
+        jPanel_artistCRUD_cmd.add(jPanel_artistCRUD_edit1, "card2");
+
+        jButton_artistStore.setText("Αποθήκευση");
+        jButton_artistStore.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton_artistStoreActionPerformed(evt);
+            }
+        });
+        jPanel_artistCRUD_edit2.add(jButton_artistStore);
+
+        jButton_artistCancel.setText("Ακύρωση");
+        jButton_artistCancel.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton_artistCancelActionPerformed(evt);
+            }
+        });
+        jPanel_artistCRUD_edit2.add(jButton_artistCancel);
+
+        jPanel_artistCRUD_cmd.add(jPanel_artistCRUD_edit2, "card3");
 
         javax.swing.GroupLayout jPanel_ArtistsLayout = new javax.swing.GroupLayout(jPanel_Artists);
         jPanel_Artists.setLayout(jPanel_ArtistsLayout);
@@ -444,30 +519,22 @@ public class ApplicationForm extends javax.swing.JFrame {
             .addGroup(jPanel_ArtistsLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 186, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel_ArtistsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel_ArtistPreview, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel_ArtistsLayout.createSequentialGroup()
-                        .addComponent(jButton_AddArtist)
-                        .addGap(30, 30, 30)
-                        .addComponent(jButton_EditArtist)
-                        .addGap(23, 23, 23)
-                        .addComponent(jButton_DeleteArtist)
-                        .addContainerGap())))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel_ArtistsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jPanel_ArtistPreview, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel_artistCRUD_cmd, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(126, Short.MAX_VALUE))
         );
         jPanel_ArtistsLayout.setVerticalGroup(
             jPanel_ArtistsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel_ArtistsLayout.createSequentialGroup()
                 .addGroup(jPanel_ArtistsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 380, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel_ArtistsLayout.createSequentialGroup()
                         .addComponent(jPanel_ArtistPreview, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(32, 32, 32)
-                        .addGroup(jPanel_ArtistsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jButton_AddArtist)
-                            .addComponent(jButton_EditArtist)
-                            .addComponent(jButton_DeleteArtist))))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(18, 18, 18)
+                        .addComponent(jPanel_artistCRUD_cmd, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 345, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(8, Short.MAX_VALUE))
         );
 
         jPanel_FileMgrContents.add(jPanel_Artists, "cardArtists");
@@ -657,8 +724,6 @@ public class ApplicationForm extends javax.swing.JFrame {
                 .addGap(39, 39, 39))
         );
 
-        jPanel_AlbumArtistPreview.getAccessibleContext().setAccessibleName("Επισκόπηση Δισκογραφίας Καλλιτέχνη");
-
         jPanel_FileMgrContents.add(jPanel_ArtistsAlbums, "cardArtistsAlbum");
 
         jPanel_FileMgr.add(jPanel_FileMgrContents, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 160, -1, 390));
@@ -687,29 +752,29 @@ public class ApplicationForm extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jTF_artists_artisticnameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTF_artists_artisticnameActionPerformed
+    private void jTF_artist_artisticnameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTF_artist_artisticnameActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTF_artists_artisticnameActionPerformed
+    }//GEN-LAST:event_jTF_artist_artisticnameActionPerformed
 
     private void jTF_artist_genreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTF_artist_genreActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jTF_artist_genreActionPerformed
 
-    private void jTF_artists_cityActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTF_artists_cityActionPerformed
+    private void jTF_artist_birthplaceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTF_artist_birthplaceActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTF_artists_cityActionPerformed
+    }//GEN-LAST:event_jTF_artist_birthplaceActionPerformed
 
     private void jButton_DeleteArtistActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_DeleteArtistActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton_DeleteArtistActionPerformed
 
-    private void jTF_artists_firstnameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTF_artists_firstnameActionPerformed
+    private void jTF_artist_firstnameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTF_artist_firstnameActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTF_artists_firstnameActionPerformed
+    }//GEN-LAST:event_jTF_artist_firstnameActionPerformed
 
-    private void jTF_artists_lastnameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTF_artists_lastnameActionPerformed
+    private void jTF_artist_lastnameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTF_artist_lastnameActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTF_artists_lastnameActionPerformed
+    }//GEN-LAST:event_jTF_artist_lastnameActionPerformed
 
     private void jButton_FileMgrActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_FileMgrActionPerformed
         jPanel_Menu.setVisible(false);
@@ -721,7 +786,7 @@ public class ApplicationForm extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton_SongListsActionPerformed
 
     private void jButton_ExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_ExitActionPerformed
-        // TODO add your handling code here:
+        System.exit(0);
     }//GEN-LAST:event_jButton_ExitActionPerformed
 
     private void jButton_Artists_GoMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_Artists_GoMenuActionPerformed
@@ -771,8 +836,87 @@ public class ApplicationForm extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton_DeleteArtist1ActionPerformed
 
+    private void jTable_ArtistsPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_jTable_ArtistsPropertyChange
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTable_ArtistsPropertyChange
+
+    private void jTable_ArtistsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable_ArtistsMouseClicked
+       artist1 = artistList.get( jTable_Artists.getSelectedRow());
+       //JOptionPane.showMessageDialog(this, "Eggs are not supposed to be green.\n\n" + artist1.getArtisticname() + "\nemail: " + artist1.getBirthday());
+    }//GEN-LAST:event_jTable_ArtistsMouseClicked
+
+    private void jPanel_ArtistsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanel_ArtistsMouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jPanel_ArtistsMouseClicked
+
+    private void jButton_AddArtistActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_AddArtistActionPerformed
+        try {
+            artist1 = new Artist(0);
+            artist1.setArtisticname("Anekdotos Bandas");
+            artist1.setFirstname("Anekdotos");
+            artist1.setLastname("Bandas");
+            artist1.setBirthday((new SimpleDateFormat("yyyy-mm-DD")).parse("1066-10-26"));
+            artist1.setBirthplace("Athens, Greece");
+            artist1.setGenre((MusicGenre) RadioStationPUEntityManager.createNamedQuery("MusicGenre.findByGenrename").setParameter("genrename", "Blues").getSingleResult());
+            this.jpaArtist.create(artist1);
+            JOptionPane.showMessageDialog(this, "User created!");
+        } catch (ParseException ex) {
+            Logger.getLogger(ApplicationForm.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "User creation failed!");
+            Logger.getLogger(ApplicationForm.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_jButton_AddArtistActionPerformed
+
+    private void artist1PropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_artist1PropertyChange
+        //JOptionPane.showMessageDialog(this, "Eggs are not supposed to be green.\n\n" + artist1.getArtisticname() + "\nemail: " + artist1.getBirthday());
+    }//GEN-LAST:event_artist1PropertyChange
+
+    private void jButton_EditArtistActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_EditArtistActionPerformed
+        setEditableArtistForm(true);
+    }//GEN-LAST:event_jButton_EditArtistActionPerformed
+
+    private void jButton_artistStoreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_artistStoreActionPerformed
+        try {
+            this.jpaArtist.edit(artist1);
+            setEditableArtistForm(false);
+            JOptionPane.showMessageDialog(this, "Τα στοιχεία του Καλλιτέχνη αποθηκεύτηκαν επιτυχώς!");
+        } catch (Exception ex) {
+            Logger.getLogger(ApplicationForm.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(this, "Εμφανίστηκε σφάλμα κατά την αποθήκευση!");
+        }
+    }//GEN-LAST:event_jButton_artistStoreActionPerformed
+
+    private void jButton_artistCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_artistCancelActionPerformed
+       setEditableArtistForm(false);
+    }//GEN-LAST:event_jButton_artistCancelActionPerformed
+
+/* Custom methods for CRUD operations */
+    private void setEditableArtistForm(boolean status) {
+        // set command buttons
+        jPanel_artistCRUD_edit1.setVisible(!status);
+        jPanel_artistCRUD_edit2.setVisible(status);
+        // set jTable list
+        jTable_Artists.setEnabled(!status);
+        // set panel title
+        TitledBorder border = (TitledBorder)jPanel_ArtistPreview.getBorder();
+        border.setTitle(status ? "Επεξεργασία Στοιχείων Καλλιτέχνη": "Επισκόπηση Στοιχείων Καλλιτέχνη");   
+        border.setTitleColor(status ? Color.RED : Color.BLACK);
+        jPanel_ArtistPreview.repaint();
+
+        // set form fields
+        jTF_artist_artisticname.setEditable(status);
+        jTF_artist_firstname.setEditable(status);
+        jTF_artist_lastname.setEditable(status);
+        jTF_artist_birthdate.setEditable(status);
+        jTF_artist_birthplace.setEditable(status);
+        jTF_artist_genre.setEditable(status);
+        
+    }
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.persistence.EntityManager RadioStationPUEntityManager;
+    private radiostation.Artist artist1;
     private java.util.List<radiostation.Album> artistAlbumList;
     private javax.persistence.Query artistAlbumQuery;
     private java.util.List<radiostation.Artist> artistList;
@@ -791,7 +935,8 @@ public class ApplicationForm extends javax.swing.JFrame {
     private javax.swing.JButton jButton_FileMgr;
     private javax.swing.JButton jButton_Groups;
     private javax.swing.JButton jButton_SongLists;
-    private javax.swing.JFormattedTextField jFTF_birthdate;
+    private javax.swing.JButton jButton_artistCancel;
+    private javax.swing.JButton jButton_artistStore;
     private javax.swing.JFormattedTextField jFTF_birthdate1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
@@ -814,17 +959,21 @@ public class ApplicationForm extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel_FileMgrContents;
     private javax.swing.JPanel jPanel_FileMgrMenu;
     private javax.swing.JPanel jPanel_Menu;
+    private javax.swing.JPanel jPanel_artistCRUD_cmd;
+    private javax.swing.JPanel jPanel_artistCRUD_edit1;
+    private javax.swing.JPanel jPanel_artistCRUD_edit2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JTextField jTF_artist_artisticname;
+    private javax.swing.JFormattedTextField jTF_artist_birthdate;
+    private javax.swing.JTextField jTF_artist_birthplace;
+    private javax.swing.JTextField jTF_artist_firstname;
     private javax.swing.JTextField jTF_artist_genre;
     private javax.swing.JTextField jTF_artist_genre1;
+    private javax.swing.JTextField jTF_artist_lastname;
     private javax.swing.JTextField jTF_artistalbum_title;
-    private javax.swing.JTextField jTF_artists_artisticname;
-    private javax.swing.JTextField jTF_artists_city;
     private javax.swing.JTextField jTF_artists_city1;
-    private javax.swing.JTextField jTF_artists_firstname;
     private javax.swing.JTextField jTF_artists_firstname1;
-    private javax.swing.JTextField jTF_artists_lastname;
     private javax.swing.JTextField jTF_artists_lastname1;
     private javax.swing.JTable jTable_AlbumArtists;
     private javax.swing.JTable jTable_Artists;
