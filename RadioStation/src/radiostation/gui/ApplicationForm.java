@@ -12,10 +12,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.border.TitledBorder;
+import javax.swing.table.DefaultTableModel;
 import radiostation.Artist;
 import radiostation.MusicGenre;
 import radiostation.jpa.ArtistJpaController;
+import radiostation.jpa.exceptions.NonexistentEntityException;
 
 /**
  *
@@ -24,6 +27,7 @@ import radiostation.jpa.ArtistJpaController;
 public class ApplicationForm extends javax.swing.JFrame {
     private EntityManager em;
     private ArtistJpaController jpaArtist;
+    private final JPanel msg = new JPanel();
 
     /**
      * Creates new form ArtistsForm
@@ -32,7 +36,7 @@ public class ApplicationForm extends javax.swing.JFrame {
         this.em = em;
         this.jpaArtist = new ArtistJpaController(em);
         initComponents();
-        setEditableArtistForm(false);
+        setEditableArtistForm(false, false);
     }
 
     /**
@@ -45,10 +49,10 @@ public class ApplicationForm extends javax.swing.JFrame {
     private void initComponents() {
         bindingGroup = new org.jdesktop.beansbinding.BindingGroup();
 
-        RadioStationPUEntityManager = java.beans.Beans.isDesignTime() ? null : this.em;
-        artistQuery = java.beans.Beans.isDesignTime() ? null : RadioStationPUEntityManager.createQuery("SELECT a FROM Artist a");
+        radioStationPUEntityManager = java.beans.Beans.isDesignTime() ? null : this.em;
+        artistQuery = java.beans.Beans.isDesignTime() ? null : radioStationPUEntityManager.createQuery("SELECT a FROM Artist a");
         artistList = java.beans.Beans.isDesignTime() ? java.util.Collections.emptyList() : artistQuery.getResultList();
-        artistAlbumQuery = java.beans.Beans.isDesignTime() ? null : RadioStationPUEntityManager.createQuery("SELECT a FROM Album a WHERE a.type1 = 'artist'");
+        artistAlbumQuery = java.beans.Beans.isDesignTime() ? null : radioStationPUEntityManager.createQuery("SELECT a FROM Album a WHERE a.type1 = 'artist'");
         artistAlbumList = java.beans.Beans.isDesignTime() ? java.util.Collections.emptyList() : artistAlbumQuery.getResultList();
         artist1 = new radiostation.Artist();
         jPanel1 = new javax.swing.JPanel();
@@ -765,7 +769,15 @@ public class ApplicationForm extends javax.swing.JFrame {
     }//GEN-LAST:event_jTF_artist_birthplaceActionPerformed
 
     private void jButton_DeleteArtistActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_DeleteArtistActionPerformed
-        // TODO add your handling code here:
+        try {
+            int ans = JOptionPane.showConfirmDialog(msg, "Είσαι σίγουρος για τη διαγραφή?", "Question", JOptionPane.YES_NO_OPTION);
+            if (ans == 0) {
+                this.jpaArtist.destroy(artist1.getId());
+                JOptionPane.showMessageDialog(this, "Η διαγραφή ολοκληρώθηκε επιτυχώς!");
+            }
+        } catch (NonexistentEntityException ex) {
+            Logger.getLogger(ApplicationForm.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_jButton_DeleteArtistActionPerformed
 
     private void jTF_artist_firstnameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTF_artist_firstnameActionPerformed
@@ -841,7 +853,8 @@ public class ApplicationForm extends javax.swing.JFrame {
     }//GEN-LAST:event_jTable_ArtistsPropertyChange
 
     private void jTable_ArtistsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable_ArtistsMouseClicked
-       artist1 = artistList.get( jTable_Artists.getSelectedRow());
+        if (jTable_Artists.getSelectedRowCount() != 0 )
+            artist1 = artistList.get( jTable_Artists.getSelectedRow());
        //JOptionPane.showMessageDialog(this, "Eggs are not supposed to be green.\n\n" + artist1.getArtisticname() + "\nemail: " + artist1.getBirthday());
     }//GEN-LAST:event_jTable_ArtistsMouseClicked
 
@@ -850,22 +863,11 @@ public class ApplicationForm extends javax.swing.JFrame {
     }//GEN-LAST:event_jPanel_ArtistsMouseClicked
 
     private void jButton_AddArtistActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_AddArtistActionPerformed
-        try {
-            artist1 = new Artist(0);
-            artist1.setArtisticname("Anekdotos Bandas");
-            artist1.setFirstname("Anekdotos");
-            artist1.setLastname("Bandas");
-            artist1.setBirthday((new SimpleDateFormat("yyyy-mm-DD")).parse("1066-10-26"));
-            artist1.setBirthplace("Athens, Greece");
-            artist1.setGenre((MusicGenre) RadioStationPUEntityManager.createNamedQuery("MusicGenre.findByGenrename").setParameter("genrename", "Blues").getSingleResult());
-            this.jpaArtist.create(artist1);
-            JOptionPane.showMessageDialog(this, "User created!");
-        } catch (ParseException ex) {
-            Logger.getLogger(ApplicationForm.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "User creation failed!");
-            Logger.getLogger(ApplicationForm.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        artist1 = new Artist();
+        artist1.setArtisticname("<New Artist>");
+        artistList.add(artist1);
+        //jTable_Artists.clearSelection();
+        setEditableArtistForm(true, true);
     }//GEN-LAST:event_jButton_AddArtistActionPerformed
 
     private void artist1PropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_artist1PropertyChange
@@ -873,13 +875,21 @@ public class ApplicationForm extends javax.swing.JFrame {
     }//GEN-LAST:event_artist1PropertyChange
 
     private void jButton_EditArtistActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_EditArtistActionPerformed
-        setEditableArtistForm(true);
+        setEditableArtistForm(true, false);
     }//GEN-LAST:event_jButton_EditArtistActionPerformed
 
     private void jButton_artistStoreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_artistStoreActionPerformed
         try {
-            this.jpaArtist.edit(artist1);
-            setEditableArtistForm(false);
+            if (artist1.getId() == null) {
+                artist1.setArtisticname(jTF_artist_artisticname.getText());
+                artist1.setFirstname(jTF_artist_firstname.getText());
+                artist1.setLastname(jTF_artist_lastname.getText());
+                artist1.setBirthday(Utility.parseToDate(jTF_artist_birthdate.getText()));
+                artist1.setGenre(Utility.getGenre(em, jTF_artist_genre.getText()));
+                this.jpaArtist.create(artist1);
+            } else
+                this.jpaArtist.edit(artist1);
+            setEditableArtistForm(false, false);
             JOptionPane.showMessageDialog(this, "Τα στοιχεία του Καλλιτέχνη αποθηκεύτηκαν επιτυχώς!");
         } catch (Exception ex) {
             Logger.getLogger(ApplicationForm.class.getName()).log(Level.SEVERE, null, ex);
@@ -888,19 +898,21 @@ public class ApplicationForm extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton_artistStoreActionPerformed
 
     private void jButton_artistCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_artistCancelActionPerformed
-       setEditableArtistForm(false);
+       setEditableArtistForm(false, false);
     }//GEN-LAST:event_jButton_artistCancelActionPerformed
 
 /* Custom methods for CRUD operations */
-    private void setEditableArtistForm(boolean status) {
+    private void setEditableArtistForm(boolean status, boolean isNew) {
         // set command buttons
         jPanel_artistCRUD_edit1.setVisible(!status);
         jPanel_artistCRUD_edit2.setVisible(status);
         // set jTable list
         jTable_Artists.setEnabled(!status);
+        //jTable_Artists.setRowSelectionInterval(0,0);
+        jTable_Artists.clearSelection();
         // set panel title
         TitledBorder border = (TitledBorder)jPanel_ArtistPreview.getBorder();
-        border.setTitle(status ? "Επεξεργασία Στοιχείων Καλλιτέχνη": "Επισκόπηση Στοιχείων Καλλιτέχνη");   
+        border.setTitle(status ? (isNew ? "Δημιουργία Εγγραφής" : "Επεξεργασία Στοιχείων"): "Επισκόπηση Στοιχείων");   
         border.setTitleColor(status ? Color.RED : Color.BLACK);
         jPanel_ArtistPreview.repaint();
 
@@ -911,11 +923,18 @@ public class ApplicationForm extends javax.swing.JFrame {
         jTF_artist_birthdate.setEditable(status);
         jTF_artist_birthplace.setEditable(status);
         jTF_artist_genre.setEditable(status);
-        
+
+        if (status && isNew) {
+            jTF_artist_artisticname.setText(null);
+            jTF_artist_firstname.setText(null);
+            jTF_artist_lastname.setText(null);
+            jTF_artist_birthdate.setText(null);
+            jTF_artist_genre.setText(null);
+        }
+   
     }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.persistence.EntityManager RadioStationPUEntityManager;
     private radiostation.Artist artist1;
     private java.util.List<radiostation.Album> artistAlbumList;
     private javax.persistence.Query artistAlbumQuery;
@@ -977,6 +996,7 @@ public class ApplicationForm extends javax.swing.JFrame {
     private javax.swing.JTextField jTF_artists_lastname1;
     private javax.swing.JTable jTable_AlbumArtists;
     private javax.swing.JTable jTable_Artists;
+    private javax.persistence.EntityManager radioStationPUEntityManager;
     private org.jdesktop.beansbinding.BindingGroup bindingGroup;
     // End of variables declaration//GEN-END:variables
 }

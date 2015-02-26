@@ -70,14 +70,14 @@ public class ArtistJpaController implements Serializable {
             }
             em.getTransaction().commit();
         } catch (Exception ex) {
-            if (findArtist(artist.getId()) != null) {
-                throw new PreexistingEntityException("Artist " + artist + " already exists.", ex);
-            }
+            //if (findArtist(artist.getId()) != null) {
+            //    throw new PreexistingEntityException("Artist " + artist + " already exists.", ex);
+            //}
             throw ex;
         } finally {
-            if (em != null) {
-                em.close();
-            }
+//            if (em != null) {
+//                em.close();
+//            }
         }
     }
 
@@ -139,9 +139,9 @@ public class ArtistJpaController implements Serializable {
             }
             throw ex;
         } finally {
-            if (em != null) {
-                em.close();
-            }
+//            if (em != null) {
+//                em.close();
+//            }
         }
     }
 
@@ -170,9 +170,9 @@ public class ArtistJpaController implements Serializable {
             em.remove(artist);
             em.getTransaction().commit();
         } finally {
-            if (em != null) {
-                em.close();
-            }
+//            if (em != null) {
+//                em.close();
+//            }
         }
     }
 
@@ -196,7 +196,7 @@ public class ArtistJpaController implements Serializable {
             }
             return q.getResultList();
         } finally {
-            em.close();
+//            em.close();
         }
     }
 
@@ -205,7 +205,7 @@ public class ArtistJpaController implements Serializable {
         try {
             return em.find(Artist.class, id);
         } finally {
-            em.close();
+//            em.close();
         }
     }
 
@@ -218,7 +218,7 @@ public class ArtistJpaController implements Serializable {
             Query q = em.createQuery(cq);
             return ((Long) q.getSingleResult()).intValue();
         } finally {
-            em.close();
+//            em.close();
         }
     }
     
