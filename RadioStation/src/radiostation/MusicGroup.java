@@ -8,35 +8,34 @@ package radiostation;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.Serializable;
-import java.util.Collection;
+import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
  * @author a.gounaris
  */
 @Entity
-@Table(name = "PLAYLIST", catalog = "", schema = "APP")
+@Table(name = "MUSICGROUP", catalog = "", schema = "APP")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Playlist.findAll", query = "SELECT p FROM Playlist p"),
-    @NamedQuery(name = "Playlist.findById", query = "SELECT p FROM Playlist p WHERE p.id = :id"),
-    @NamedQuery(name = "Playlist.findByName", query = "SELECT p FROM Playlist p WHERE p.name = :name")})
-public class Playlist implements Serializable {
+    @NamedQuery(name = "MusicGroup.findAll", query = "SELECT m FROM MusicGroup m"),
+    @NamedQuery(name = "MusicGroup.findById", query = "SELECT m FROM MusicGroup m WHERE m.id = :id"),
+    @NamedQuery(name = "MusicGroup.findByName", query = "SELECT m FROM MusicGroup m WHERE m.name = :name"),
+    @NamedQuery(name = "MusicGroup.findByFormationdate", query = "SELECT m FROM MusicGroup m WHERE m.formationdate = :formationdate")})
+public class MusicGroup implements Serializable {
     @Transient
     private PropertyChangeSupport changeSupport = new PropertyChangeSupport(this);
     private static final long serialVersionUID = 1L;
@@ -45,19 +44,25 @@ public class Playlist implements Serializable {
     @Basic(optional = false)
     @Column(name = "ID")
     private Integer id;
+    @Basic(optional = false)
     @Column(name = "NAME")
     private String name;
-    @JoinTable(name = "PLAYLIST_SONG", joinColumns = {
-        @JoinColumn(name = "PLAYLIST_ID", referencedColumnName = "ID")}, inverseJoinColumns = {
-        @JoinColumn(name = "SONG_ID", referencedColumnName = "ID")})
-    @ManyToMany
-    private Collection<Song> songCollection;
+    @Basic(optional = false)
+    @Column(name = "FORMATIONDATE")
+    @Temporal(TemporalType.DATE)
+    private Date formationdate;
 
-    public Playlist() {
+    public MusicGroup() {
     }
 
-    public Playlist(Integer id) {
+    public MusicGroup(Integer id) {
         this.id = id;
+    }
+
+    public MusicGroup(Integer id, String name, Date formationdate) {
+        this.id = id;
+        this.name = name;
+        this.formationdate = formationdate;
     }
 
     public Integer getId() {
@@ -80,13 +85,14 @@ public class Playlist implements Serializable {
         changeSupport.firePropertyChange("name", oldName, name);
     }
 
-    @XmlTransient
-    public Collection<Song> getSongCollection() {
-        return songCollection;
+    public Date getFormationdate() {
+        return formationdate;
     }
 
-    public void setSongCollection(Collection<Song> songCollection) {
-        this.songCollection = songCollection;
+    public void setFormationdate(Date formationdate) {
+        Date oldFormationdate = this.formationdate;
+        this.formationdate = formationdate;
+        changeSupport.firePropertyChange("formationdate", oldFormationdate, formationdate);
     }
 
     @Override
@@ -99,10 +105,10 @@ public class Playlist implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Playlist)) {
+        if (!(object instanceof MusicGroup)) {
             return false;
         }
-        Playlist other = (Playlist) object;
+        MusicGroup other = (MusicGroup) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
@@ -111,7 +117,7 @@ public class Playlist implements Serializable {
 
     @Override
     public String toString() {
-        return "radiostation.Playlist[ id=" + id + " ]";
+        return "radiostation.MusicGroup[ id=" + id + " ]";
     }
 
     public void addPropertyChangeListener(PropertyChangeListener listener) {

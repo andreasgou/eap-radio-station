@@ -5,12 +5,16 @@
  */
 package radiostation;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
@@ -22,6 +26,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -42,8 +47,11 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Artist.findByBirthday", query = "SELECT a FROM Artist a WHERE a.birthday = :birthday"),
     @NamedQuery(name = "Artist.findByBirthplace", query = "SELECT a FROM Artist a WHERE a.birthplace = :birthplace")})
 public class Artist implements Serializable {
+    @Transient
+    private PropertyChangeSupport changeSupport = new PropertyChangeSupport(this);
     private static final long serialVersionUID = 1L;
     @Id
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "ID")
     private Integer id;
@@ -70,10 +78,10 @@ public class Artist implements Serializable {
         @JoinColumn(name = "ARTIST_ID", referencedColumnName = "ID")}, inverseJoinColumns = {
         @JoinColumn(name = "MUSICGROUP_ID", referencedColumnName = "ID")})
     @ManyToMany
-    private Collection<Musicgroup> musicgroupCollection;
+    private Collection<MusicGroup> musicgroupCollection;
     @JoinColumn(name = "GENRE", referencedColumnName = "GENRENAME")
     @ManyToOne(optional = false)
-    private Musicgenre genre;
+    private MusicGenre genre;
     @OneToMany(mappedBy = "artistId")
     private Collection<Album> albumCollection;
 
@@ -99,7 +107,9 @@ public class Artist implements Serializable {
     }
 
     public void setId(Integer id) {
+        Integer oldId = this.id;
         this.id = id;
+        changeSupport.firePropertyChange("id", oldId, id);
     }
 
     public String getFirstname() {
@@ -107,7 +117,9 @@ public class Artist implements Serializable {
     }
 
     public void setFirstname(String firstname) {
+        String oldFirstname = this.firstname;
         this.firstname = firstname;
+        changeSupport.firePropertyChange("firstname", oldFirstname, firstname);
     }
 
     public String getLastname() {
@@ -115,7 +127,9 @@ public class Artist implements Serializable {
     }
 
     public void setLastname(String lastname) {
+        String oldLastname = this.lastname;
         this.lastname = lastname;
+        changeSupport.firePropertyChange("lastname", oldLastname, lastname);
     }
 
     public String getArtisticname() {
@@ -123,7 +137,9 @@ public class Artist implements Serializable {
     }
 
     public void setArtisticname(String artisticname) {
+        String oldArtisticname = this.artisticname;
         this.artisticname = artisticname;
+        changeSupport.firePropertyChange("artisticname", oldArtisticname, artisticname);
     }
 
     public Character getSex() {
@@ -131,7 +147,9 @@ public class Artist implements Serializable {
     }
 
     public void setSex(Character sex) {
+        Character oldSex = this.sex;
         this.sex = sex;
+        changeSupport.firePropertyChange("sex", oldSex, sex);
     }
 
     public Date getBirthday() {
@@ -139,7 +157,9 @@ public class Artist implements Serializable {
     }
 
     public void setBirthday(Date birthday) {
+        Date oldBirthday = this.birthday;
         this.birthday = birthday;
+        changeSupport.firePropertyChange("birthday", oldBirthday, birthday);
     }
 
     public String getBirthplace() {
@@ -147,24 +167,28 @@ public class Artist implements Serializable {
     }
 
     public void setBirthplace(String birthplace) {
+        String oldBirthplace = this.birthplace;
         this.birthplace = birthplace;
+        changeSupport.firePropertyChange("birthplace", oldBirthplace, birthplace);
     }
 
     @XmlTransient
-    public Collection<Musicgroup> getMusicgroupCollection() {
+    public Collection<MusicGroup> getMusicgroupCollection() {
         return musicgroupCollection;
     }
 
-    public void setMusicgroupCollection(Collection<Musicgroup> musicgroupCollection) {
+    public void setMusicgroupCollection(Collection<MusicGroup> musicgroupCollection) {
         this.musicgroupCollection = musicgroupCollection;
     }
 
-    public Musicgenre getGenre() {
+    public MusicGenre getGenre() {
         return genre;
     }
 
-    public void setGenre(Musicgenre genre) {
+    public void setGenre(MusicGenre genre) {
+        MusicGenre oldGenre = this.genre;
         this.genre = genre;
+        changeSupport.firePropertyChange("genre", oldGenre, genre);
     }
 
     @XmlTransient
@@ -199,6 +223,14 @@ public class Artist implements Serializable {
     @Override
     public String toString() {
         return "radiostation.Artist[ id=" + id + " ]";
+    }
+
+    public void addPropertyChangeListener(PropertyChangeListener listener) {
+        changeSupport.addPropertyChangeListener(listener);
+    }
+
+    public void removePropertyChangeListener(PropertyChangeListener listener) {
+        changeSupport.removePropertyChangeListener(listener);
     }
     
 }

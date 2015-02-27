@@ -664,7 +664,7 @@ public class MainForm extends javax.swing.JFrame {
                                 .addGroup(jPanelArtistManagementLayout.createSequentialGroup()
                                     .addComponent(jLabelArrtistsex4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                     .addGap(26, 26, 26))
-                                .addComponent(jLabelArtisticName2, javax.swing.GroupLayout.DEFAULT_SIZE, 102, Short.MAX_VALUE))))
+                                .addComponent(jLabelArtisticName2, javax.swing.GroupLayout.PREFERRED_SIZE, 102, Short.MAX_VALUE))))
                     .addGroup(jPanelArtistManagementLayout.createSequentialGroup()
                         .addContainerGap()
                         .addComponent(jLabelArtistDateBirth2, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)))
@@ -1172,7 +1172,6 @@ public class MainForm extends javax.swing.JFrame {
         );
 
         jPanelFather2.add(jPanelArtistsAlbumsManagement, "artistsAlbumsManagement");
-        jPanelArtistsAlbumsManagement.getAccessibleContext().setAccessibleName("Φόρμα Διαχείρισης Άλμπουμ");
 
         jPanelSongListManagement.setBorder(javax.swing.BorderFactory.createTitledBorder("Φόρμα Διαχείρισης Λίστας"));
         jPanelSongListManagement.setName("jPanelSongListManagement"); // NOI18N
