@@ -28,11 +28,11 @@ import javax.xml.bind.annotation.XmlTransient;
 @Table(name = "MUSICPRODUCTIONCOMPANY", catalog = "", schema = "APP")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Musicproductioncompany.findAll", query = "SELECT m FROM Musicproductioncompany m"),
-    @NamedQuery(name = "Musicproductioncompany.findById", query = "SELECT m FROM Musicproductioncompany m WHERE m.id = :id"),
-    @NamedQuery(name = "Musicproductioncompany.findByName", query = "SELECT m FROM Musicproductioncompany m WHERE m.name = :name"),
-    @NamedQuery(name = "Musicproductioncompany.findByAddress", query = "SELECT m FROM Musicproductioncompany m WHERE m.address = :address"),
-    @NamedQuery(name = "Musicproductioncompany.findByTelephone", query = "SELECT m FROM Musicproductioncompany m WHERE m.telephone = :telephone")})
+    @NamedQuery(name = "MusicProductionCompany.findAll", query = "SELECT m FROM MusicProductionCompany m"),
+    @NamedQuery(name = "MusicProductionCompany.findById", query = "SELECT m FROM MusicProductionCompany m WHERE m.id = :id"),
+    @NamedQuery(name = "MusicProductionCompany.findByName", query = "SELECT m FROM MusicProductionCompany m WHERE m.name = :name"),
+    @NamedQuery(name = "MusicProductionCompany.findByAddress", query = "SELECT m FROM MusicProductionCompany m WHERE m.address = :address"),
+    @NamedQuery(name = "MusicProductionCompany.findByTelephone", query = "SELECT m FROM MusicProductionCompany m WHERE m.telephone = :telephone")})
 public class MusicProductionCompany implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
@@ -127,7 +127,7 @@ public class MusicProductionCompany implements Serializable {
 
     @Override
     public String toString() {
-        return "radiostation.Musicproductioncompany[ id=" + id + " ]";
+        return "radiostation.MusicProductionCompany[ id=" + id + " ]";
     }
     
 }

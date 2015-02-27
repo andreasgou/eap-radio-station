@@ -27,8 +27,8 @@ import javax.xml.bind.annotation.XmlTransient;
 @Table(name = "MUSICGENRE", catalog = "", schema = "APP")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Musicgenre.findAll", query = "SELECT m FROM Musicgenre m"),
-    @NamedQuery(name = "Musicgenre.findByGenrename", query = "SELECT m FROM Musicgenre m WHERE m.genrename = :genrename")})
+    @NamedQuery(name = "MusicGenre.findAll", query = "SELECT m FROM MusicGenre m"),
+    @NamedQuery(name = "MusicGenre.findByGenrename", query = "SELECT m FROM MusicGenre m WHERE m.genrename = :genrename")})
 public class MusicGenre implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
@@ -84,7 +84,7 @@ public class MusicGenre implements Serializable {
 
     @Override
     public String toString() {
-        return "radiostation.Musicgenre[ genrename=" + genrename + " ]";
+        return "radiostation.MusicGenre[ genrename=" + genrename + " ]";
     }
     
 }
