@@ -6,6 +6,9 @@
 package radiostation.gui;
 
 import java.awt.Color;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.EntityManager;
@@ -13,6 +16,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.TitledBorder;
 import radiostation.Artist;
+import radiostation.MusicGenre;
 import radiostation.jpa.ArtistJpaController;
 import radiostation.jpa.exceptions.NonexistentEntityException;
 
@@ -21,10 +25,6 @@ import radiostation.jpa.exceptions.NonexistentEntityException;
  * @author a.gounaris
  */
 public class ApplicationForm extends javax.swing.JFrame {
-    private EntityManager em;
-    private ArtistJpaController jpaArtist;
-    private final JPanel msg = new JPanel();
-
     /**
      * Creates new form ArtistsForm
      */
@@ -46,6 +46,8 @@ public class ApplicationForm extends javax.swing.JFrame {
         bindingGroup = new org.jdesktop.beansbinding.BindingGroup();
 
         radioStationPUEntityManager = java.beans.Beans.isDesignTime() ? null : this.em;
+        musicGenreQuery = java.beans.Beans.isDesignTime() ? null : radioStationPUEntityManager.createQuery("SELECT m FROM MusicGenre m");
+        musicGenreList = java.beans.Beans.isDesignTime() ? java.util.Collections.emptyList() : org.jdesktop.observablecollections.ObservableCollections.observableList(musicGenreQuery.getResultList());
         artistQuery = java.beans.Beans.isDesignTime() ? null : radioStationPUEntityManager.createQuery("SELECT a FROM Artist a");
         artistList = java.beans.Beans.isDesignTime() ? java.util.Collections.emptyList() : org.jdesktop.observablecollections.ObservableCollections.observableList(artistQuery.getResultList());
         artistAlbumQuery = java.beans.Beans.isDesignTime() ? null : radioStationPUEntityManager.createQuery("SELECT a FROM Album a WHERE a.type1 = 'artist'");
@@ -55,6 +57,9 @@ public class ApplicationForm extends javax.swing.JFrame {
         albumQuery = java.beans.Beans.isDesignTime() ? null : radioStationPUEntityManager.createQuery("SELECT a FROM Album a");
         albumList = java.beans.Beans.isDesignTime() ? java.util.Collections.emptyList() : albumQuery.getResultList();
         artist1 = new radiostation.Artist();
+        musicGenreRenderer = new radiostation.gui.MusicGenreRenderer();
+        jTF_artist_sex = new javax.swing.JComboBox();
+        buttonGroup1 = new javax.swing.ButtonGroup();
         jPanel1 = new javax.swing.JPanel();
         jPanel_Menu = new javax.swing.JPanel();
         jButton_FileMgr = new javax.swing.JButton();
@@ -84,9 +89,10 @@ public class ApplicationForm extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         jTF_artist_birthplace = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
-        jTF_artist_genre = new javax.swing.JTextField();
-        jTF_artist_sex = new javax.swing.JComboBox();
         jLabel13 = new javax.swing.JLabel();
+        jCombo_artist_genre = new javax.swing.JComboBox();
+        jRadioButton1 = new javax.swing.JRadioButton();
+        jRadioButton2 = new javax.swing.JRadioButton();
         jPanel_artistCRUD_cmd = new javax.swing.JPanel();
         jPanel_artistCRUD_edit1 = new javax.swing.JPanel();
         jButton_AddArtist = new javax.swing.JButton();
@@ -117,9 +123,14 @@ public class ApplicationForm extends javax.swing.JFrame {
         jList_ArtistAlbumSongs = new javax.swing.JList();
         jScrollPane5 = new javax.swing.JScrollPane();
         jTable_ArtistAlbumSongs = new javax.swing.JTable();
+        jPanel_albumArtistCRUD_cmd = new javax.swing.JPanel();
+        jPanel_albumArtistCRUD_edit1 = new javax.swing.JPanel();
         jButton_AddArtistAlbum = new javax.swing.JButton();
         jButton_EditArtistAlbum = new javax.swing.JButton();
         jButton_DeleteArtistAlbum = new javax.swing.JButton();
+        jPanel_albumArtistCRUD_edit2 = new javax.swing.JPanel();
+        jButton_artistAlbumStore = new javax.swing.JButton();
+        jButton_artistAlbumCancel = new javax.swing.JButton();
         jPanel_Groups = new javax.swing.JPanel();
         jScrollPane3 = new javax.swing.JScrollPane();
         jTable_Groups = new javax.swing.JTable();
@@ -128,15 +139,20 @@ public class ApplicationForm extends javax.swing.JFrame {
         jTF_groups_name = new javax.swing.JTextField();
         jLabel17 = new javax.swing.JLabel();
         jFTF_dateCreated = new javax.swing.JFormattedTextField();
-        jButton_AddGroup = new javax.swing.JButton();
-        jButton_EditGroup = new javax.swing.JButton();
-        jButton_DeleteGroup = new javax.swing.JButton();
         jScrollPane6 = new javax.swing.JScrollPane();
         jList_GroupArtists = new javax.swing.JList();
         jScrollPane7 = new javax.swing.JScrollPane();
         jList_AvailableArtists = new javax.swing.JList();
         jButton_AddArtistGroup = new javax.swing.JButton();
         jButton_DeleteArtistGroup = new javax.swing.JButton();
+        jPanel_groupCRUD_cmd = new javax.swing.JPanel();
+        jPanel_groupCRUD_edit1 = new javax.swing.JPanel();
+        jButton_AddGroup = new javax.swing.JButton();
+        jButton_EditGroup = new javax.swing.JButton();
+        jButton_DeleteGroup = new javax.swing.JButton();
+        jPanel_groupCRUD_edit2 = new javax.swing.JPanel();
+        jButton_groupStore = new javax.swing.JButton();
+        jButton_groupCancel1 = new javax.swing.JButton();
         jPanel_GroupsAlbums = new javax.swing.JPanel();
         jScrollPane8 = new javax.swing.JScrollPane();
         jTable_AlbumGroups = new javax.swing.JTable();
@@ -188,6 +204,14 @@ public class ApplicationForm extends javax.swing.JFrame {
         jButton_ExportXML = new javax.swing.JButton();
         jButton_SaveSongList = new javax.swing.JButton();
         jButton_CancelSongList = new javax.swing.JButton();
+
+        musicGenreRenderer.setText("musicGenreRenderer1");
+
+        org.jdesktop.beansbinding.ELProperty eLProperty = org.jdesktop.beansbinding.ELProperty.create("${sex}");
+        org.jdesktop.swingbinding.JComboBoxBinding jComboBoxBinding = org.jdesktop.swingbinding.SwingBindings.createJComboBoxBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, artist1, eLProperty, jTF_artist_sex);
+        bindingGroup.addBinding(jComboBoxBinding);
+        org.jdesktop.beansbinding.Binding binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, jTable_Artists, org.jdesktop.beansbinding.ELProperty.create("${selectedElement.sex}"), jTF_artist_sex, org.jdesktop.beansbinding.BeanProperty.create("selectedItem"));
+        bindingGroup.addBinding(binding);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -256,7 +280,7 @@ public class ApplicationForm extends javax.swing.JFrame {
                     .addComponent(jButton_FileMgr, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 191, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel18, javax.swing.GroupLayout.PREFERRED_SIZE, 539, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(941, Short.MAX_VALUE))
+                .addContainerGap(588, Short.MAX_VALUE))
         );
         jPanel_MenuLayout.setVerticalGroup(
             jPanel_MenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -359,14 +383,14 @@ public class ApplicationForm extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jButton_Artists, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(jButton_AlbumArtists, javax.swing.GroupLayout.DEFAULT_SIZE, 174, Short.MAX_VALUE)
-                .addGap(18, 18, 18)
+                .addComponent(jButton_AlbumArtists, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(38, 38, 38)
                 .addComponent(jButton_Groups, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(jButton_AlbumGroups, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(51, 51, 51)
+                .addComponent(jButton_AlbumGroups, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(32, 32, 32)
                 .addComponent(jButton_Artists_GoMenu)
-                .addGap(19, 19, 19))
+                .addContainerGap(30, Short.MAX_VALUE))
         );
         jPanel_FileMgrMenuLayout.setVerticalGroup(
             jPanel_FileMgrMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -380,7 +404,7 @@ public class ApplicationForm extends javax.swing.JFrame {
                             .addComponent(jButton_AlbumArtists, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jButton_Groups, javax.swing.GroupLayout.PREFERRED_SIZE, 141, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(jPanel_FileMgrMenuLayout.createSequentialGroup()
-                        .addGap(49, 49, 49)
+                        .addGap(46, 46, 46)
                         .addComponent(jButton_Artists_GoMenu)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -405,7 +429,7 @@ public class ApplicationForm extends javax.swing.JFrame {
 
         jLabel1.setText("Καλλιτέχνης:");
 
-        org.jdesktop.beansbinding.Binding binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, jTable_Artists, org.jdesktop.beansbinding.ELProperty.create("${selectedElement.artisticname}"), jTF_artist_artisticname, org.jdesktop.beansbinding.BeanProperty.create("text"));
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, jTable_Artists, org.jdesktop.beansbinding.ELProperty.create("${selectedElement.artisticname}"), jTF_artist_artisticname, org.jdesktop.beansbinding.BeanProperty.create("text"));
         bindingGroup.addBinding(binding);
 
         jTF_artist_artisticname.addActionListener(new java.awt.event.ActionListener() {
@@ -456,61 +480,66 @@ public class ApplicationForm extends javax.swing.JFrame {
 
         jLabel4.setText("Είδος Μουσικής:");
 
-        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, jTable_Artists, org.jdesktop.beansbinding.ELProperty.create("${selectedElement.genre.genrename}"), jTF_artist_genre, org.jdesktop.beansbinding.BeanProperty.create("text"));
+        jLabel13.setText("Φύλο:");
+
+        jCombo_artist_genre.setRenderer(musicGenreRenderer);
+
+        jComboBoxBinding = org.jdesktop.swingbinding.SwingBindings.createJComboBoxBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, musicGenreList, jCombo_artist_genre);
+        bindingGroup.addBinding(jComboBoxBinding);
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, jTable_Artists, org.jdesktop.beansbinding.ELProperty.create("${selectedElement.genre}"), jCombo_artist_genre, org.jdesktop.beansbinding.BeanProperty.create("selectedItem"));
         bindingGroup.addBinding(binding);
 
-        jTF_artist_genre.addActionListener(new java.awt.event.ActionListener() {
+        buttonGroup1.add(jRadioButton1);
+        jRadioButton1.setText("Ανδρας");
+
+        buttonGroup1.add(jRadioButton2);
+        jRadioButton2.setText("Γυναίκα");
+        jRadioButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTF_artist_genreActionPerformed(evt);
+                jRadioButton2ActionPerformed(evt);
             }
         });
-
-        jLabel13.setText("Φύλο:");
 
         javax.swing.GroupLayout jPanel_ArtistPreviewLayout = new javax.swing.GroupLayout(jPanel_ArtistPreview);
         jPanel_ArtistPreview.setLayout(jPanel_ArtistPreviewLayout);
         jPanel_ArtistPreviewLayout.setHorizontalGroup(
             jPanel_ArtistPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel_ArtistPreviewLayout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(jLabel4)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jCombo_artist_genre, javax.swing.GroupLayout.PREFERRED_SIZE, 265, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(62, 62, 62))
             .addGroup(jPanel_ArtistPreviewLayout.createSequentialGroup()
+                .addContainerGap()
                 .addGroup(jPanel_ArtistPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel_ArtistPreviewLayout.createSequentialGroup()
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(jPanel_ArtistPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel_ArtistPreviewLayout.createSequentialGroup()
-                                .addComponent(jLabel1)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jTF_artist_artisticname, javax.swing.GroupLayout.PREFERRED_SIZE, 276, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel_ArtistPreviewLayout.createSequentialGroup()
-                                .addComponent(jLabel5)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jTF_artist_firstname, javax.swing.GroupLayout.PREFERRED_SIZE, 176, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel_ArtistPreviewLayout.createSequentialGroup()
-                                .addGroup(jPanel_ArtistPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel_ArtistPreviewLayout.createSequentialGroup()
-                                        .addComponent(jLabel6)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
-                                    .addGroup(jPanel_ArtistPreviewLayout.createSequentialGroup()
-                                        .addComponent(jLabel3)
-                                        .addGap(3, 3, 3)))
-                                .addGroup(jPanel_ArtistPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(jFTF_artist_birthdate)
-                                    .addComponent(jTF_artist_lastname, javax.swing.GroupLayout.DEFAULT_SIZE, 176, Short.MAX_VALUE)))))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel_ArtistPreviewLayout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addGroup(jPanel_ArtistPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel_ArtistPreviewLayout.createSequentialGroup()
-                                .addComponent(jLabel4)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jTF_artist_genre, javax.swing.GroupLayout.PREFERRED_SIZE, 272, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel_ArtistPreviewLayout.createSequentialGroup()
-                                .addGroup(jPanel_ArtistPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(jLabel2)
-                                    .addComponent(jLabel13))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(jPanel_ArtistPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(jTF_artist_sex, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(jTF_artist_birthplace, javax.swing.GroupLayout.DEFAULT_SIZE, 176, Short.MAX_VALUE))))))
-                .addContainerGap())
+                        .addComponent(jLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jTF_artist_artisticname, javax.swing.GroupLayout.PREFERRED_SIZE, 276, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel_ArtistPreviewLayout.createSequentialGroup()
+                        .addComponent(jLabel5)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jTF_artist_firstname, javax.swing.GroupLayout.PREFERRED_SIZE, 176, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel_ArtistPreviewLayout.createSequentialGroup()
+                        .addGroup(jPanel_ArtistPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jLabel6)
+                            .addComponent(jLabel3))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel_ArtistPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jFTF_artist_birthdate)
+                            .addComponent(jTF_artist_lastname, javax.swing.GroupLayout.PREFERRED_SIZE, 176, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel_ArtistPreviewLayout.createSequentialGroup()
+                        .addComponent(jLabel13)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jRadioButton1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jRadioButton2))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel_ArtistPreviewLayout.createSequentialGroup()
+                        .addComponent(jLabel2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jTF_artist_birthplace, javax.swing.GroupLayout.PREFERRED_SIZE, 176, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel_ArtistPreviewLayout.setVerticalGroup(
             jPanel_ArtistPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -535,17 +564,18 @@ public class ApplicationForm extends javax.swing.JFrame {
                     .addComponent(jFTF_artist_birthdate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanel_ArtistPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTF_artist_sex, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel13))
+                    .addComponent(jLabel13)
+                    .addComponent(jRadioButton1)
+                    .addComponent(jRadioButton2))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel_ArtistPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jTF_artist_birthplace, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel2))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel_ArtistPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTF_artist_genre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel4))
-                .addContainerGap())
+                    .addComponent(jLabel4)
+                    .addComponent(jCombo_artist_genre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(12, 12, 12))
         );
 
         jPanel_artistCRUD_cmd.setLayout(new java.awt.CardLayout());
@@ -557,6 +587,7 @@ public class ApplicationForm extends javax.swing.JFrame {
                 jButton_AddArtistActionPerformed(evt);
             }
         });
+        jPanel_artistCRUD_edit1.add(jButton_AddArtist);
 
         jButton_EditArtist.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/images14.jpg"))); // NOI18N
         jButton_EditArtist.setText("Επεξεργασία");
@@ -565,6 +596,7 @@ public class ApplicationForm extends javax.swing.JFrame {
                 jButton_EditArtistActionPerformed(evt);
             }
         });
+        jPanel_artistCRUD_edit1.add(jButton_EditArtist);
 
         jButton_DeleteArtist.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/removeFromDatabase.jpg"))); // NOI18N
         jButton_DeleteArtist.setText("Διαγραφή");
@@ -573,32 +605,9 @@ public class ApplicationForm extends javax.swing.JFrame {
                 jButton_DeleteArtistActionPerformed(evt);
             }
         });
+        jPanel_artistCRUD_edit1.add(jButton_DeleteArtist);
 
-        javax.swing.GroupLayout jPanel_artistCRUD_edit1Layout = new javax.swing.GroupLayout(jPanel_artistCRUD_edit1);
-        jPanel_artistCRUD_edit1.setLayout(jPanel_artistCRUD_edit1Layout);
-        jPanel_artistCRUD_edit1Layout.setHorizontalGroup(
-            jPanel_artistCRUD_edit1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel_artistCRUD_edit1Layout.createSequentialGroup()
-                .addGap(14, 14, 14)
-                .addComponent(jButton_AddArtist)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton_EditArtist)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton_DeleteArtist)
-                .addContainerGap(15, Short.MAX_VALUE))
-        );
-        jPanel_artistCRUD_edit1Layout.setVerticalGroup(
-            jPanel_artistCRUD_edit1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel_artistCRUD_edit1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel_artistCRUD_edit1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton_AddArtist)
-                    .addComponent(jButton_EditArtist)
-                    .addComponent(jButton_DeleteArtist))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-
-        jPanel_artistCRUD_cmd.add(jPanel_artistCRUD_edit1, "card2");
+        jPanel_artistCRUD_cmd.add(jPanel_artistCRUD_edit1, "cardArtistCRUD_edit1");
 
         jButton_artistStore.setText("Αποθήκευση");
         jButton_artistStore.addActionListener(new java.awt.event.ActionListener() {
@@ -616,7 +625,7 @@ public class ApplicationForm extends javax.swing.JFrame {
         });
         jPanel_artistCRUD_edit2.add(jButton_artistCancel);
 
-        jPanel_artistCRUD_cmd.add(jPanel_artistCRUD_edit2, "card3");
+        jPanel_artistCRUD_cmd.add(jPanel_artistCRUD_edit2, "cardArtistCRUD_edit2");
 
         javax.swing.GroupLayout jPanel_ArtistsLayout = new javax.swing.GroupLayout(jPanel_Artists);
         jPanel_Artists.setLayout(jPanel_ArtistsLayout);
@@ -625,21 +634,21 @@ public class ApplicationForm extends javax.swing.JFrame {
             .addGroup(jPanel_ArtistsLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 186, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel_ArtistsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jPanel_ArtistPreview, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jPanel_artistCRUD_cmd, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(1110, 1110, 1110))
+                .addGap(714, 714, 714))
         );
         jPanel_ArtistsLayout.setVerticalGroup(
             jPanel_ArtistsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel_ArtistsLayout.createSequentialGroup()
                 .addGroup(jPanel_ArtistsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 347, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel_ArtistsLayout.createSequentialGroup()
                         .addComponent(jPanel_ArtistPreview, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jPanel_artistCRUD_cmd, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 347, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(jPanel_artistCRUD_cmd, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -786,49 +795,52 @@ public class ApplicationForm extends javax.swing.JFrame {
             jPanel_AlbumArtistPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel_AlbumArtistPreviewLayout.createSequentialGroup()
                 .addContainerGap()
+                .addGroup(jPanel_AlbumArtistPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel7)
+                    .addComponent(jTF_artistalbum_title, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel_AlbumArtistPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel_AlbumArtistPreviewLayout.createSequentialGroup()
                         .addGroup(jPanel_AlbumArtistPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel7)
-                            .addComponent(jTF_artistalbum_title, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jLabel8)
+                            .addComponent(jTF_artistalbum_type, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addComponent(jLabel9))
+                    .addComponent(jTF_artistalbum_number, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel_AlbumArtistPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel10)
+                    .addComponent(jFTF_artistalbum_datecreated, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel_AlbumArtistPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel11)
+                    .addComponent(jTF_artistalbum_company, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanel_AlbumArtistPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jTF_artistalbum_artist, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel15))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanel_AlbumArtistPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel_AlbumArtistPreviewLayout.createSequentialGroup()
+                        .addComponent(jButton_AddArtistAlbumSong)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel_AlbumArtistPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel_AlbumArtistPreviewLayout.createSequentialGroup()
-                                .addGroup(jPanel_AlbumArtistPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(jLabel8)
-                                    .addComponent(jTF_artistalbum_type, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(18, 18, 18)
-                                .addComponent(jLabel9))
-                            .addComponent(jTF_artistalbum_number, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel_AlbumArtistPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel10)
-                            .addComponent(jFTF_artistalbum_datecreated, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel_AlbumArtistPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel11)
-                            .addComponent(jTF_artistalbum_company, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(jPanel_AlbumArtistPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jTF_artistalbum_artist, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel15))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(jPanel_AlbumArtistPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel_AlbumArtistPreviewLayout.createSequentialGroup()
-                                .addComponent(jButton_AddArtistAlbumSong)
-                                .addGap(18, 18, 18)
-                                .addComponent(jButton_DeleteArtistAlbumSong))
-                            .addComponent(jScrollPane5, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addComponent(jScrollPane4)))
+                        .addComponent(jButton_DeleteArtistAlbumSong)
+                        .addGap(12, 12, 12))
+                    .addComponent(jScrollPane5, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)))
+            .addComponent(jScrollPane4)
         );
+
+        jPanel_albumArtistCRUD_cmd.setLayout(new java.awt.CardLayout());
 
         jButton_AddArtistAlbum.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/addToDatabase.jpg"))); // NOI18N
         jButton_AddArtistAlbum.setText("Εισαγωγή");
         jButton_AddArtistAlbum.setToolTipText("Εισαγωγή νέου άλμπουμ");
+        jPanel_albumArtistCRUD_edit1.add(jButton_AddArtistAlbum);
 
         jButton_EditArtistAlbum.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/images14.jpg"))); // NOI18N
         jButton_EditArtistAlbum.setText("Ενημέρωση");
         jButton_EditArtistAlbum.setToolTipText("Ενημέρωση υπάρχοντος άλμπουμ");
+        jPanel_albumArtistCRUD_edit1.add(jButton_EditArtistAlbum);
 
         jButton_DeleteArtistAlbum.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/removeFromDatabase.jpg"))); // NOI18N
         jButton_DeleteArtistAlbum.setText("Διαγραφή");
@@ -838,6 +850,27 @@ public class ApplicationForm extends javax.swing.JFrame {
                 jButton_DeleteArtistAlbumActionPerformed(evt);
             }
         });
+        jPanel_albumArtistCRUD_edit1.add(jButton_DeleteArtistAlbum);
+
+        jPanel_albumArtistCRUD_cmd.add(jPanel_albumArtistCRUD_edit1, "card2");
+
+        jButton_artistAlbumStore.setText("Αποθήκευση");
+        jButton_artistAlbumStore.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton_artistAlbumStoreActionPerformed(evt);
+            }
+        });
+        jPanel_albumArtistCRUD_edit2.add(jButton_artistAlbumStore);
+
+        jButton_artistAlbumCancel.setText("Ακύρωση");
+        jButton_artistAlbumCancel.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton_artistAlbumCancelActionPerformed(evt);
+            }
+        });
+        jPanel_albumArtistCRUD_edit2.add(jButton_artistAlbumCancel);
+
+        jPanel_albumArtistCRUD_cmd.add(jPanel_albumArtistCRUD_edit2, "card3");
 
         javax.swing.GroupLayout jPanel_ArtistsAlbumsLayout = new javax.swing.GroupLayout(jPanel_ArtistsAlbums);
         jPanel_ArtistsAlbums.setLayout(jPanel_ArtistsAlbumsLayout);
@@ -846,31 +879,20 @@ public class ApplicationForm extends javax.swing.JFrame {
             .addGroup(jPanel_ArtistsAlbumsLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 186, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel_ArtistsAlbumsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel_ArtistsAlbumsLayout.createSequentialGroup()
-                        .addComponent(jButton_AddArtistAlbum)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton_EditArtistAlbum)
-                        .addGap(93, 93, 93)
-                        .addComponent(jButton_DeleteArtistAlbum))
-                    .addComponent(jPanel_AlbumArtistPreview, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(902, Short.MAX_VALUE))
+                    .addComponent(jPanel_AlbumArtistPreview, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jPanel_albumArtistCRUD_cmd, javax.swing.GroupLayout.PREFERRED_SIZE, 406, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel_ArtistsAlbumsLayout.setVerticalGroup(
             jPanel_ArtistsAlbumsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel_ArtistsAlbumsLayout.createSequentialGroup()
-                .addGap(0, 0, Short.MAX_VALUE)
-                .addGroup(jPanel_ArtistsAlbumsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addGroup(jPanel_ArtistsAlbumsLayout.createSequentialGroup()
-                        .addComponent(jPanel_AlbumArtistPreview, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(jPanel_ArtistsAlbumsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jButton_AddArtistAlbum)
-                            .addComponent(jButton_EditArtistAlbum)
-                            .addComponent(jButton_DeleteArtistAlbum)))
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 347, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(39, 39, 39))
+            .addGroup(jPanel_ArtistsAlbumsLayout.createSequentialGroup()
+                .addComponent(jPanel_AlbumArtistPreview, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jPanel_albumArtistCRUD_cmd, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 443, Short.MAX_VALUE)
         );
 
         jPanel_FileMgrContents.add(jPanel_ArtistsAlbums, "cardArtistsAlbum");
@@ -901,23 +923,6 @@ public class ApplicationForm extends javax.swing.JFrame {
 
         jFTF_dateCreated.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.DateFormatter(java.text.DateFormat.getDateInstance(java.text.DateFormat.LONG))));
 
-        jButton_AddGroup.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/addToDatabase.jpg"))); // NOI18N
-        jButton_AddGroup.setText("Εισαγωγή");
-        jButton_AddGroup.setToolTipText("Εισαγωγή νέου συγκροτήματος");
-
-        jButton_EditGroup.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/images14.jpg"))); // NOI18N
-        jButton_EditGroup.setText("Μεταβολή");
-        jButton_EditGroup.setToolTipText("Ενημέρωση υπάρχοντος συγκροτήματος");
-
-        jButton_DeleteGroup.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/removeFromDatabase.jpg"))); // NOI18N
-        jButton_DeleteGroup.setText("Διαγραφή");
-        jButton_DeleteGroup.setToolTipText("Διαγραφή υπάρχοντος συγκροτήματος");
-        jButton_DeleteGroup.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton_DeleteGroupActionPerformed(evt);
-            }
-        });
-
         jList_GroupArtists.setBorder(javax.swing.BorderFactory.createTitledBorder("Λίστα Καλλιτεχνών Συγκροτήματος"));
         jScrollPane6.setViewportView(jList_GroupArtists);
 
@@ -946,31 +951,21 @@ public class ApplicationForm extends javax.swing.JFrame {
                     .addGroup(jPanel_GroupPreviewLayout.createSequentialGroup()
                         .addGroup(jPanel_GroupPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel17)
-                            .addComponent(jLabel14)
-                            .addComponent(jButton_AddGroup))
-                        .addGroup(jPanel_GroupPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel_GroupPreviewLayout.createSequentialGroup()
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addGroup(jPanel_GroupPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(jFTF_dateCreated, javax.swing.GroupLayout.DEFAULT_SIZE, 176, Short.MAX_VALUE)
-                                    .addComponent(jTF_groups_name))
-                                .addGap(100, 100, 100))
-                            .addGroup(jPanel_GroupPreviewLayout.createSequentialGroup()
-                                .addGap(81, 81, 81)
-                                .addComponent(jButton_EditGroup)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jButton_DeleteGroup)
-                                .addGap(33, 33, 33))))
+                            .addComponent(jLabel14))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(jPanel_GroupPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jFTF_dateCreated, javax.swing.GroupLayout.DEFAULT_SIZE, 176, Short.MAX_VALUE)
+                            .addComponent(jTF_groups_name))
+                        .addGap(100, 100, 100))
                     .addGroup(jPanel_GroupPreviewLayout.createSequentialGroup()
                         .addComponent(jScrollPane7, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(jPanel_GroupPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jButton_AddArtistGroup, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jButton_DeleteArtistGroup, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jScrollPane6, javax.swing.GroupLayout.PREFERRED_SIZE, 203, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 11, Short.MAX_VALUE)))
-                .addContainerGap())
+                        .addContainerGap(23, Short.MAX_VALUE))))
         );
         jPanel_GroupPreviewLayout.setVerticalGroup(
             jPanel_GroupPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -983,25 +978,61 @@ public class ApplicationForm extends javax.swing.JFrame {
                 .addGroup(jPanel_GroupPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jFTF_dateCreated, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel17))
-                .addGroup(jPanel_GroupPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel_GroupPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(jPanel_GroupPreviewLayout.createSequentialGroup()
                         .addGap(31, 31, 31)
                         .addGroup(jPanel_GroupPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(jScrollPane6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jScrollPane7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel_GroupPreviewLayout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jScrollPane7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(jPanel_GroupPreviewLayout.createSequentialGroup()
+                        .addGap(55, 55, 55)
                         .addComponent(jButton_AddArtistGroup)
-                        .addGap(39, 39, 39)
-                        .addComponent(jButton_DeleteArtistGroup)
-                        .addGap(67, 67, 67)))
-                .addGroup(jPanel_GroupPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton_AddGroup)
-                    .addComponent(jButton_EditGroup)
-                    .addComponent(jButton_DeleteGroup))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jButton_DeleteArtistGroup)))
                 .addContainerGap())
         );
+
+        jPanel_groupCRUD_cmd.setLayout(new java.awt.CardLayout());
+
+        jButton_AddGroup.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/addToDatabase.jpg"))); // NOI18N
+        jButton_AddGroup.setText("Εισαγωγή");
+        jButton_AddGroup.setToolTipText("Εισαγωγή νέου συγκροτήματος");
+        jPanel_groupCRUD_edit1.add(jButton_AddGroup);
+
+        jButton_EditGroup.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/images14.jpg"))); // NOI18N
+        jButton_EditGroup.setText("Μεταβολή");
+        jButton_EditGroup.setToolTipText("Ενημέρωση υπάρχοντος συγκροτήματος");
+        jPanel_groupCRUD_edit1.add(jButton_EditGroup);
+
+        jButton_DeleteGroup.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/removeFromDatabase.jpg"))); // NOI18N
+        jButton_DeleteGroup.setText("Διαγραφή");
+        jButton_DeleteGroup.setToolTipText("Διαγραφή υπάρχοντος συγκροτήματος");
+        jButton_DeleteGroup.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton_DeleteGroupActionPerformed(evt);
+            }
+        });
+        jPanel_groupCRUD_edit1.add(jButton_DeleteGroup);
+
+        jPanel_groupCRUD_cmd.add(jPanel_groupCRUD_edit1, "card2");
+
+        jButton_groupStore.setText("Αποθήκευση");
+        jButton_groupStore.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton_groupStoreActionPerformed(evt);
+            }
+        });
+        jPanel_groupCRUD_edit2.add(jButton_groupStore);
+
+        jButton_groupCancel1.setText("Ακύρωση");
+        jButton_groupCancel1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton_groupCancel1ActionPerformed(evt);
+            }
+        });
+        jPanel_groupCRUD_edit2.add(jButton_groupCancel1);
+
+        jPanel_groupCRUD_cmd.add(jPanel_groupCRUD_edit2, "cardArtistCRUD_edit2");
 
         javax.swing.GroupLayout jPanel_GroupsLayout = new javax.swing.GroupLayout(jPanel_Groups);
         jPanel_Groups.setLayout(jPanel_GroupsLayout);
@@ -1012,18 +1043,28 @@ public class ApplicationForm extends javax.swing.JFrame {
                 .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 186, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel_GroupPreview, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(935, Short.MAX_VALUE))
+                .addContainerGap(575, Short.MAX_VALUE))
+            .addGroup(jPanel_GroupsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel_GroupsLayout.createSequentialGroup()
+                    .addGap(250, 250, 250)
+                    .addComponent(jPanel_groupCRUD_cmd, javax.swing.GroupLayout.PREFERRED_SIZE, 482, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addContainerGap(636, Short.MAX_VALUE)))
         );
         jPanel_GroupsLayout.setVerticalGroup(
             jPanel_GroupsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel_GroupsLayout.createSequentialGroup()
-                .addGroup(jPanel_GroupsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 347, Short.MAX_VALUE)
-                    .addComponent(jPanel_GroupPreview, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addGroup(jPanel_GroupsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jPanel_GroupPreview, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(0, 23, Short.MAX_VALUE))
+            .addGroup(jPanel_GroupsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel_GroupsLayout.createSequentialGroup()
+                    .addGap(303, 303, 303)
+                    .addComponent(jPanel_groupCRUD_cmd, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addContainerGap(83, Short.MAX_VALUE)))
         );
 
-        jPanel_FileMgrContents.add(jPanel_Groups, "cardGroup");
+        jPanel_FileMgrContents.add(jPanel_Groups, "cardGroups");
 
         jPanel_GroupsAlbums.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Αλμπουμ Συγκροτημάτων", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Arial Narrow", 0, 24), new java.awt.Color(255, 0, 102))); // NOI18N
 
@@ -1208,7 +1249,7 @@ public class ApplicationForm extends javax.swing.JFrame {
             .addGroup(jPanel_GroupsAlbumsLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jScrollPane8, javax.swing.GroupLayout.PREFERRED_SIZE, 186, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel_GroupsAlbumsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel_GroupsAlbumsLayout.createSequentialGroup()
                         .addComponent(jButton_AddGroupAlbum)
@@ -1217,21 +1258,19 @@ public class ApplicationForm extends javax.swing.JFrame {
                         .addGap(70, 70, 70)
                         .addComponent(jButton_DeleteGroupAlbum))
                     .addComponent(jPanel_AlbumGroupPreview, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(903, Short.MAX_VALUE))
+                .addContainerGap(561, Short.MAX_VALUE))
         );
         jPanel_GroupsAlbumsLayout.setVerticalGroup(
             jPanel_GroupsAlbumsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel_GroupsAlbumsLayout.createSequentialGroup()
-                .addGap(0, 0, Short.MAX_VALUE)
-                .addGroup(jPanel_GroupsAlbumsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addGroup(jPanel_GroupsAlbumsLayout.createSequentialGroup()
-                        .addComponent(jPanel_AlbumGroupPreview, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(jPanel_GroupsAlbumsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jButton_AddGroupAlbum)
-                            .addComponent(jButton_EditGroupAlbum)
-                            .addComponent(jButton_DeleteGroupAlbum)))
-                    .addComponent(jScrollPane8, javax.swing.GroupLayout.PREFERRED_SIZE, 347, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(jPanel_GroupsAlbumsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane8, javax.swing.GroupLayout.PREFERRED_SIZE, 347, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jPanel_AlbumGroupPreview, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanel_GroupsAlbumsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButton_AddGroupAlbum)
+                    .addComponent(jButton_EditGroupAlbum)
+                    .addComponent(jButton_DeleteGroupAlbum))
                 .addGap(39, 39, 39))
         );
 
@@ -1239,7 +1278,7 @@ public class ApplicationForm extends javax.swing.JFrame {
 
         jPanel_FileMgrContents.add(jPanel_GroupsAlbums, "cardGroupsAlbums");
 
-        jPanel_FileMgr.add(jPanel_FileMgrContents, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 160, -1, 390));
+        jPanel_FileMgr.add(jPanel_FileMgrContents, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 160, -1, 480));
 
         jPanel1.add(jPanel_FileMgr, "cardFileMgr");
 
@@ -1469,7 +1508,7 @@ public class ApplicationForm extends javax.swing.JFrame {
                 .addGroup(jPanel_SongMgrLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel_SongLists, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jPanel_SongListsPreview, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(968, Short.MAX_VALUE))
+                .addContainerGap(615, Short.MAX_VALUE))
         );
         jPanel_SongMgrLayout.setVerticalGroup(
             jPanel_SongMgrLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1488,14 +1527,15 @@ public class ApplicationForm extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 1375, Short.MAX_VALUE)
+                .addGap(112, 112, 112))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 634, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(22, Short.MAX_VALUE))
+                .addContainerGap(43, Short.MAX_VALUE))
         );
 
         bindingGroup.bind();
@@ -1508,16 +1548,13 @@ public class ApplicationForm extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_jTF_artist_artisticnameActionPerformed
 
-    private void jTF_artist_genreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTF_artist_genreActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTF_artist_genreActionPerformed
-
     private void jTF_artist_birthplaceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTF_artist_birthplaceActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jTF_artist_birthplaceActionPerformed
 
     private void jButton_DeleteArtistActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_DeleteArtistActionPerformed
         try {
+            artist1 = artistList.get( jTable_Artists.getSelectedRow());
             int ans = JOptionPane.showConfirmDialog(msg, artist1.getArtisticname() + "\n\nΕίσαι σίγουρος για τη διαγραφή?", "Διαγραφή Καλλιτέχνη", JOptionPane.YES_NO_OPTION);
             if (ans == 0) {
                 artistList.remove(artist1);
@@ -1660,22 +1697,13 @@ public class ApplicationForm extends javax.swing.JFrame {
 
     private void jButton_artistStoreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_artistStoreActionPerformed
         try {
-            if (artist1.getId() == null) {
-                //artist1 = artistList.get( jTable_Artists.convertRowIndexToModel(jTable_Artists.getSelectedRowCount()));
-                artist1.setArtisticname(jTF_artist_artisticname.getText());
-                artist1.setFirstname(jTF_artist_firstname.getText());
-                artist1.setLastname(jTF_artist_lastname.getText());
-                artist1.setBirthday(Utility.parseToDate(jFTF_artist_birthdate.getText()));
-                artist1.setGenre(Utility.getGenre(em, jTF_artist_genre.getText()));
+            if (artist1.getId() == null)
                 this.jpaArtist.create(artist1);
-                //artistList.set(artistList.indexOf(artist1), artist1);
-                artistList.clear();
-                artistList.addAll(artistQuery.getResultList());
-                //jTable_AlbumArtists.repaint();
-            } else
-            this.jpaArtist.edit(artist1);
+            else
+                this.jpaArtist.edit(artist1);
             setEditableArtistForm(false, false);
             JOptionPane.showMessageDialog(this, "Τα στοιχεία του Καλλιτέχνη αποθηκεύτηκαν επιτυχώς!");
+
         } catch (Exception ex) {
             Logger.getLogger(ApplicationForm.class.getName()).log(Level.SEVERE, null, ex);
             JOptionPane.showMessageDialog(this, "Εμφανίστηκε σφάλμα κατά την αποθήκευση!");
@@ -1691,45 +1719,37 @@ public class ApplicationForm extends javax.swing.JFrame {
         artist1 = new Artist();
         artist1.setArtisticname("<New Artist>");
         artistList.add(artist1);
+        int idx = jTable_Artists.getRowCount()-1;
+        jTable_Artists.setRowSelectionInterval(idx, idx);
         //jTable_Artists.clearSelection();
         setEditableArtistForm(true, true);
     }//GEN-LAST:event_jButton_AddArtistActionPerformed
 
     private void jButton_EditArtistActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_EditArtistActionPerformed
+        artist1 = artistList.get( jTable_Artists.getSelectedRow());
         setEditableArtistForm(true, false);
     }//GEN-LAST:event_jButton_EditArtistActionPerformed
-/* Custom methods for CRUD operations */
-    private void setEditableArtistForm(boolean status, boolean isNew) {
-        // set command buttons
-        jPanel_artistCRUD_edit1.setVisible(!status);
-        jPanel_artistCRUD_edit2.setVisible(status);
-        // set jTable list
-        jTable_Artists.setEnabled(!status);
-        //jTable_Artists.setRowSelectionInterval(0,0);
-        // set panel title
-        TitledBorder border = (TitledBorder)jPanel_ArtistPreview.getBorder();
-        border.setTitle(status ? (isNew ? "Δημιουργία Εγγραφής" : "Επεξεργασία Στοιχείων"): "Επισκόπηση Στοιχείων");   
-        border.setTitleColor(status ? Color.RED : Color.BLACK);
-        jPanel_ArtistPreview.repaint();
 
-        // set form fields
-        jTF_artist_artisticname.setEditable(status);
-        jTF_artist_firstname.setEditable(status);
-        jTF_artist_lastname.setEditable(status);
-        jFTF_artist_birthdate.setEditable(status);
-        //jTF_artist_birthplace.setEditable(status);
-        jTF_artist_genre.setEditable(status);
+    private void jButton_artistAlbumStoreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_artistAlbumStoreActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton_artistAlbumStoreActionPerformed
 
-        if (status && isNew) {
-            jTable_Artists.clearSelection();
-            jTF_artist_artisticname.setText(null);
-            jTF_artist_firstname.setText(null);
-            jTF_artist_lastname.setText(null);
-            jFTF_artist_birthdate.setText(null);
-            jTF_artist_genre.setText(null);
-        }
-   
-    }
+    private void jButton_artistAlbumCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_artistAlbumCancelActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton_artistAlbumCancelActionPerformed
+
+    private void jButton_groupStoreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_groupStoreActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton_groupStoreActionPerformed
+
+    private void jButton_groupCancel1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_groupCancel1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton_groupCancel1ActionPerformed
+
+    private void jRadioButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton2ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jRadioButton2ActionPerformed
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private java.util.List<radiostation.Album> albumList;
     private javax.persistence.Query albumQuery;
@@ -1738,6 +1758,7 @@ public class ApplicationForm extends javax.swing.JFrame {
     private javax.persistence.Query artistAlbumQuery;
     private java.util.List<radiostation.Artist> artistList;
     private javax.persistence.Query artistQuery;
+    private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JButton jButton_AddArtist;
     private javax.swing.JButton jButton_AddArtistAlbum;
     private javax.swing.JButton jButton_AddArtistAlbumSong;
@@ -1775,8 +1796,13 @@ public class ApplicationForm extends javax.swing.JFrame {
     private javax.swing.JButton jButton_SearchSong;
     private javax.swing.JButton jButton_SongLists;
     private javax.swing.JButton jButton_SongLists_GoMenu;
+    private javax.swing.JButton jButton_artistAlbumCancel;
+    private javax.swing.JButton jButton_artistAlbumStore;
     private javax.swing.JButton jButton_artistCancel;
     private javax.swing.JButton jButton_artistStore;
+    private javax.swing.JButton jButton_groupCancel1;
+    private javax.swing.JButton jButton_groupStore;
+    private javax.swing.JComboBox jCombo_artist_genre;
     private javax.swing.JFormattedTextField jFTF_artist_birthdate;
     private javax.swing.JFormattedTextField jFTF_artistalbum_datecreated;
     private javax.swing.JFormattedTextField jFTF_dateCreated;
@@ -1828,9 +1854,17 @@ public class ApplicationForm extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel_SongLists;
     private javax.swing.JPanel jPanel_SongListsPreview;
     private javax.swing.JPanel jPanel_SongMgr;
+    private javax.swing.JPanel jPanel_albumArtistCRUD_cmd;
+    private javax.swing.JPanel jPanel_albumArtistCRUD_edit1;
+    private javax.swing.JPanel jPanel_albumArtistCRUD_edit2;
     private javax.swing.JPanel jPanel_artistCRUD_cmd;
     private javax.swing.JPanel jPanel_artistCRUD_edit1;
     private javax.swing.JPanel jPanel_artistCRUD_edit2;
+    private javax.swing.JPanel jPanel_groupCRUD_cmd;
+    private javax.swing.JPanel jPanel_groupCRUD_edit1;
+    private javax.swing.JPanel jPanel_groupCRUD_edit2;
+    private javax.swing.JRadioButton jRadioButton1;
+    private javax.swing.JRadioButton jRadioButton2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane10;
     private javax.swing.JScrollPane jScrollPane11;
@@ -1847,7 +1881,6 @@ public class ApplicationForm extends javax.swing.JFrame {
     private javax.swing.JTextField jTF_artist_artisticname;
     private javax.swing.JTextField jTF_artist_birthplace;
     private javax.swing.JTextField jTF_artist_firstname;
-    private javax.swing.JTextField jTF_artist_genre;
     private javax.swing.JTextField jTF_artist_lastname;
     private javax.swing.JComboBox jTF_artist_sex;
     private javax.swing.JTextField jTF_artistalbum_artist;
@@ -1871,9 +1904,51 @@ public class ApplicationForm extends javax.swing.JFrame {
     private javax.swing.JTable jTable_Available_Songs;
     private javax.swing.JTable jTable_GroupAlbumSongs;
     private javax.swing.JTable jTable_Groups;
+    private java.util.List<radiostation.MusicGenre> musicGenreList;
+    private javax.persistence.Query musicGenreQuery;
+    private radiostation.gui.MusicGenreRenderer musicGenreRenderer;
     private java.util.List<radiostation.MusicGroup> musicGroupList;
     private javax.persistence.Query musicGroupQuery;
     private javax.persistence.EntityManager radioStationPUEntityManager;
     private org.jdesktop.beansbinding.BindingGroup bindingGroup;
     // End of variables declaration//GEN-END:variables
+
+    /* Custom variables declaration */
+    private EntityManager em;
+    private ArtistJpaController jpaArtist;
+    private final JPanel msg = new JPanel();
+    private final List<String> sex = new ArrayList(Arrays.asList("M","F"));
+
+    /* Custom methods declaration */
+    private void setEditableArtistForm(boolean status, boolean isNew) {
+        // set command buttons
+        jPanel_artistCRUD_edit1.setVisible(!status);
+        jPanel_artistCRUD_edit2.setVisible(status);
+        
+        // set panel title
+        TitledBorder border = (TitledBorder)jPanel_ArtistPreview.getBorder();
+        border.setTitle(status ? (isNew ? "Δημιουργία Εγγραφής" : "Επεξεργασία Στοιχείων"): "Επισκόπηση Στοιχείων");   
+        border.setTitleColor(status ? Color.RED : Color.BLACK);
+        jPanel_ArtistPreview.repaint();
+
+        // set form fields
+        jTF_artist_artisticname.setEditable(status);
+        jTF_artist_firstname.setEditable(status);
+        jTF_artist_lastname.setEditable(status);
+        jFTF_artist_birthdate.setEditable(status);
+        jTF_artist_birthplace.setEditable(status);
+        jCombo_artist_genre.setEditable(status);
+   
+    }
+    
+    private boolean isMale(String sex) {
+        return "M".equals(sex);
+    }
+    
+    private boolean isFemale(String sex) {
+        return "F".equals(sex);
+    }
+
+
+
 }
