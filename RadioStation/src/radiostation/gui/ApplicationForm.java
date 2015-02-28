@@ -492,8 +492,21 @@ public class ApplicationForm extends javax.swing.JFrame {
         buttonGroup1.add(jRadioButton1);
         jRadioButton1.setText("Ανδρας");
 
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, jTable_Artists, org.jdesktop.beansbinding.ELProperty.create("${selectedElement.male}"), jRadioButton1, org.jdesktop.beansbinding.BeanProperty.create("selected"));
+        bindingGroup.addBinding(binding);
+
+        jRadioButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jRadioButton1ActionPerformed(evt);
+            }
+        });
+
         buttonGroup1.add(jRadioButton2);
         jRadioButton2.setText("Γυναίκα");
+
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, jTable_Artists, org.jdesktop.beansbinding.ELProperty.create("${selectedElement.female}"), jRadioButton2, org.jdesktop.beansbinding.BeanProperty.create("selected"));
+        bindingGroup.addBinding(binding);
+
         jRadioButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jRadioButton2ActionPerformed(evt);
@@ -1559,7 +1572,7 @@ public class ApplicationForm extends javax.swing.JFrame {
             if (ans == 0) {
                 artistList.remove(artist1);
                 this.jpaArtist.destroy(artist1.getId());
-                JOptionPane.showMessageDialog(this, "Η διαγραφή ολοκληρώθηκε επιτυχώς!");
+                Utility.msg(this, "Η διαγραφή ολοκληρώθηκε επιτυχώς!");
                 
             }
         } catch (NonexistentEntityException ex) {
@@ -1697,16 +1710,17 @@ public class ApplicationForm extends javax.swing.JFrame {
 
     private void jButton_artistStoreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_artistStoreActionPerformed
         try {
+            Utility.msg(this, "getSex="+artist1.getSex() + "\nisMale="+(artist1.getSex()=='M') + "\nisFemale="+(artist1.getSex()=='F'));
             if (artist1.getId() == null)
                 this.jpaArtist.create(artist1);
             else
                 this.jpaArtist.edit(artist1);
             setEditableArtistForm(false, false);
-            JOptionPane.showMessageDialog(this, "Τα στοιχεία του Καλλιτέχνη αποθηκεύτηκαν επιτυχώς!");
+            Utility.msg(this, "Τα στοιχεία του Καλλιτέχνη αποθηκεύτηκαν επιτυχώς!");
 
         } catch (Exception ex) {
             Logger.getLogger(ApplicationForm.class.getName()).log(Level.SEVERE, null, ex);
-            JOptionPane.showMessageDialog(this, "Εμφανίστηκε σφάλμα κατά την αποθήκευση!");
+            Utility.msg(this, "Εμφανίστηκε σφάλμα κατά την αποθήκευση!");
         }
     }//GEN-LAST:event_jButton_artistStoreActionPerformed
 
@@ -1747,8 +1761,12 @@ public class ApplicationForm extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton_groupCancel1ActionPerformed
 
     private void jRadioButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton2ActionPerformed
-        // TODO add your handling code here:
+        //artist1.setSex('F');
     }//GEN-LAST:event_jRadioButton2ActionPerformed
+
+    private void jRadioButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton1ActionPerformed
+        //artist1.setSex('M');
+    }//GEN-LAST:event_jRadioButton1ActionPerformed
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private java.util.List<radiostation.Album> albumList;
@@ -1940,15 +1958,4 @@ public class ApplicationForm extends javax.swing.JFrame {
         jCombo_artist_genre.setEditable(status);
    
     }
-    
-    private boolean isMale(String sex) {
-        return "M".equals(sex);
-    }
-    
-    private boolean isFemale(String sex) {
-        return "F".equals(sex);
-    }
-
-
-
 }

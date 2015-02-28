@@ -151,7 +151,30 @@ public class Artist implements Serializable {
         this.sex = sex;
         changeSupport.firePropertyChange("sex", oldSex, sex);
     }
-
+    
+    /*
+     * This special purpose getter/setter methods is to allow binding 
+     * with radio buttons
+    */
+    public boolean isMale() {
+        return (getSex()!=null) ? getSex()=='M' : false;
+    }
+    public void setMale(boolean nl) {
+        if (nl) setSex('M');
+    }
+    
+    /*
+     * This special purpose getter/setter methods is to allow binding 
+     * with radio buttons
+    */
+    public boolean isFemale() {
+        return (getSex()!=null) ? getSex()=='F' : false;
+    }
+    public void setFemale(boolean nl) {
+        if (nl) setSex('F');
+    }
+    
+    
     public Date getBirthday() {
         return birthday;
     }

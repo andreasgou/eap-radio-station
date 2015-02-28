@@ -792,6 +792,12 @@
                             </Property>
                             <Property name="text" type="java.lang.String" value="&#x391;&#x3bd;&#x3b4;&#x3c1;&#x3b1;&#x3c2;"/>
                           </Properties>
+                          <BindingProperties>
+                            <BindingProperty name="selected" source="jTable_Artists" sourcePath="${selectedElement.male}" target="jRadioButton1" targetPath="selected" updateStrategy="0" immediately="false"/>
+                          </BindingProperties>
+                          <Events>
+                            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jRadioButton1ActionPerformed"/>
+                          </Events>
                         </Component>
                         <Component class="javax.swing.JRadioButton" name="jRadioButton2">
                           <Properties>
@@ -800,6 +806,9 @@
                             </Property>
                             <Property name="text" type="java.lang.String" value="&#x393;&#x3c5;&#x3bd;&#x3b1;&#x3af;&#x3ba;&#x3b1;"/>
                           </Properties>
+                          <BindingProperties>
+                            <BindingProperty name="selected" source="jTable_Artists" sourcePath="${selectedElement.female}" target="jRadioButton2" targetPath="selected" updateStrategy="0" immediately="false"/>
+                          </BindingProperties>
                           <Events>
                             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jRadioButton2ActionPerformed"/>
                           </Events>

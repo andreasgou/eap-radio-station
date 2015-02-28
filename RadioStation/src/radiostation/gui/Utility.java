@@ -13,6 +13,8 @@ import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.EntityManager;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import radiostation.MusicGenre;
 import radiostation.gui.ApplicationForm;
 
@@ -37,4 +39,7 @@ public class Utility {
             return genre;
         }
 
+    public static void msg(JFrame frame, String text) {
+        JOptionPane.showMessageDialog(frame, text);
+    }
 }
