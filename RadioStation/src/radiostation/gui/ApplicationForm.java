@@ -87,12 +87,12 @@ public class ApplicationForm extends javax.swing.JFrame {
         jLabel3 = new javax.swing.JLabel();
         jFTF_artist_birthdate = new javax.swing.JFormattedTextField();
         jLabel2 = new javax.swing.JLabel();
+        jLabel13 = new javax.swing.JLabel();
+        jRB_male = new javax.swing.JRadioButton();
+        jRB_female = new javax.swing.JRadioButton();
         jTF_artist_birthplace = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
-        jLabel13 = new javax.swing.JLabel();
         jCombo_artist_genre = new javax.swing.JComboBox();
-        jRadioButton1 = new javax.swing.JRadioButton();
-        jRadioButton2 = new javax.swing.JRadioButton();
         jPanel_artistCRUD_cmd = new javax.swing.JPanel();
         jPanel_artistCRUD_edit1 = new javax.swing.JPanel();
         jButton_AddArtist = new javax.swing.JButton();
@@ -469,6 +469,32 @@ public class ApplicationForm extends javax.swing.JFrame {
 
         jLabel2.setText("Πόλη:");
 
+        jLabel13.setText("Φύλο:");
+
+        buttonGroup1.add(jRB_male);
+        jRB_male.setText("Ανδρας");
+
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, jTable_Artists, org.jdesktop.beansbinding.ELProperty.create("${selectedElement.male}"), jRB_male, org.jdesktop.beansbinding.BeanProperty.create("selected"));
+        bindingGroup.addBinding(binding);
+
+        jRB_male.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jRB_maleActionPerformed(evt);
+            }
+        });
+
+        buttonGroup1.add(jRB_female);
+        jRB_female.setText("Γυναίκα");
+
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, jTable_Artists, org.jdesktop.beansbinding.ELProperty.create("${selectedElement.female}"), jRB_female, org.jdesktop.beansbinding.BeanProperty.create("selected"));
+        bindingGroup.addBinding(binding);
+
+        jRB_female.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jRB_femaleActionPerformed(evt);
+            }
+        });
+
         binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, jTable_Artists, org.jdesktop.beansbinding.ELProperty.create("${selectedElement.birthplace}"), jTF_artist_birthplace, org.jdesktop.beansbinding.BeanProperty.create("text"));
         bindingGroup.addBinding(binding);
 
@@ -480,38 +506,12 @@ public class ApplicationForm extends javax.swing.JFrame {
 
         jLabel4.setText("Είδος Μουσικής:");
 
-        jLabel13.setText("Φύλο:");
-
         jCombo_artist_genre.setRenderer(musicGenreRenderer);
 
         jComboBoxBinding = org.jdesktop.swingbinding.SwingBindings.createJComboBoxBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, musicGenreList, jCombo_artist_genre);
         bindingGroup.addBinding(jComboBoxBinding);
         binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, jTable_Artists, org.jdesktop.beansbinding.ELProperty.create("${selectedElement.genre}"), jCombo_artist_genre, org.jdesktop.beansbinding.BeanProperty.create("selectedItem"));
         bindingGroup.addBinding(binding);
-
-        buttonGroup1.add(jRadioButton1);
-        jRadioButton1.setText("Ανδρας");
-
-        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, jTable_Artists, org.jdesktop.beansbinding.ELProperty.create("${selectedElement.male}"), jRadioButton1, org.jdesktop.beansbinding.BeanProperty.create("selected"));
-        bindingGroup.addBinding(binding);
-
-        jRadioButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jRadioButton1ActionPerformed(evt);
-            }
-        });
-
-        buttonGroup1.add(jRadioButton2);
-        jRadioButton2.setText("Γυναίκα");
-
-        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, jTable_Artists, org.jdesktop.beansbinding.ELProperty.create("${selectedElement.female}"), jRadioButton2, org.jdesktop.beansbinding.BeanProperty.create("selected"));
-        bindingGroup.addBinding(binding);
-
-        jRadioButton2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jRadioButton2ActionPerformed(evt);
-            }
-        });
 
         javax.swing.GroupLayout jPanel_ArtistPreviewLayout = new javax.swing.GroupLayout(jPanel_ArtistPreview);
         jPanel_ArtistPreview.setLayout(jPanel_ArtistPreviewLayout);
@@ -545,9 +545,9 @@ public class ApplicationForm extends javax.swing.JFrame {
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel_ArtistPreviewLayout.createSequentialGroup()
                         .addComponent(jLabel13)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jRadioButton1)
+                        .addComponent(jRB_male)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jRadioButton2))
+                        .addComponent(jRB_female))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel_ArtistPreviewLayout.createSequentialGroup()
                         .addComponent(jLabel2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -578,8 +578,8 @@ public class ApplicationForm extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanel_ArtistPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel13)
-                    .addComponent(jRadioButton1)
-                    .addComponent(jRadioButton2))
+                    .addComponent(jRB_male)
+                    .addComponent(jRB_female))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel_ArtistPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jTF_artist_birthplace, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1710,7 +1710,6 @@ public class ApplicationForm extends javax.swing.JFrame {
 
     private void jButton_artistStoreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_artistStoreActionPerformed
         try {
-            Utility.msg(this, "getSex="+artist1.getSex() + "\nisMale="+(artist1.getSex()=='M') + "\nisFemale="+(artist1.getSex()=='F'));
             if (artist1.getId() == null)
                 this.jpaArtist.create(artist1);
             else
@@ -1741,6 +1740,8 @@ public class ApplicationForm extends javax.swing.JFrame {
 
     private void jButton_EditArtistActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_EditArtistActionPerformed
         artist1 = artistList.get( jTable_Artists.getSelectedRow());
+        if (artist1.getSex() == null)
+            buttonGroup1.clearSelection();
         setEditableArtistForm(true, false);
     }//GEN-LAST:event_jButton_EditArtistActionPerformed
 
@@ -1760,13 +1761,13 @@ public class ApplicationForm extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton_groupCancel1ActionPerformed
 
-    private void jRadioButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton2ActionPerformed
+    private void jRB_femaleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRB_femaleActionPerformed
         //artist1.setSex('F');
-    }//GEN-LAST:event_jRadioButton2ActionPerformed
+    }//GEN-LAST:event_jRB_femaleActionPerformed
 
-    private void jRadioButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton1ActionPerformed
+    private void jRB_maleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRB_maleActionPerformed
         //artist1.setSex('M');
-    }//GEN-LAST:event_jRadioButton1ActionPerformed
+    }//GEN-LAST:event_jRB_maleActionPerformed
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private java.util.List<radiostation.Album> albumList;
@@ -1881,8 +1882,8 @@ public class ApplicationForm extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel_groupCRUD_cmd;
     private javax.swing.JPanel jPanel_groupCRUD_edit1;
     private javax.swing.JPanel jPanel_groupCRUD_edit2;
-    private javax.swing.JRadioButton jRadioButton1;
-    private javax.swing.JRadioButton jRadioButton2;
+    private javax.swing.JRadioButton jRB_female;
+    private javax.swing.JRadioButton jRB_male;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane10;
     private javax.swing.JScrollPane jScrollPane11;
@@ -1950,12 +1951,15 @@ public class ApplicationForm extends javax.swing.JFrame {
         jPanel_ArtistPreview.repaint();
 
         // set form fields
+        jTable_Artists.setEnabled(!status);
         jTF_artist_artisticname.setEditable(status);
         jTF_artist_firstname.setEditable(status);
         jTF_artist_lastname.setEditable(status);
         jFTF_artist_birthdate.setEditable(status);
+        jRB_male.setEnabled(status);
+        jRB_female.setEnabled(status);
         jTF_artist_birthplace.setEditable(status);
-        jCombo_artist_genre.setEditable(status);
+        //jCombo_artist_genre.setEditable(status);
    
     }
 }
