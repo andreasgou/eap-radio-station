@@ -1572,9 +1572,9 @@ public class ApplicationForm extends javax.swing.JFrame {
             if (ans == 0) {
                 artistList.remove(artist1);
                 this.jpaArtist.destroy(artist1.getId());
-                Utility.msg(this, "Η διαγραφή ολοκληρώθηκε επιτυχώς!");
-                
+                Utility.msg(this, "Η διαγραφή ολοκληρώθηκε επιτυχώς!");   
             }
+            
         } catch (NonexistentEntityException ex) {
             Logger.getLogger(ApplicationForm.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -1724,6 +1724,12 @@ public class ApplicationForm extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton_artistStoreActionPerformed
 
     private void jButton_artistCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_artistCancelActionPerformed
+        // reset list
+        if (artist1.getId() == null) {
+            artistList.remove(artist1);
+            int idx = jTable_Artists.getRowCount()-1;
+            jTable_Artists.setRowSelectionInterval(idx, idx);
+        }
         setEditableArtistForm(false, false);
     }//GEN-LAST:event_jButton_artistCancelActionPerformed
 
