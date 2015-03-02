@@ -5,12 +5,16 @@
  */
 package radiostation;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.io.Serializable;
 import java.util.Collection;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -18,6 +22,7 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -35,8 +40,11 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Album.findByType1", query = "SELECT a FROM Album a WHERE a.type1 = :type1"),
     @NamedQuery(name = "Album.findByDisknumber", query = "SELECT a FROM Album a WHERE a.disknumber = :disknumber")})
 public class Album implements Serializable {
+    @Transient
+    private PropertyChangeSupport changeSupport = new PropertyChangeSupport(this);
     private static final long serialVersionUID = 1L;
     @Id
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "ID")
     private Integer id;
@@ -80,7 +88,9 @@ public class Album implements Serializable {
     }
 
     public void setId(Integer id) {
+        Integer oldId = this.id;
         this.id = id;
+        changeSupport.firePropertyChange("id", oldId, id);
     }
 
     public String getTitle() {
@@ -88,7 +98,9 @@ public class Album implements Serializable {
     }
 
     public void setTitle(String title) {
+        String oldTitle = this.title;
         this.title = title;
+        changeSupport.firePropertyChange("title", oldTitle, title);
     }
 
     public String getType1() {
@@ -96,7 +108,9 @@ public class Album implements Serializable {
     }
 
     public void setType1(String type1) {
+        String oldType1 = this.type1;
         this.type1 = type1;
+        changeSupport.firePropertyChange("type1", oldType1, type1);
     }
 
     public short getDisknumber() {
@@ -104,7 +118,9 @@ public class Album implements Serializable {
     }
 
     public void setDisknumber(short disknumber) {
+        short oldDisknumber = this.disknumber;
         this.disknumber = disknumber;
+        changeSupport.firePropertyChange("disknumber", oldDisknumber, disknumber);
     }
 
     @XmlTransient
@@ -121,7 +137,9 @@ public class Album implements Serializable {
     }
 
     public void setArtistId(Artist artistId) {
+        Artist oldArtistId = this.artistId;
         this.artistId = artistId;
+        changeSupport.firePropertyChange("artistId", oldArtistId, artistId);
     }
 
     public MusicGroup getMusicgroupId() {
@@ -129,7 +147,9 @@ public class Album implements Serializable {
     }
 
     public void setMusicgroupId(MusicGroup musicgroupId) {
+        MusicGroup oldMusicgroupId = this.musicgroupId;
         this.musicgroupId = musicgroupId;
+        changeSupport.firePropertyChange("musicgroupId", oldMusicgroupId, musicgroupId);
     }
 
     public MusicProductionCompany getCompanyId() {
@@ -137,7 +157,9 @@ public class Album implements Serializable {
     }
 
     public void setCompanyId(MusicProductionCompany companyId) {
+        MusicProductionCompany oldCompanyId = this.companyId;
         this.companyId = companyId;
+        changeSupport.firePropertyChange("companyId", oldCompanyId, companyId);
     }
 
     @Override
@@ -163,6 +185,14 @@ public class Album implements Serializable {
     @Override
     public String toString() {
         return "radiostation.Album[ id=" + id + " ]";
+    }
+
+    public void addPropertyChangeListener(PropertyChangeListener listener) {
+        changeSupport.addPropertyChangeListener(listener);
+    }
+
+    public void removePropertyChangeListener(PropertyChangeListener listener) {
+        changeSupport.removePropertyChangeListener(listener);
     }
     
 }

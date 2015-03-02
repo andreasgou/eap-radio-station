@@ -13,6 +13,8 @@ import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
@@ -49,6 +51,7 @@ public class Artist implements Serializable {
     private PropertyChangeSupport changeSupport = new PropertyChangeSupport(this);
     private static final long serialVersionUID = 1L;
     @Id
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "ID")
     private Integer id;
@@ -148,7 +151,30 @@ public class Artist implements Serializable {
         this.sex = sex;
         changeSupport.firePropertyChange("sex", oldSex, sex);
     }
-
+    
+    /*
+     * This special purpose getter/setter methods is to allow binding 
+     * with radio buttons
+    */
+    public boolean isMale() {
+        return (getSex()!=null) ? getSex()=='M' : false;
+    }
+    public void setMale(boolean nl) {
+        if (nl) setSex('M');
+    }
+    
+    /*
+     * This special purpose getter/setter methods is to allow binding 
+     * with radio buttons
+    */
+    public boolean isFemale() {
+        return (getSex()!=null) ? getSex()=='F' : false;
+    }
+    public void setFemale(boolean nl) {
+        if (nl) setSex('F');
+    }
+    
+    
     public Date getBirthday() {
         return birthday;
     }

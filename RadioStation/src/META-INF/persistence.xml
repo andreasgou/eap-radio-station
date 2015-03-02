@@ -10,7 +10,7 @@
     <class>radiostation.MusicGroup</class>
     <class>radiostation.MusicProductionCompany</class>
     <properties>
-      <property name="javax.persistence.jdbc.url" value="jdbc:derby://localhost:1527/RadioStation"/>
+      <property name="javax.persistence.jdbc.url" value="jdbc:derby://localhost:1527/gounaris"/>
       <property name="javax.persistence.jdbc.user" value="app"/>
       <property name="javax.persistence.jdbc.driver" value="org.apache.derby.jdbc.ClientDriver"/>
       <property name="javax.persistence.jdbc.password" value="app"/>
