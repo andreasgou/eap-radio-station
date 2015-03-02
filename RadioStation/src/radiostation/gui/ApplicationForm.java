@@ -1607,6 +1607,7 @@ public class ApplicationForm extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton_SongListsActionPerformed
 
     private void jButton_ExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_ExitActionPerformed
+        Utility.msg(this, "Στο καλό");
         System.exit(0);
     }//GEN-LAST:event_jButton_ExitActionPerformed
 
