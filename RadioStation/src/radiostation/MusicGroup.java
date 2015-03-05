@@ -8,13 +8,19 @@ package radiostation;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
+import java.util.Vector;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
@@ -22,6 +28,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -35,7 +42,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "MusicGroup.findById", query = "SELECT m FROM MusicGroup m WHERE m.id = :id"),
     @NamedQuery(name = "MusicGroup.findByName", query = "SELECT m FROM MusicGroup m WHERE m.name = :name"),
     @NamedQuery(name = "MusicGroup.findByFormationdate", query = "SELECT m FROM MusicGroup m WHERE m.formationdate = :formationdate")})
-public class MusicGroup implements Serializable {
+public class MusicGroup implements Serializable, Cloneable {
     @Transient
     private PropertyChangeSupport changeSupport = new PropertyChangeSupport(this);
     private static final long serialVersionUID = 1L;
@@ -51,7 +58,12 @@ public class MusicGroup implements Serializable {
     @Column(name = "FORMATIONDATE")
     @Temporal(TemporalType.DATE)
     private Date formationdate;
-
+    @JoinTable(name = "ARTISTMUSICGROUP", joinColumns = {
+        @JoinColumn(name = "MUSICGROUP_ID", referencedColumnName = "ID")}, inverseJoinColumns = {
+        @JoinColumn(name = "ARTIST_ID", referencedColumnName = "ID")})
+    @ManyToMany
+    private Collection<Artist> artistCollection;
+ 
     public MusicGroup() {
     }
 
@@ -95,6 +107,16 @@ public class MusicGroup implements Serializable {
         changeSupport.firePropertyChange("formationdate", oldFormationdate, formationdate);
     }
 
+    @XmlTransient
+    public Collection<Artist> getArtistCollection() {
+        return artistCollection;
+    }
+
+    public void setArtistCollection(Collection<Artist> artistCollection) {
+        this.artistCollection = artistCollection;
+    }
+
+
     @Override
     public int hashCode() {
         int hash = 0;
@@ -128,4 +150,15 @@ public class MusicGroup implements Serializable {
         changeSupport.removePropertyChangeListener(listener);
     }
     
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        Object clone = super.clone();
+        // clone list manually
+        Collection<Artist> artistCollection = new ArrayList<Artist>();
+        if (this.artistCollection != null) {
+            artistCollection.addAll(this.artistCollection);
+            ((MusicGroup)clone).setArtistCollection(artistCollection);
+        }
+        return clone;
+    }
 }

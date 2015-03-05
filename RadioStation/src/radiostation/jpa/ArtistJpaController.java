@@ -15,8 +15,12 @@ import radiostation.Album;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 import radiostation.Artist;
+import radiostation.gui.ApplicationForm;
+import radiostation.gui.Utility;
 import radiostation.jpa.exceptions.NonexistentEntityException;
 import radiostation.jpa.exceptions.PreexistingEntityException;
 
@@ -222,4 +226,76 @@ public class ArtistJpaController implements Serializable {
         }
     }
     
+    /* Methods triggered by form events */
+    public void newArtist(ApplicationForm form) {
+        Artist artist1 = new Artist();
+        form.setArtist(artist1);
+        artist1.setArtisticname("<New Artist>");
+        form.getArtistList().add(artist1);
+        int idx = form.getjTable_Artists().getRowCount()-1;
+        form.getjTable_Artists().setRowSelectionInterval(idx, idx);
+        form.setEditableArtistForm(true, true);
+    }
+
+    public void destroyArtist(ApplicationForm form) {
+        try {
+            Artist artist1 = form.getArtistList().get(form.getjTable_Artists().getSelectedRow());
+            int ans = Utility.msgPrompt(form, artist1.getArtisticname() + "\n\nΕίσαι σίγουρος για τη διαγραφή?", "Διαγραφή Καλλιτέχνη");
+            if (ans == 0) {
+                form.getArtistList().remove(artist1);
+                this.destroy(artist1.getId());
+                Utility.msgInfo(form, "Η διαγραφή ολοκληρώθηκε επιτυχώς!");   
+            }
+            
+        } catch (NonexistentEntityException ex) {
+            Logger.getLogger(ApplicationForm.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public void editArtist(ApplicationForm form) {
+        try {
+            Artist artist1 = form.getArtistList().get(form.getjTable_Artists().getSelectedRow());
+            form.setArtist(artist1);
+            form.setClonedObj(artist1.clone());
+            if (artist1.getSex() == null)
+                form.getButtonGroup1().clearSelection();
+            form.setEditableArtistForm(true, false);
+        } catch (CloneNotSupportedException ex) {
+            Logger.getLogger(ApplicationForm.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public void commitArtist(ApplicationForm form) {
+        try {
+            Artist artist1 = form.getArtist();
+            if (artist1.getId() == null)
+                this.create(artist1);
+            else
+                this.edit(artist1);
+            form.setEditableArtistForm(false, false);
+            Utility.msgInfo(form, "Τα στοιχεία του Καλλιτέχνη αποθηκεύτηκαν επιτυχώς!");
+
+        } catch (Exception ex) {
+            Logger.getLogger(ApplicationForm.class.getName()).log(Level.SEVERE, null, ex);
+            Utility.msgError(form, "Εμφανίστηκε σφάλμα κατά την αποθήκευση!");
+        }
+    }
+
+    public void revertArtist(ApplicationForm form) {
+        // reset list
+        Artist artist1 = form.getArtistList().get(form.getjTable_Artists().getSelectedRow());
+        if (artist1.getId() == null) {
+            form.getArtistList().remove(artist1);
+            int idx = form.getjTable_Artists().getRowCount()-1;
+            form.getjTable_Artists().setRowSelectionInterval(idx, idx);
+        } else {
+            artist1 = (Artist)form.getClonedObj();
+            int idx = form.getjTable_Artists().getSelectedRow();
+            form.getArtistList().set(idx, artist1);
+            form.getjTable_Artists().clearSelection();
+            form.getjTable_Artists().setRowSelectionInterval(idx, idx);
+        }
+        form.setEditableArtistForm(false, false);
+    }
+
 }
