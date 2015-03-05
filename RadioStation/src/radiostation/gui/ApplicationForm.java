@@ -8,24 +8,13 @@ package radiostation.gui;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
-import java.util.Vector;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.persistence.EntityManager;
-import javax.swing.DefaultListModel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.ListModel;
 import javax.swing.border.TitledBorder;
-import org.jdesktop.beansbinding.Binding;
 import radiostation.Artist;
-import radiostation.MusicGenre;
 import radiostation.MusicGroup;
 import radiostation.jpa.ArtistJpaController;
 import radiostation.jpa.MusicGroupJpaController;
-import radiostation.jpa.exceptions.NonexistentEntityException;
 
 /**
  *
@@ -1777,38 +1766,10 @@ public class ApplicationForm extends javax.swing.JFrame {
 
     private void jButton_groupStoreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_groupStoreActionPerformed
         this.jpaMusicGroup.commitMusicGroup(this);
-//        try {
-//            if (musicGroup1.getId() == null) {
-//                this.jpaMusicGroup.create(musicGroup1);
-//            } else {
-//                this.jpaMusicGroup.edit(musicGroup1);
-//            }
-//            setEditableGroupForm(false, false);
-//            Utility.msgInfo(this, "Τα στοιχεία του συγκροτήματος αποθηκεύτηκαν επιτυχώς!");
-//
-//        } catch (Exception ex) {
-//            Logger.getLogger(ApplicationForm.class.getName()).log(Level.SEVERE, null, ex);
-//            Utility.msgError(this, "Εμφανίστηκε σφάλμα κατά την αποθήκευση!");
-//        }
     }//GEN-LAST:event_jButton_groupStoreActionPerformed
 
     private void jButton_groupCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_groupCancelActionPerformed
         this.jpaMusicGroup.revertGroup(this);
-//        int idx;
-//        // reset list
-//        if (musicGroup1.getId() == null) {
-//            musicGroupList.remove(musicGroup1);
-//            musicGroup1.setArtistCollection(new ArrayList<Artist>());
-//            getjTable_Groups().clearSelection();
-//        } else {
-//            musicGroup1 = (MusicGroup)clonedObj;
-//            idx = getjTable_Groups().getSelectedRow();
-//            musicGroupList.set(idx, musicGroup1);
-//            getjTable_Groups().clearSelection();
-//            getjTable_Groups().setRowSelectionInterval(idx, idx);
-//        }
-//        jList_GroupArtists.setListData(musicGroup1.getArtistCollection().toArray());
-//        setEditableGroupForm(false, false);
     }//GEN-LAST:event_jButton_groupCancelActionPerformed
 
     private void jRB_femaleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRB_femaleActionPerformed
@@ -1821,52 +1782,14 @@ public class ApplicationForm extends javax.swing.JFrame {
 
     private void jButton_AddGroupActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_AddGroupActionPerformed
         this.jpaMusicGroup.newGroup(this);
-//        try {
-//            musicGroup1 = new MusicGroup();
-//            clonedObj = musicGroup1.clone();
-//            musicGroup1.setName("<New Nusic Group>");
-//            musicGroup1.setArtistCollection(new ArrayList<Artist>());
-//            musicGroupList.add(musicGroup1);
-//            int idx = getjTable_Groups().getRowCount()-1;
-//            getjTable_Groups().setRowSelectionInterval(idx, idx);
-//            jList_GroupArtists.setListData(musicGroup1.getArtistCollection().toArray());
-//            setEditableGroupForm(true, true);
-//        } catch (CloneNotSupportedException ex) {
-//            Logger.getLogger(ApplicationForm.class.getName()).log(Level.SEVERE, null, ex);
-//        }
     }//GEN-LAST:event_jButton_AddGroupActionPerformed
 
     private void jButton_EditGroupActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_EditGroupActionPerformed
         this.jpaMusicGroup.editMusicGroup(this);
-//        if (getjTable_Groups().getSelectedRow() < 0) {
-//            Utility.msgWarning(this, "Δεν έχετε επιλέξει εγγραφή για τροποποίηση", "Επεξεργασία συγκροτήματος");
-//        } else {
-//            try {
-//                // get user selection
-//                musicGroup1 = musicGroupList.get(getjTable_Groups().getSelectedRow());
-//                // clone object - to be used if user cancels editing
-//                clonedObj = musicGroup1.clone();
-//                //artistInGroupList = new Vector<Artist>();
-//                //artistInGroupList.addAll(musicGroup1.getArtistCollection());
-//                setEditableGroupForm(true, false);
-//
-//            } catch (CloneNotSupportedException ex) {
-//                Logger.getLogger(ApplicationForm.class.getName()).log(Level.SEVERE, null, ex);
-//            }
-//        }
     }//GEN-LAST:event_jButton_EditGroupActionPerformed
 
     private void jButton_AddArtistGroupActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_AddArtistGroupActionPerformed
         this.jpaMusicGroup.addArtistInGroup(this);
-//        if (jList_AvailableArtists.getSelectedIndex() < 0) {
-//            Utility.msgWarning(this, "Δεν έχετε επιλέξει καλλιτέχνη για προσθήκη στο συγκρότημα", "Επεξεργασία συγκροτήματος");
-//        } else {
-//            Artist artistToGroup =  (Artist)jList_AvailableArtists.getSelectedValue();
-//            List artistInGroupList = (List)musicGroup1.getArtistCollection();
-//            artistInGroupList.add (artistToGroup);
-//            jList_GroupArtists.setListData(artistInGroupList.toArray());
-//            jList_GroupArtists.setSelectedIndex(artistInGroupList.size()-1);
-//        }
     }//GEN-LAST:event_jButton_AddArtistGroupActionPerformed
 
     private void jTable_GroupsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable_GroupsMouseClicked
