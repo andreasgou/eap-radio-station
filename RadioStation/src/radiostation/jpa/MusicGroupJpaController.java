@@ -184,18 +184,54 @@ public class MusicGroupJpaController implements Serializable {
 
 
    /* Methods triggered by form events */
-     public void newGroup(ApplicationForm form) {
+    public void newGroup(ApplicationForm form) {
+        // create object
+        MusicGroup musicGroup1 = new MusicGroup();
+        // keep the object in the form
+        form.setMusicGroup(musicGroup1);
+        // init object
+        musicGroup1.setName("<New Nusic Group>");
+        musicGroup1.setArtistCollection(new ArrayList<Artist>());
+        // add the new entry to the table
+        form.getMusicGroupList().add(musicGroup1);
+        int idx = form.getjTable_Groups().getRowCount()-1;
+        form.getjTable_Groups().setRowSelectionInterval(idx, idx);
+        // reset the list
+        form.getjList_GroupArtists().setListData(musicGroup1.getArtistCollection().toArray());
+        form.setEditableGroupForm(true, true);
+    }
+
+    public void destroyGroup(ApplicationForm form) {
         try {
-            MusicGroup musicGroup1 = new MusicGroup();
+            int idx = form.getjTable_Groups().getSelectedRow();
+            MusicGroup musicGroup1 = form.getMusicGroupList().get(idx);
+            int ans = Utility.msgPrompt(form, musicGroup1.getName() + "\n\nΕίσαι σίγουρος για τη διαγραφή?", "Διαγραφή Συγκροτήματος");
+            if (ans == 0) {
+                form.getMusicGroupList().remove(musicGroup1);
+                this.destroy(musicGroup1.getId());
+                Utility.msgInfo(form, "Η διαγραφή ολοκληρώθηκε επιτυχώς!");
+                form.getjTable_Groups().setRowSelectionInterval(idx-1, idx-1);
+            }
+            
+        } catch (NonexistentEntityException ex) {
+            Logger.getLogger(ApplicationForm.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public void editMusicGroup(ApplicationForm form) {
+        if (form.getjTable_Groups().getSelectedRow() < 0) {
+            Utility.msgWarning(form, "Δεν έχετε επιλέξει εγγραφή για τροποποίηση", "Επεξεργασία συγκροτήματος");
+            return;
+        }
+        try {
+            // prepare user selection for editing
+            MusicGroup musicGroup1 = form.getMusicGroupList().get(form.getjTable_Groups().getSelectedRow());
             form.setMusicGroup(musicGroup1);
+            // clone original object - used when cancel editing
             form.setClonedObj(musicGroup1.clone());
-            musicGroup1.setName("<New Nusic Group>");
-            musicGroup1.setArtistCollection(new ArrayList<Artist>());
-            form.getMusicGroupList().add(musicGroup1);
-            int idx = form.getjTable_Groups().getRowCount()-1;
-            form.getjTable_Groups().setRowSelectionInterval(idx, idx);
-            form.getjList_GroupArtists().setListData(musicGroup1.getArtistCollection().toArray());
-            form.setEditableGroupForm(true, true);
+            // enable edit form 
+            form.setEditableGroupForm(true, false);
+
         } catch (CloneNotSupportedException ex) {
             Logger.getLogger(ApplicationForm.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -232,41 +268,35 @@ public class MusicGroupJpaController implements Serializable {
 
     public void revertGroup(ApplicationForm form) {
         int idx;
-        MusicGroup musicGroup1 = form.getMusicGroup();
         // reset list
+        MusicGroup musicGroup1 = form.getMusicGroup();
         if (musicGroup1.getId() == null) {
+            // cancel from new entry
             form.getMusicGroupList().remove(musicGroup1);
-            musicGroup1.setArtistCollection(new ArrayList<Artist>());
-            form.getjTable_Groups().clearSelection();
+            idx = form.getjTable_Groups().getRowCount()-1;
+            if (idx > -1) {
+                // has rows
+                form.getjTable_Groups().clearSelection();
+                form.getjTable_Groups().setRowSelectionInterval(idx, idx);
+                musicGroup1 = form.getMusicGroupList().get(idx);
+                form.setMusicGroup(musicGroup1);
+            } else {
+                // no rows
+                musicGroup1.setArtistCollection(new ArrayList<Artist>());
+                form.getjTable_Groups().clearSelection();
+            }
         } else {
-            musicGroup1 = (MusicGroup)form.getClonedObj();
+            idx = form.getjTable_Groups().getSelectedRow();
+            // cancel from existing entry
+            musicGroup1.restore((MusicGroup)form.getClonedObj());
             idx = form.getjTable_Groups().getSelectedRow();
             form.getMusicGroupList().set(idx, musicGroup1);
+            // reset selection
             form.getjTable_Groups().clearSelection();
             form.getjTable_Groups().setRowSelectionInterval(idx, idx);
         }
         form.getjList_GroupArtists().setListData(musicGroup1.getArtistCollection().toArray());
         form.setEditableGroupForm(false, false);
-    }
-
-    public void editMusicGroup(ApplicationForm form) {
-        if (form.getjTable_Groups().getSelectedRow() < 0) {
-            Utility.msgWarning(form, "Δεν έχετε επιλέξει εγγραφή για τροποποίηση", "Επεξεργασία συγκροτήματος");
-        } else {
-            try {
-                MusicGroup musicGroup1 = form.getMusicGroup(); 
-                // get user selection
-                musicGroup1 = form.getMusicGroupList().get(form.getjTable_Groups().getSelectedRow());
-                // clone object - to be used if user cancels editing
-                form.setClonedObj(musicGroup1.clone());
-                //artistInGroupList = new Vector<Artist>();
-                //artistInGroupList.addAll(musicGroup1.getArtistCollection());
-                form.setEditableGroupForm(true, false);
-
-            } catch (CloneNotSupportedException ex) {
-                Logger.getLogger(ApplicationForm.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
     }
 
     public void addArtistInGroup(ApplicationForm form) {

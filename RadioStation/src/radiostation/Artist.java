@@ -8,6 +8,7 @@ package radiostation;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import javax.persistence.Basic;
@@ -258,7 +259,31 @@ public class Artist implements Serializable, Cloneable {
     
     @Override
     public Object clone() throws CloneNotSupportedException {
-        return super.clone();
+        Object clone = super.clone();
+        // clone lists manually
+        Collection<MusicGroup> musicgroupCollection = new ArrayList<MusicGroup>();
+        if (this.musicgroupCollection != null) {
+            musicgroupCollection.addAll(this.musicgroupCollection);
+            ((Artist)clone).setMusicgroupCollection(musicgroupCollection);
+        }
+        Collection<Album> albumCollection = new ArrayList<Album>();
+        if (this.albumCollection != null) {
+            albumCollection.addAll(this.albumCollection);
+            ((Artist)clone).setAlbumCollection(albumCollection);
+        }
+        return clone;
+    }
+
+    public void restore(Artist artist) {
+        setArtisticname(artist.getArtisticname());
+        setFirstname(artist.getFirstname());
+        setLastname(artist.getLastname());
+        setBirthday(artist.getBirthday());
+        setBirthplace(artist.getBirthplace());
+        setGenre(artist.getGenre());
+        setSex(artist.getSex());
+        setMusicgroupCollection(artist.getMusicgroupCollection());
+        setAlbumCollection(artist.getAlbumCollection());
     }
 
 }

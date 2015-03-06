@@ -89,7 +89,6 @@ public class ApplicationForm extends javax.swing.JFrame {
         jLabel6 = new javax.swing.JLabel();
         jTF_artist_lastname = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
-        jFTF_artist_birthdate = new javax.swing.JFormattedTextField();
         jLabel2 = new javax.swing.JLabel();
         jLabel13 = new javax.swing.JLabel();
         jRB_male = new javax.swing.JRadioButton();
@@ -97,6 +96,7 @@ public class ApplicationForm extends javax.swing.JFrame {
         jTF_artist_birthplace = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
         jCombo_artist_genre = new javax.swing.JComboBox();
+        jCAL_artist_birthdate = new com.toedter.calendar.JDateChooser();
         jPanel_artistCRUD_cmd = new javax.swing.JPanel();
         jPanel_artistCRUD_edit1 = new javax.swing.JPanel();
         jButton_AddArtist = new javax.swing.JButton();
@@ -471,11 +471,6 @@ public class ApplicationForm extends javax.swing.JFrame {
 
         jLabel3.setText("Ημερ./νία Γέννησης:");
 
-        jFTF_artist_birthdate.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.DateFormatter(java.text.DateFormat.getDateInstance(java.text.DateFormat.LONG))));
-
-        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, jTable_Artists, org.jdesktop.beansbinding.ELProperty.create("${selectedElement.birthday}"), jFTF_artist_birthdate, org.jdesktop.beansbinding.BeanProperty.create("value"));
-        bindingGroup.addBinding(binding);
-
         jLabel2.setText("Πόλη:");
 
         jLabel13.setText("Φύλο:");
@@ -522,6 +517,9 @@ public class ApplicationForm extends javax.swing.JFrame {
         binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, jTable_Artists, org.jdesktop.beansbinding.ELProperty.create("${selectedElement.genre}"), jCombo_artist_genre, org.jdesktop.beansbinding.BeanProperty.create("selectedItem"));
         bindingGroup.addBinding(binding);
 
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, jTable_Artists, org.jdesktop.beansbinding.ELProperty.create("${selectedElement.birthday}"), jCAL_artist_birthdate, org.jdesktop.beansbinding.BeanProperty.create("date"));
+        bindingGroup.addBinding(binding);
+
         javax.swing.GroupLayout jPanel_ArtistPreviewLayout = new javax.swing.GroupLayout(jPanel_ArtistPreview);
         jPanel_ArtistPreview.setLayout(jPanel_ArtistPreviewLayout);
         jPanel_ArtistPreviewLayout.setHorizontalGroup(
@@ -536,32 +534,34 @@ public class ApplicationForm extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(jPanel_ArtistPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel_ArtistPreviewLayout.createSequentialGroup()
-                        .addComponent(jLabel1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTF_artist_artisticname, javax.swing.GroupLayout.PREFERRED_SIZE, 276, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel_ArtistPreviewLayout.createSequentialGroup()
-                        .addComponent(jLabel5)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTF_artist_firstname, javax.swing.GroupLayout.PREFERRED_SIZE, 176, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel_ArtistPreviewLayout.createSequentialGroup()
-                        .addGroup(jPanel_ArtistPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel6)
-                            .addComponent(jLabel3))
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addGroup(jPanel_ArtistPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel6, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.TRAILING))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel_ArtistPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jFTF_artist_birthdate)
-                            .addComponent(jTF_artist_lastname, javax.swing.GroupLayout.PREFERRED_SIZE, 176, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel_ArtistPreviewLayout.createSequentialGroup()
-                        .addComponent(jLabel13)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jRB_male)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jRB_female))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel_ArtistPreviewLayout.createSequentialGroup()
-                        .addComponent(jLabel2)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTF_artist_birthplace, javax.swing.GroupLayout.PREFERRED_SIZE, 176, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(jTF_artist_lastname, javax.swing.GroupLayout.DEFAULT_SIZE, 176, Short.MAX_VALUE)
+                            .addComponent(jCAL_artist_birthdate, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addGroup(jPanel_ArtistPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addGroup(jPanel_ArtistPreviewLayout.createSequentialGroup()
+                            .addComponent(jLabel1)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(jTF_artist_artisticname, javax.swing.GroupLayout.PREFERRED_SIZE, 276, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(jPanel_ArtistPreviewLayout.createSequentialGroup()
+                            .addComponent(jLabel5)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(jTF_artist_firstname, javax.swing.GroupLayout.PREFERRED_SIZE, 176, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(jPanel_ArtistPreviewLayout.createSequentialGroup()
+                            .addComponent(jLabel13)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                            .addComponent(jRB_male)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(jRB_female))
+                        .addGroup(jPanel_ArtistPreviewLayout.createSequentialGroup()
+                            .addComponent(jLabel2)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(jTF_artist_birthplace, javax.swing.GroupLayout.PREFERRED_SIZE, 176, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addGap(67, 67, 67))
         );
         jPanel_ArtistPreviewLayout.setVerticalGroup(
             jPanel_ArtistPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -571,19 +571,17 @@ public class ApplicationForm extends javax.swing.JFrame {
                     .addComponent(jLabel1)
                     .addComponent(jTF_artist_artisticname, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel_ArtistPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel_ArtistPreviewLayout.createSequentialGroup()
-                        .addGroup(jPanel_ArtistPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel5)
-                            .addComponent(jTF_artist_firstname, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(31, 31, 31))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel_ArtistPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jLabel6)
-                        .addComponent(jTF_artist_lastname, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGroup(jPanel_ArtistPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel5)
+                    .addComponent(jTF_artist_firstname, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel_ArtistPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jTF_artist_lastname, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel6))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel_ArtistPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel3)
-                    .addComponent(jFTF_artist_birthdate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jCAL_artist_birthdate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanel_ArtistPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel13)
@@ -1647,6 +1645,7 @@ public class ApplicationForm extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton_Artists_GoMenuActionPerformed
 
     private void jButton_ArtistsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_ArtistsActionPerformed
+        //artistList = org.jdesktop.observablecollections.ObservableCollections.observableList(artistQuery.getResultList());
         jPanel_Artists.setVisible(true);
         jPanel_ArtistsAlbums.setVisible(false);
         jPanel_Groups.setVisible(false);
@@ -1661,6 +1660,7 @@ public class ApplicationForm extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton_AlbumArtistsActionPerformed
 
     private void jButton_GroupsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_GroupsActionPerformed
+        //musicGroupList = org.jdesktop.observablecollections.ObservableCollections.observableList(musicGroupQuery.getResultList());
         jPanel_Artists.setVisible(false);
         jPanel_ArtistsAlbums.setVisible(false);
         jPanel_Groups.setVisible(true);
@@ -1701,7 +1701,7 @@ public class ApplicationForm extends javax.swing.JFrame {
     }//GEN-LAST:event_jTF_group_nameActionPerformed
 
     private void jButton_DeleteGroupActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_DeleteGroupActionPerformed
-        // TODO add your handling code here:
+        this.jpaMusicGroup.destroyGroup(this);
     }//GEN-LAST:event_jButton_DeleteGroupActionPerformed
 
     private void jButton_DeleteArtistGroupActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_DeleteArtistGroupActionPerformed
@@ -1793,8 +1793,8 @@ public class ApplicationForm extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton_AddArtistGroupActionPerformed
 
     private void jTable_GroupsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable_GroupsMouseClicked
-            musicGroup1 = musicGroupList.get(getjTable_Groups().getSelectedRow());
-            jList_GroupArtists.setListData(musicGroup1.getArtistCollection().toArray());
+        musicGroup1 = musicGroupList.get(getjTable_Groups().getSelectedRow());
+        jList_GroupArtists.setListData(musicGroup1.getArtistCollection().toArray());
     }//GEN-LAST:event_jTable_GroupsMouseClicked
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -1852,8 +1852,8 @@ public class ApplicationForm extends javax.swing.JFrame {
     private javax.swing.JButton jButton_artistStore;
     private javax.swing.JButton jButton_groupCancel;
     private javax.swing.JButton jButton_groupStore;
+    private com.toedter.calendar.JDateChooser jCAL_artist_birthdate;
     private javax.swing.JComboBox jCombo_artist_genre;
-    private javax.swing.JFormattedTextField jFTF_artist_birthdate;
     private javax.swing.JFormattedTextField jFTF_artistalbum_datecreated;
     private javax.swing.JFormattedTextField jFTF_group_DateCreated;
     private javax.swing.JFormattedTextField jFTF_groupalbum_datecreated;
@@ -1991,7 +1991,8 @@ public class ApplicationForm extends javax.swing.JFrame {
         jTF_artist_artisticname.setEditable(status);
         jTF_artist_firstname.setEditable(status);
         jTF_artist_lastname.setEditable(status);
-        jFTF_artist_birthdate.setEditable(status);
+        jCAL_artist_birthdate.setEnabled(status);
+        //jCAL_artist_birthdate.getJCalendar().setSize(300, 300);
         jRB_male.setEnabled(status);
         jRB_female.setEnabled(status);
         jTF_artist_birthplace.setEditable(status);

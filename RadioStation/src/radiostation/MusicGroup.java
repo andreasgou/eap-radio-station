@@ -161,4 +161,10 @@ public class MusicGroup implements Serializable, Cloneable {
         }
         return clone;
     }
+
+    public void restore(MusicGroup musicGroup) {
+        setName(musicGroup.getName());
+        setFormationdate(musicGroup.getFormationdate());
+        setArtistCollection(musicGroup.getArtistCollection());
+    }
 }

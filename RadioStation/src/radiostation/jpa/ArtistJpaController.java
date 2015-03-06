@@ -19,6 +19,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 import radiostation.Artist;
+import radiostation.MusicGroup;
 import radiostation.gui.ApplicationForm;
 import radiostation.gui.Utility;
 import radiostation.jpa.exceptions.NonexistentEntityException;
@@ -228,9 +229,13 @@ public class ArtistJpaController implements Serializable {
     
     /* Methods triggered by form events */
     public void newArtist(ApplicationForm form) {
+        // create object
         Artist artist1 = new Artist();
+        // keep the object in the form
         form.setArtist(artist1);
+        // init object
         artist1.setArtisticname("<New Artist>");
+        // add the new entry to the table
         form.getArtistList().add(artist1);
         int idx = form.getjTable_Artists().getRowCount()-1;
         form.getjTable_Artists().setRowSelectionInterval(idx, idx);
@@ -239,12 +244,14 @@ public class ArtistJpaController implements Serializable {
 
     public void destroyArtist(ApplicationForm form) {
         try {
-            Artist artist1 = form.getArtistList().get(form.getjTable_Artists().getSelectedRow());
+            int idx = form.getjTable_Artists().getSelectedRow();
+            Artist artist1 = form.getArtistList().get(idx);
             int ans = Utility.msgPrompt(form, artist1.getArtisticname() + "\n\nΕίσαι σίγουρος για τη διαγραφή?", "Διαγραφή Καλλιτέχνη");
             if (ans == 0) {
                 form.getArtistList().remove(artist1);
                 this.destroy(artist1.getId());
                 Utility.msgInfo(form, "Η διαγραφή ολοκληρώθηκε επιτυχώς!");   
+                form.getjTable_Artists().setRowSelectionInterval(idx-1, idx-1);
             }
             
         } catch (NonexistentEntityException ex) {
@@ -253,13 +260,22 @@ public class ArtistJpaController implements Serializable {
     }
 
     public void editArtist(ApplicationForm form) {
+        if (form.getjTable_Artists().getSelectedRow() < 0) {
+            Utility.msgWarning(form, "Δεν έχετε επιλέξει εγγραφή για τροποποίηση", "Επεξεργασία καλλιτέχνη");
+            return;
+        }
         try {
-            Artist artist1 = form.getArtistList().get(form.getjTable_Artists().getSelectedRow());
+            // prepare user selection for editing
+            Artist artist1 = (Artist)form.getArtistList().get(form.getjTable_Artists().getSelectedRow());
             form.setArtist(artist1);
+            // prepare user selection for editing
             form.setClonedObj(artist1.clone());
+            // clear radio buttons if sex is undefined
             if (artist1.getSex() == null)
                 form.getButtonGroup1().clearSelection();
+            // enable edit form 
             form.setEditableArtistForm(true, false);
+        
         } catch (CloneNotSupportedException ex) {
             Logger.getLogger(ApplicationForm.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -282,16 +298,27 @@ public class ArtistJpaController implements Serializable {
     }
 
     public void revertArtist(ApplicationForm form) {
+        int idx;
         // reset list
-        Artist artist1 = form.getArtistList().get(form.getjTable_Artists().getSelectedRow());
+        Artist artist1 = form.getArtist();
         if (artist1.getId() == null) {
+            // cancel from new entry
             form.getArtistList().remove(artist1);
-            int idx = form.getjTable_Artists().getRowCount()-1;
-            form.getjTable_Artists().setRowSelectionInterval(idx, idx);
+            idx = form.getjTable_Artists().getRowCount()-1;
+            if (idx > -1) {
+                // has rows
+                form.getjTable_Artists().clearSelection();
+                form.getjTable_Artists().setRowSelectionInterval(idx, idx);
+            } else {
+                // no rows
+                form.getjTable_Artists().clearSelection();
+            }
         } else {
-            artist1 = (Artist)form.getClonedObj();
-            int idx = form.getjTable_Artists().getSelectedRow();
+            // cancel from existing entry
+            artist1.restore((Artist)form.getClonedObj());
+            idx = form.getjTable_Artists().getSelectedRow();
             form.getArtistList().set(idx, artist1);
+            // reset selection
             form.getjTable_Artists().clearSelection();
             form.getjTable_Artists().setRowSelectionInterval(idx, idx);
         }
