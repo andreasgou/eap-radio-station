@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import javax.persistence.EntityManager;
+import javax.swing.JList;
 import javax.swing.border.TitledBorder;
 import radiostation.Artist;
 import radiostation.MusicGroup;
@@ -2062,5 +2063,5 @@ public class ApplicationForm extends javax.swing.JFrame {
     public List<MusicGroup> getMusicGroupList() {
         return this.musicGroupList;
     }
-    
+
 }
