@@ -47,21 +47,28 @@ public class MusicGroupJpaController implements Serializable {
             em = getEntityManager();
             em.getTransaction().begin();
             Collection<Artist> attachedArtistCollection = new ArrayList<Artist>();
+
+            // store music group to get a new ID from the Database (no collections)
+            musicGroup.setArtistCollection(attachedArtistCollection);
+            em.persist(musicGroup);
+            
             for (Artist artistCollectionArtistToAttach : musicGroup.getArtistCollection()) {
                 artistCollectionArtistToAttach = em.getReference(artistCollectionArtistToAttach.getClass(), artistCollectionArtistToAttach.getId());
                 attachedArtistCollection.add(artistCollectionArtistToAttach);
             }
+            
+            // store again with all collections, now that we have an ID
             musicGroup.setArtistCollection(attachedArtistCollection);
             em.persist(musicGroup);
+            
+            // notify each Artist for the new membership
             for (Artist artistCollectionArtist : musicGroup.getArtistCollection()) {
                 artistCollectionArtist.getMusicgroupCollection().add(musicGroup);
                 artistCollectionArtist = em.merge(artistCollectionArtist);
             }
             em.getTransaction().commit();
+            
         } finally {
-            if (em != null) {
-                //em.close();
-            }
         }
     }
 
@@ -237,21 +244,13 @@ public class MusicGroupJpaController implements Serializable {
         }
     }
 
-    public void removeArtistFromMusicGroup(ApplicationForm form) {
-        if (form.getjList_GroupArtists().getSelectedIndex() < 0) {
-            Utility.msgWarning(form, "Δεν έχετε επιλέξει καλλιτέχνη για αφαίρεση", "Επεξεργασία συγκροτήματος");
-        } else {
-            List artistInGroupList = (List)form.getMusicGroup().getArtistCollection();
-            artistInGroupList.remove(form.getjList_GroupArtists().getSelectedIndex());
-            form.getjList_GroupArtists().setListData(artistInGroupList.toArray());
-            form.getjList_GroupArtists().setSelectedIndex(artistInGroupList.size()-1);
-        }
-        
-    }
-
     public void commitMusicGroup(ApplicationForm form) {
         try {
             MusicGroup musicGroup1 = form.getMusicGroup();
+            if (musicGroup1.getArtistCollection().size() < 2) {
+                Utility.msgWarning(form, "Το συγκρότημα πρέπει να έχει τουλάχιστον 2 μέλη", "Επεξεργασία συγκροτήματος");
+                return;
+            }
             if (musicGroup1.getId() == null) {
                 this.create(musicGroup1);
             } else {
@@ -306,11 +305,25 @@ public class MusicGroupJpaController implements Serializable {
             MusicGroup musicGroup1 = form.getMusicGroup();
             Artist artistToGroup =  (Artist)form.getjList_AvailableArtists().getSelectedValue();
             List artistInGroupList = (List)musicGroup1.getArtistCollection();
-            artistInGroupList.add (artistToGroup);
-            form.getjList_GroupArtists().setListData(artistInGroupList.toArray());
-            form.getjList_GroupArtists().setSelectedIndex(artistInGroupList.size()-1);
+            if (artistInGroupList.contains(artistToGroup)) {
+                Utility.msgWarning(form, "Ο καλλιτέχνης ανήκει ήδη στο συγκρότημα", "Επεξεργασία συγκροτήματος");
+            } else {
+                artistInGroupList.add (artistToGroup);
+                form.getjList_GroupArtists().setListData(artistInGroupList.toArray());
+                form.getjList_GroupArtists().setSelectedIndex(artistInGroupList.size()-1);
+            }
         }
     }
 
+    public void removeArtistFromMusicGroup(ApplicationForm form) {
+        if (form.getjList_GroupArtists().getSelectedIndex() < 0) {
+            Utility.msgWarning(form, "Δεν έχετε επιλέξει καλλιτέχνη για αφαίρεση", "Επεξεργασία συγκροτήματος");
+        } else {
+            List artistInGroupList = (List)form.getMusicGroup().getArtistCollection();
+            artistInGroupList.remove(form.getjList_GroupArtists().getSelectedIndex());
+            form.getjList_GroupArtists().setListData(artistInGroupList.toArray());
+            form.getjList_GroupArtists().setSelectedIndex(artistInGroupList.size()-1);
+        }       
+    }
     
 }
