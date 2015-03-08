@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import javax.persistence.EntityManager;
+import javax.swing.JFrame;
 import javax.swing.JList;
 import javax.swing.border.TitledBorder;
 import radiostation.Artist;
@@ -143,7 +144,6 @@ public class ApplicationForm extends javax.swing.JFrame {
         jLabel14 = new javax.swing.JLabel();
         jTF_group_name = new javax.swing.JTextField();
         jLabel17 = new javax.swing.JLabel();
-        jFTF_group_DateCreated = new javax.swing.JFormattedTextField();
         jScrollPane6 = new javax.swing.JScrollPane();
         jList_GroupArtists = new javax.swing.JList();
         jLabel25 = new javax.swing.JLabel();
@@ -153,6 +153,7 @@ public class ApplicationForm extends javax.swing.JFrame {
         jList_AvailableArtists = new javax.swing.JList();
         jButton_AddArtistGroup = new javax.swing.JButton();
         jButton_DeleteArtistGroup = new javax.swing.JButton();
+        jCAL_group_DateCreated = new com.toedter.calendar.JDateChooser();
         jPanel_groupCRUD_cmd = new javax.swing.JPanel();
         jPanel_groupCRUD_edit1 = new javax.swing.JPanel();
         jButton_AddGroup = new javax.swing.JButton();
@@ -583,7 +584,7 @@ public class ApplicationForm extends javax.swing.JFrame {
                 .addGroup(jPanel_ArtistPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel3)
                     .addComponent(jCAL_artist_birthdate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 6, Short.MAX_VALUE)
                 .addGroup(jPanel_ArtistPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel13)
                     .addComponent(jRB_male)
@@ -946,22 +947,15 @@ public class ApplicationForm extends javax.swing.JFrame {
         binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, jTable_Groups, org.jdesktop.beansbinding.ELProperty.create("${selectedElement.name}"), jTF_group_name, org.jdesktop.beansbinding.BeanProperty.create("text"));
         bindingGroup.addBinding(binding);
 
-        jTF_group_name.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTF_group_nameActionPerformed(evt);
+        jTF_group_name.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                jTF_group_nameFocusLost(evt);
             }
         });
-        jPanel_GroupPreview.add(jTF_group_name, new org.netbeans.lib.awtextra.AbsoluteConstraints(330, 24, 253, -1));
+        jPanel_GroupPreview.add(jTF_group_name, new org.netbeans.lib.awtextra.AbsoluteConstraints(330, 24, 200, -1));
 
         jLabel17.setText("Ημερ/νία Δημιουργίας:");
         jPanel_GroupPreview.add(jLabel17, new org.netbeans.lib.awtextra.AbsoluteConstraints(174, 64, -1, -1));
-
-        jFTF_group_DateCreated.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.DateFormatter(java.text.DateFormat.getDateInstance(java.text.DateFormat.LONG))));
-
-        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, jTable_Groups, org.jdesktop.beansbinding.ELProperty.create("${selectedElement.formationdate}"), jFTF_group_DateCreated, org.jdesktop.beansbinding.BeanProperty.create("value"));
-        bindingGroup.addBinding(binding);
-
-        jPanel_GroupPreview.add(jFTF_group_DateCreated, new org.netbeans.lib.awtextra.AbsoluteConstraints(330, 58, 253, -1));
 
         jList_GroupArtists.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
         jList_GroupArtists.setCellRenderer(artistRenderer);
@@ -1030,10 +1024,17 @@ public class ApplicationForm extends javax.swing.JFrame {
                     .addComponent(jLabel24)
                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                     .addComponent(jScrollPane7, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(12, Short.MAX_VALUE)))
+                    .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
         );
 
         jPanel_GroupPreview.add(jPanel_ArtistsInGroup, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 114, -1, 240));
+
+        jCAL_group_DateCreated.setDateFormatString("dd/MM/yyyy");
+
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, jTable_Groups, org.jdesktop.beansbinding.ELProperty.create("${selectedElement.formationdate}"), jCAL_group_DateCreated, org.jdesktop.beansbinding.BeanProperty.create("date"));
+        bindingGroup.addBinding(binding);
+
+        jPanel_GroupPreview.add(jCAL_group_DateCreated, new org.netbeans.lib.awtextra.AbsoluteConstraints(330, 60, 200, -1));
 
         jPanel_groupCRUD_cmd.setLayout(new java.awt.CardLayout());
 
@@ -1594,7 +1595,7 @@ public class ApplicationForm extends javax.swing.JFrame {
 
         bindingGroup.bind();
 
-        setSize(new java.awt.Dimension(805, 649));
+        setSize(new java.awt.Dimension(817, 649));
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
@@ -1697,10 +1698,6 @@ public class ApplicationForm extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton_DeleteArtistAlbumActionPerformed
 
-    private void jTF_group_nameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTF_group_nameActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTF_group_nameActionPerformed
-
     private void jButton_DeleteGroupActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_DeleteGroupActionPerformed
         this.jpaMusicGroup.destroyGroup(this);
     }//GEN-LAST:event_jButton_DeleteGroupActionPerformed
@@ -1797,6 +1794,10 @@ public class ApplicationForm extends javax.swing.JFrame {
         musicGroup1 = musicGroupList.get(getjTable_Groups().getSelectedRow());
         jList_GroupArtists.setListData(musicGroup1.getArtistCollection().toArray());
     }//GEN-LAST:event_jTable_GroupsMouseClicked
+
+    private void jTF_group_nameFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTF_group_nameFocusLost
+        
+    }//GEN-LAST:event_jTF_group_nameFocusLost
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private java.util.List<radiostation.Album> albumList;
@@ -1854,9 +1855,9 @@ public class ApplicationForm extends javax.swing.JFrame {
     private javax.swing.JButton jButton_groupCancel;
     private javax.swing.JButton jButton_groupStore;
     private com.toedter.calendar.JDateChooser jCAL_artist_birthdate;
+    private com.toedter.calendar.JDateChooser jCAL_group_DateCreated;
     private javax.swing.JComboBox jCombo_artist_genre;
     private javax.swing.JFormattedTextField jFTF_artistalbum_datecreated;
-    private javax.swing.JFormattedTextField jFTF_group_DateCreated;
     private javax.swing.JFormattedTextField jFTF_groupalbum_datecreated;
     private javax.swing.JFormattedTextField jFTF_songlist_datecreated;
     private javax.swing.JLabel jLabel1;
@@ -2014,7 +2015,7 @@ public class ApplicationForm extends javax.swing.JFrame {
         // set form fields
         getjTable_Groups().setEnabled(!status);
         jTF_group_name .setEditable(status);
-        jFTF_group_DateCreated.setEditable(status);
+        jCAL_group_DateCreated.setEnabled(status);
         jPanel_ArtistsInGroup.setVisible(status);
     }
 

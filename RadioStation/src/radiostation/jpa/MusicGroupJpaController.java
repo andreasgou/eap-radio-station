@@ -33,7 +33,7 @@ public class MusicGroupJpaController implements Serializable {
         this.em = em;
     }
     private EntityManager em = null;
-
+    
     public EntityManager getEntityManager() {
         return em;
     }
@@ -47,27 +47,20 @@ public class MusicGroupJpaController implements Serializable {
             em = getEntityManager();
             em.getTransaction().begin();
             Collection<Artist> attachedArtistCollection = new ArrayList<Artist>();
+            Collection<Artist> currentCollection = musicGroup.getArtistCollection();
 
-            // store music group to get a new ID from the Database (no collections)
+            // store music group without collection to get a new ID from the Database
             musicGroup.setArtistCollection(attachedArtistCollection);
             em.persist(musicGroup);
-            
-            for (Artist artistCollectionArtistToAttach : musicGroup.getArtistCollection()) {
-                artistCollectionArtistToAttach = em.getReference(artistCollectionArtistToAttach.getClass(), artistCollectionArtistToAttach.getId());
-                attachedArtistCollection.add(artistCollectionArtistToAttach);
-            }
-            
-            // store again with all collections, now that we have an ID
-            musicGroup.setArtistCollection(attachedArtistCollection);
-            em.persist(musicGroup);
-            
-            // notify each Artist for the new membership
-            for (Artist artistCollectionArtist : musicGroup.getArtistCollection()) {
-                artistCollectionArtist.getMusicgroupCollection().add(musicGroup);
-                artistCollectionArtist = em.merge(artistCollectionArtist);
-            }
             em.getTransaction().commit();
+
+            // restore collections for the new entity and store again if not empty
+            musicGroup.setArtistCollection(currentCollection);
+            if (currentCollection.size() > 0)
+                edit(musicGroup);
             
+        } catch (Exception ex) {
+            Logger.getLogger(MusicGroupJpaController.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
         }
     }
@@ -197,7 +190,7 @@ public class MusicGroupJpaController implements Serializable {
         // keep the object in the form
         form.setMusicGroup(musicGroup1);
         // init object
-        musicGroup1.setName("<New Nusic Group>");
+        musicGroup1.setName("<New Music Group>");
         musicGroup1.setArtistCollection(new ArrayList<Artist>());
         // add the new entry to the table
         form.getMusicGroupList().add(musicGroup1);
@@ -209,6 +202,10 @@ public class MusicGroupJpaController implements Serializable {
     }
 
     public void destroyGroup(ApplicationForm form) {
+        if (form.getjTable_Groups().getSelectedRow() < 0) {
+            Utility.msgWarning(form, "Δεν έχετε επιλέξει εγγραφή για διαγραφή", "Επεξεργασία συγκροτήματος");
+            return;
+        }
         try {
             int idx = form.getjTable_Groups().getSelectedRow();
             MusicGroup musicGroup1 = form.getMusicGroupList().get(idx);
@@ -246,7 +243,12 @@ public class MusicGroupJpaController implements Serializable {
 
     public void commitMusicGroup(ApplicationForm form) {
         try {
+            
             MusicGroup musicGroup1 = form.getMusicGroup();
+            if (musicGroup1.getName().equalsIgnoreCase("<New Music Group>")){
+                Utility.msgWarning(form, "Δεν έχετε δώσει όνομα στο συγκρότημα", "Επεξεργασία συγκροτήματος");
+                return;
+            }
             if (musicGroup1.getArtistCollection().size() < 2) {
                 Utility.msgWarning(form, "Το συγκρότημα πρέπει να έχει τουλάχιστον 2 μέλη", "Επεξεργασία συγκροτήματος");
                 return;
@@ -309,6 +311,7 @@ public class MusicGroupJpaController implements Serializable {
                 Utility.msgWarning(form, "Ο καλλιτέχνης ανήκει ήδη στο συγκρότημα", "Επεξεργασία συγκροτήματος");
             } else {
                 artistInGroupList.add (artistToGroup);
+
                 form.getjList_GroupArtists().setListData(artistInGroupList.toArray());
                 form.getjList_GroupArtists().setSelectedIndex(artistInGroupList.size()-1);
             }
