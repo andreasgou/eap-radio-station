@@ -688,7 +688,7 @@
                                       <Component id="jLabel3" min="-2" max="-2" attributes="0"/>
                                       <Component id="jCAL_artist_birthdate" min="-2" max="-2" attributes="0"/>
                                   </Group>
-                                  <EmptySpace pref="6" max="32767" attributes="0"/>
+                                  <EmptySpace max="32767" attributes="0"/>
                                   <Group type="103" groupAlignment="3" attributes="0">
                                       <Component id="jLabel13" alignment="3" min="-2" max="-2" attributes="0"/>
                                       <Component id="jRB_male" alignment="3" min="-2" max="-2" attributes="0"/>

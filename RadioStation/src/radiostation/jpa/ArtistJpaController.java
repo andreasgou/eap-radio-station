@@ -243,6 +243,10 @@ public class ArtistJpaController implements Serializable {
     }
 
     public void destroyArtist(ApplicationForm form) {
+        if (form.getjTable_Artists().getSelectedRow() < 0) {
+            Utility.msgWarning(form, "Δεν έχετε επιλέξει εγγραφή για τροποποίηση", "Διαγραφή καλλιτέχνη");
+            return;
+        }
         try {
             int idx = form.getjTable_Artists().getSelectedRow();
             Artist artist1 = form.getArtistList().get(idx);

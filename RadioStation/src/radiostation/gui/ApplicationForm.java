@@ -1642,40 +1642,47 @@ public class ApplicationForm extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton_ExitActionPerformed
 
     private void jButton_Artists_GoMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_Artists_GoMenuActionPerformed
-        jPanel_FileMgr.setVisible(false);
-        jPanel_Menu.setVisible(true);
+        if (isEditingAllowed()) {
+            jPanel_FileMgr.setVisible(false);
+            jPanel_Menu.setVisible(true);
+        }
     }//GEN-LAST:event_jButton_Artists_GoMenuActionPerformed
 
     private void jButton_ArtistsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_ArtistsActionPerformed
-        //artistList = org.jdesktop.observablecollections.ObservableCollections.observableList(artistQuery.getResultList());
-        jPanel_Artists.setVisible(true);
-        jPanel_ArtistsAlbums.setVisible(false);
-        jPanel_Groups.setVisible(false);
-        jPanel_GroupsAlbums.setVisible(false);
+        if (isEditingAllowed()) {
+            jPanel_Artists.setVisible(true);
+            jPanel_ArtistsAlbums.setVisible(false);
+            jPanel_Groups.setVisible(false);
+            jPanel_GroupsAlbums.setVisible(false);
+        }
     }//GEN-LAST:event_jButton_ArtistsActionPerformed
 
     private void jButton_AlbumArtistsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_AlbumArtistsActionPerformed
-        jPanel_Artists.setVisible(false);
-        jPanel_ArtistsAlbums.setVisible(true);
-        jPanel_Groups.setVisible(false);
-        jPanel_GroupsAlbums.setVisible(false);
+        if (isEditingAllowed()) {
+            jPanel_Artists.setVisible(false);
+            jPanel_ArtistsAlbums.setVisible(true);
+            jPanel_Groups.setVisible(false);
+            jPanel_GroupsAlbums.setVisible(false);
+        }
     }//GEN-LAST:event_jButton_AlbumArtistsActionPerformed
 
     private void jButton_GroupsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_GroupsActionPerformed
-        //musicGroupList = org.jdesktop.observablecollections.ObservableCollections.observableList(musicGroupQuery.getResultList());
-        jPanel_Artists.setVisible(false);
-        jPanel_ArtistsAlbums.setVisible(false);
-        jPanel_Groups.setVisible(true);
-        jPanel_GroupsAlbums.setVisible(false);
-        jPanel_ArtistsInGroup.setVisible(false);
-                
+        if (isEditingAllowed()) {
+            jPanel_Artists.setVisible(false);
+            jPanel_ArtistsAlbums.setVisible(false);
+            jPanel_Groups.setVisible(true);
+            jPanel_GroupsAlbums.setVisible(false);
+            jPanel_ArtistsInGroup.setVisible(false);
+        }
     }//GEN-LAST:event_jButton_GroupsActionPerformed
 
     private void jButton_AlbumGroupsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_AlbumGroupsActionPerformed
-        jPanel_Artists.setVisible(false);
-        jPanel_ArtistsAlbums.setVisible(false);
-        jPanel_Groups.setVisible(false);
-        jPanel_GroupsAlbums.setVisible(true);
+        if (isEditingAllowed()) {
+            jPanel_Artists.setVisible(false);
+            jPanel_ArtistsAlbums.setVisible(false);
+            jPanel_Groups.setVisible(false);
+            jPanel_GroupsAlbums.setVisible(true);
+        }
     }//GEN-LAST:event_jButton_AlbumGroupsActionPerformed
 
     private void jTF_artistalbum_titleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTF_artistalbum_titleActionPerformed
@@ -1977,6 +1984,14 @@ public class ApplicationForm extends javax.swing.JFrame {
     private final List<String> sex = new ArrayList(Arrays.asList("M","F"));
 
     /* Custom methods declaration */
+    public boolean isEditingAllowed() {
+        // check if we're already in editing mode
+        if (!this.jPanel_FileMgr.isEnabled()) {
+            Utility.msgWarning(this, "Είστε σε κατάσταση επεξεργασίας εγγραφής.\nΘα πρέπει πρώτα να αποθηκεύσετε ή να ακυρώσετε την τρέχουσα επεξεργασία.", "Διαχείριση Αρχείων");
+        }
+        return this.jPanel_FileMgr.isEnabled();
+    }
+    
     public void setEditableArtistForm(boolean status, boolean isNew) {
         // set command buttons
         jPanel_artistCRUD_edit1.setVisible(!status);
@@ -1998,7 +2013,10 @@ public class ApplicationForm extends javax.swing.JFrame {
         jRB_male.setEnabled(status);
         jRB_female.setEnabled(status);
         jTF_artist_birthplace.setEditable(status);
-        //jCombo_artist_genre.setEditable(status);
+
+        // let the system know that you are editing or not
+        this.jPanel_FileMgr.setEnabled(!status);
+
     }
 
     public void setEditableGroupForm(boolean status, boolean isNew) {
@@ -2017,7 +2035,10 @@ public class ApplicationForm extends javax.swing.JFrame {
         jTF_group_name .setEditable(status);
         jCAL_group_DateCreated.setEnabled(status);
         jPanel_ArtistsInGroup.setVisible(status);
-    }
+
+        // let the system know that you are editing or not
+        this.jPanel_FileMgr.setEnabled(!status);
+}
 
     /**
      * @return the jTable_Groups
