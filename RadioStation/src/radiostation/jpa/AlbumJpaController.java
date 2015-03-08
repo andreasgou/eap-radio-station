@@ -266,7 +266,7 @@ public class AlbumJpaController implements Serializable {
         form. getjTable_AlbumGroups().setRowSelectionInterval(idx, idx);
         // reset the list
         form.getjList_GroupAlbumSongs().setListData(album1.getSongCollection().toArray());
-        form.setEditableGroupForm(true, true);
+        form.setEditableGroupAlbumForm(true, true);
     }
 
    /* public void destroyAlbum(ApplicationForm form) {
@@ -302,7 +302,7 @@ public class AlbumJpaController implements Serializable {
             // clone original object - used when cancel editing
             form.setClonedObj(album1.clone());
             // enable edit form 
-            form.setEditableGroupForm(true, false);
+            form.setEditableGroupAlbumForm(true, false);
 
         } catch (CloneNotSupportedException ex) {
             Logger.getLogger(ApplicationForm.class.getName()).log(Level.SEVERE, null, ex);
@@ -334,7 +334,7 @@ public class AlbumJpaController implements Serializable {
             } else {
                 this.edit(album1);
             }
-            form.setEditableGroupForm(false, false);
+            form.setEditableGroupAlbumForm(false, false);
             Utility.msgInfo(form, "Τα στοιχεία του άλμπουμ αποθηκεύτηκαν επιτυχώς!");
 
         } catch (Exception ex) {
@@ -373,7 +373,7 @@ public class AlbumJpaController implements Serializable {
             form.getjTable_AlbumGroups().setRowSelectionInterval(idx, idx);
         }
         form.getjList_GroupAlbumSongs().setListData(album1.getSongCollection().toArray());
-        form.setEditableGroupForm(false, false);
+        form.setEditableGroupAlbumForm(false, false);
     }
 
     public void addSongInAlbum(ApplicationForm form) {
