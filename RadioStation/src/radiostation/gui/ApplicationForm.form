@@ -181,6 +181,29 @@
         <Property name="text" type="java.lang.String" value="songRenderer1"/>
       </Properties>
     </Component>
+    <Component class="javax.persistence.Query" name="musicProductionCompanyQuery">
+      <Properties>
+        <Property name="query" type="java.lang.String" value="SELECT m FROM MusicProductionCompany m"/>
+        <Property name="entityManager" type="java.lang.Object" editor="org.netbeans.modules.form.j2ee.J2EEPropertyModifier$EMProperty$EntityManagerEditor">
+          <ComponentRef name="radioStationPUEntityManager"/>
+        </Property>
+      </Properties>
+    </Component>
+    <Component class="java.util.List" name="musicProductionCompanyList">
+      <Properties>
+        <Property name="query" type="java.lang.Object" editor="org.netbeans.modules.form.j2ee.J2EEPropertyModifier$QueryBeanProperty$QueryEditor">
+          <ComponentRef name="musicProductionCompanyQuery"/>
+        </Property>
+      </Properties>
+      <AuxValues>
+        <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;radiostation.MusicProductionCompany&gt;"/>
+      </AuxValues>
+    </Component>
+    <Component class="radiostation.gui.ProductionCompanyRenderer" name="productionCompanyRenderer">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="productionCompanyRenderer1"/>
+      </Properties>
+    </Component>
   </NonVisualComponents>
   <Properties>
     <Property name="defaultCloseOperation" type="int" value="3"/>
@@ -1801,9 +1824,9 @@
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="jPanel_alboumGroupCRUD_cmd" min="-2" max="-2" attributes="0"/>
                                   </Group>
-                                  <Component id="jScrollPane8" min="-2" max="-2" attributes="0"/>
+                                  <Component id="jScrollPane8" alignment="0" min="-2" pref="408" max="-2" attributes="0"/>
                               </Group>
-                              <EmptySpace pref="15" max="32767" attributes="0"/>
+                              <EmptySpace pref="20" max="32767" attributes="0"/>
                           </Group>
                       </Group>
                     </DimensionLayout>
@@ -1888,8 +1911,8 @@
                                           <Group type="103" groupAlignment="0" max="-2" attributes="0">
                                               <Component id="jTF_groupalbum_number" alignment="0" max="32767" attributes="0"/>
                                               <Component id="jCal_groupAlbumDateInMarket" pref="240" max="32767" attributes="0"/>
-                                              <Component id="jTF_groupalbum_company" alignment="0" max="32767" attributes="0"/>
-                                              <Component id="jTF_grouptalbum_artist" alignment="0" max="32767" attributes="0"/>
+                                              <Component id="jCombo_groupalbum_company" alignment="0" max="32767" attributes="0"/>
+                                              <Component id="jComboBox_album_group" alignment="0" max="32767" attributes="0"/>
                                           </Group>
                                       </Group>
                                   </Group>
@@ -1927,12 +1950,12 @@
                                           <EmptySpace max="-2" attributes="0"/>
                                           <Group type="103" groupAlignment="3" attributes="0">
                                               <Component id="jLabel21" alignment="3" min="-2" max="-2" attributes="0"/>
-                                              <Component id="jTF_groupalbum_company" alignment="3" min="-2" max="-2" attributes="0"/>
+                                              <Component id="jCombo_groupalbum_company" alignment="3" min="-2" max="-2" attributes="0"/>
                                           </Group>
                                           <EmptySpace type="unrelated" max="-2" attributes="0"/>
                                           <Group type="103" groupAlignment="3" attributes="0">
                                               <Component id="jLabel22" alignment="3" min="-2" max="-2" attributes="0"/>
-                                              <Component id="jTF_grouptalbum_artist" alignment="3" min="-2" max="-2" attributes="0"/>
+                                              <Component id="jComboBox_album_group" alignment="3" min="-2" max="-2" attributes="0"/>
                                           </Group>
                                           <EmptySpace type="unrelated" max="-2" attributes="0"/>
                                           <Component id="jPanel_SongsInGroupAlbum" max="32767" attributes="0"/>
@@ -1999,23 +2022,6 @@
                             <Property name="text" type="java.lang.String" value="&#x395;&#x3c4;&#x3b1;&#x3b9;&#x3c1;&#x3b5;&#x3af;&#x3b1; &#x3a0;&#x3b1;&#x3c1;&#x3b1;&#x3b3;&#x3c9;&#x3b3;&#x3ae;&#x3c2;:"/>
                           </Properties>
                         </Component>
-                        <Component class="javax.swing.JTextField" name="jTF_groupalbum_company">
-                          <BindingProperties>
-                            <BindingProperty name="text" source="jTable_AlbumGroups" sourcePath="${selectedElement.companyId.name}" target="jTF_groupalbum_company" targetPath="text" updateStrategy="0" immediately="false">
-                              <BindingParameter name="javax.swing.binding.ParameterKeys.TEXT_CHANGE_STRATEGY" value="javax.swing.binding.TextChangeStrategy.ON_TYPE"/>
-                            </BindingProperty>
-                          </BindingProperties>
-                          <Events>
-                            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jTF_groupalbum_companyActionPerformed"/>
-                          </Events>
-                        </Component>
-                        <Component class="javax.swing.JTextField" name="jTF_grouptalbum_artist">
-                          <BindingProperties>
-                            <BindingProperty name="text" source="jTable_AlbumGroups" sourcePath="${selectedElement.musicgroupId.name}" target="jTF_grouptalbum_artist" targetPath="text" updateStrategy="0" immediately="false">
-                              <BindingParameter name="javax.swing.binding.ParameterKeys.TEXT_CHANGE_STRATEGY" value="javax.swing.binding.TextChangeStrategy.ON_TYPE"/>
-                            </BindingProperty>
-                          </BindingProperties>
-                        </Component>
                         <Component class="javax.swing.JLabel" name="jLabel22">
                           <Properties>
                             <Property name="text" type="java.lang.String" value="&#x3a3;&#x3c5;&#x3b3;&#x3ba;&#x3c1;&#x3cc;&#x3c4;&#x3b7;&#x3bc;&#x3b1;:"/>
@@ -2060,7 +2066,7 @@
                                           <Component id="jButton_AddGroupAlbumSong" min="-2" max="-2" attributes="0"/>
                                       </Group>
                                   </Group>
-                                  <Group type="102" alignment="0" attributes="0">
+                                  <Group type="102" attributes="0">
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="jLabel26" min="-2" pref="141" max="-2" attributes="0"/>
                                       <EmptySpace pref="234" max="32767" attributes="0"/>
@@ -2069,18 +2075,22 @@
                             </DimensionLayout>
                             <DimensionLayout dim="1">
                               <Group type="103" groupAlignment="0" attributes="0">
-                                  <Group type="102" alignment="0" attributes="0">
-                                      <EmptySpace max="32767" attributes="0"/>
-                                      <Component id="jButton_AddGroupAlbumSong" min="-2" max="-2" attributes="0"/>
-                                      <EmptySpace type="separate" max="-2" attributes="0"/>
-                                      <Component id="jButton_DeleteGroupAlbumSong" min="-2" max="-2" attributes="0"/>
-                                      <EmptySpace max="-2" attributes="0"/>
-                                  </Group>
-                                  <Group type="102" alignment="1" attributes="0">
-                                      <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="jLabel26" min="-2" max="-2" attributes="0"/>
-                                      <EmptySpace max="32767" attributes="0"/>
-                                      <Component id="jScrollPane10" min="-2" pref="106" max="-2" attributes="0"/>
+                                  <Group type="102" attributes="0">
+                                      <EmptySpace min="-2" pref="26" max="-2" attributes="0"/>
+                                      <Group type="103" groupAlignment="0" attributes="0">
+                                          <Group type="102" attributes="0">
+                                              <EmptySpace max="32767" attributes="0"/>
+                                              <Component id="jButton_AddGroupAlbumSong" min="-2" max="-2" attributes="0"/>
+                                              <EmptySpace type="separate" max="-2" attributes="0"/>
+                                              <Component id="jButton_DeleteGroupAlbumSong" min="-2" max="-2" attributes="0"/>
+                                              <EmptySpace max="-2" attributes="0"/>
+                                          </Group>
+                                          <Group type="102" alignment="0" attributes="0">
+                                              <Component id="jLabel26" min="-2" max="-2" attributes="0"/>
+                                              <EmptySpace pref="12" max="32767" attributes="0"/>
+                                              <Component id="jScrollPane10" min="-2" pref="106" max="-2" attributes="0"/>
+                                          </Group>
+                                      </Group>
                                   </Group>
                               </Group>
                             </DimensionLayout>
@@ -2175,6 +2185,23 @@
                             </Component>
                           </SubComponents>
                         </Container>
+                        <Component class="javax.swing.JComboBox" name="jCombo_groupalbum_company">
+                          <Properties>
+                            <Property name="renderer" type="javax.swing.ListCellRenderer" editor="org.netbeans.modules.form.ComponentChooserEditor">
+                              <ComponentRef name="productionCompanyRenderer"/>
+                            </Property>
+                          </Properties>
+                          <BindingProperties>
+                            <BindingProperty name="elements" source="musicProductionCompanyList" target="jCombo_groupalbum_company" targetPath="elements" updateStrategy="0" immediately="false"/>
+                          </BindingProperties>
+                        </Component>
+                        <Component class="javax.swing.JComboBox" name="jComboBox_album_group">
+                          <Properties>
+                            <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+                              <StringArray count="0"/>
+                            </Property>
+                          </Properties>
+                        </Component>
                       </SubComponents>
                     </Container>
                     <Container class="javax.swing.JPanel" name="jPanel_alboumGroupCRUD_cmd">

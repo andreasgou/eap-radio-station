@@ -75,6 +75,9 @@ public class ApplicationForm extends javax.swing.JFrame {
         songList = java.beans.Beans.isDesignTime() ? java.util.Collections.emptyList() : songQuery.getResultList();
         album1 = new radiostation.Album();
         songRenderer = new radiostation.gui.SongRenderer();
+        musicProductionCompanyQuery = java.beans.Beans.isDesignTime() ? null : radioStationPUEntityManager.createQuery("SELECT m FROM MusicProductionCompany m");
+        musicProductionCompanyList = java.beans.Beans.isDesignTime() ? java.util.Collections.emptyList() : musicProductionCompanyQuery.getResultList();
+        productionCompanyRenderer = new radiostation.gui.ProductionCompanyRenderer();
         jPanel1 = new javax.swing.JPanel();
         jPanel_Menu = new javax.swing.JPanel();
         jButton_FileMgr = new javax.swing.JButton();
@@ -183,8 +186,6 @@ public class ApplicationForm extends javax.swing.JFrame {
         jTF_groupalbum_number = new javax.swing.JTextField();
         jLabel20 = new javax.swing.JLabel();
         jLabel21 = new javax.swing.JLabel();
-        jTF_groupalbum_company = new javax.swing.JTextField();
-        jTF_grouptalbum_artist = new javax.swing.JTextField();
         jLabel22 = new javax.swing.JLabel();
         jScrollPane9 = new javax.swing.JScrollPane();
         jList_GroupAlbumSongs = new javax.swing.JList();
@@ -195,6 +196,8 @@ public class ApplicationForm extends javax.swing.JFrame {
         jButton_AddGroupAlbumSong = new javax.swing.JButton();
         jButton_DeleteGroupAlbumSong = new javax.swing.JButton();
         jLabel26 = new javax.swing.JLabel();
+        jCombo_groupalbum_company = new javax.swing.JComboBox();
+        jComboBox_album_group = new javax.swing.JComboBox();
         jPanel_alboumGroupCRUD_cmd = new javax.swing.JPanel();
         jPanel_albumGroupCRUD_edit1 = new javax.swing.JPanel();
         jButton_AddGroupAlbum = new javax.swing.JButton();
@@ -241,6 +244,8 @@ public class ApplicationForm extends javax.swing.JFrame {
         bindingGroup.addBinding(binding);
 
         songRenderer.setText("songRenderer1");
+
+        productionCompanyRenderer.setText("productionCompanyRenderer1");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -1189,18 +1194,6 @@ public class ApplicationForm extends javax.swing.JFrame {
 
         jLabel21.setText("Εταιρεία Παραγωγής:");
 
-        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, jTable_AlbumGroups, org.jdesktop.beansbinding.ELProperty.create("${selectedElement.companyId.name}"), jTF_groupalbum_company, org.jdesktop.beansbinding.BeanProperty.create("text"));
-        bindingGroup.addBinding(binding);
-
-        jTF_groupalbum_company.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTF_groupalbum_companyActionPerformed(evt);
-            }
-        });
-
-        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, jTable_AlbumGroups, org.jdesktop.beansbinding.ELProperty.create("${selectedElement.musicgroupId.name}"), jTF_grouptalbum_artist, org.jdesktop.beansbinding.BeanProperty.create("text"));
-        bindingGroup.addBinding(binding);
-
         jLabel22.setText("Συγκρότημα:");
 
         jList_GroupAlbumSongs.setBorder(javax.swing.BorderFactory.createTitledBorder("Λίστα Τραγουδιών Αλμπουμ"));
@@ -1263,17 +1256,24 @@ public class ApplicationForm extends javax.swing.JFrame {
         jPanel_SongsInGroupAlbumLayout.setVerticalGroup(
             jPanel_SongsInGroupAlbumLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel_SongsInGroupAlbumLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jButton_AddGroupAlbumSong)
-                .addGap(18, 18, 18)
-                .addComponent(jButton_DeleteGroupAlbumSong)
-                .addContainerGap())
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel_SongsInGroupAlbumLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel26)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jScrollPane10, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(26, 26, 26)
+                .addGroup(jPanel_SongsInGroupAlbumLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel_SongsInGroupAlbumLayout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jButton_AddGroupAlbumSong)
+                        .addGap(18, 18, 18)
+                        .addComponent(jButton_DeleteGroupAlbumSong)
+                        .addContainerGap())
+                    .addGroup(jPanel_SongsInGroupAlbumLayout.createSequentialGroup()
+                        .addComponent(jLabel26)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 12, Short.MAX_VALUE)
+                        .addComponent(jScrollPane10, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE))))
         );
+
+        jCombo_groupalbum_company.setRenderer(productionCompanyRenderer);
+
+        jComboBoxBinding = org.jdesktop.swingbinding.SwingBindings.createJComboBoxBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, musicProductionCompanyList, jCombo_groupalbum_company);
+        bindingGroup.addBinding(jComboBoxBinding);
 
         javax.swing.GroupLayout jPanel_AlbumGroupPreviewLayout = new javax.swing.GroupLayout(jPanel_AlbumGroupPreview);
         jPanel_AlbumGroupPreview.setLayout(jPanel_AlbumGroupPreviewLayout);
@@ -1302,8 +1302,8 @@ public class ApplicationForm extends javax.swing.JFrame {
                         .addGroup(jPanel_AlbumGroupPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jTF_groupalbum_number)
                             .addComponent(jCal_groupAlbumDateInMarket, javax.swing.GroupLayout.DEFAULT_SIZE, 240, Short.MAX_VALUE)
-                            .addComponent(jTF_groupalbum_company)
-                            .addComponent(jTF_grouptalbum_artist))))
+                            .addComponent(jCombo_groupalbum_company, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jComboBox_album_group, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane9, javax.swing.GroupLayout.PREFERRED_SIZE, 182, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(61, Short.MAX_VALUE))
@@ -1332,11 +1332,11 @@ public class ApplicationForm extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel_AlbumGroupPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel21)
-                            .addComponent(jTF_groupalbum_company, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jCombo_groupalbum_company, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(jPanel_AlbumGroupPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel22)
-                            .addComponent(jTF_grouptalbum_artist, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jComboBox_album_group, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jPanel_SongsInGroupAlbum, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addComponent(jScrollPane9)))
@@ -1415,8 +1415,8 @@ public class ApplicationForm extends javax.swing.JFrame {
                         .addComponent(jPanel_AlbumGroupPreview, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jPanel_alboumGroupCRUD_cmd, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jScrollPane8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(15, Short.MAX_VALUE))
+                    .addComponent(jScrollPane8, javax.swing.GroupLayout.PREFERRED_SIZE, 408, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(20, Short.MAX_VALUE))
         );
 
         jPanel_AlbumGroupPreview.getAccessibleContext().setAccessibleName("Επισκόπηση Δισκογραφίας Συγροτήματος");
@@ -1822,10 +1822,6 @@ public class ApplicationForm extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_jTF_groupalbum_numberActionPerformed
 
-    private void jTF_groupalbum_companyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTF_groupalbum_companyActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTF_groupalbum_companyActionPerformed
-
     private void jTF_songlist_descriptionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTF_songlist_descriptionActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jTF_songlist_descriptionActionPerformed
@@ -1989,7 +1985,9 @@ public class ApplicationForm extends javax.swing.JFrame {
     private com.toedter.calendar.JDateChooser jCAL_artist_birthdate;
     private com.toedter.calendar.JDateChooser jCAL_group_DateCreated;
     private com.toedter.calendar.JDateChooser jCal_groupAlbumDateInMarket;
+    private javax.swing.JComboBox jComboBox_album_group;
     private javax.swing.JComboBox jCombo_artist_genre;
+    private javax.swing.JComboBox jCombo_groupalbum_company;
     private javax.swing.JFormattedTextField jFTF_artistalbum_datecreated;
     private javax.swing.JFormattedTextField jFTF_songlist_datecreated;
     private javax.swing.JLabel jLabel1;
@@ -2081,11 +2079,9 @@ public class ApplicationForm extends javax.swing.JFrame {
     private javax.swing.JTextField jTF_artistalbum_title;
     private javax.swing.JTextField jTF_artistalbum_type;
     private javax.swing.JTextField jTF_group_name;
-    private javax.swing.JTextField jTF_groupalbum_company;
     private javax.swing.JTextField jTF_groupalbum_number;
     private javax.swing.JTextField jTF_groupalbum_title;
     private javax.swing.JTextField jTF_groupalbum_type;
-    private javax.swing.JTextField jTF_grouptalbum_artist;
     private javax.swing.JTextField jTF_song_search;
     private javax.swing.JTextField jTF_songlist_description;
     private javax.swing.JTable jTable1;
@@ -2102,6 +2098,9 @@ public class ApplicationForm extends javax.swing.JFrame {
     private radiostation.MusicGroup musicGroup1;
     private java.util.List<radiostation.MusicGroup> musicGroupList;
     private javax.persistence.Query musicGroupQuery;
+    private java.util.List<radiostation.MusicProductionCompany> musicProductionCompanyList;
+    private javax.persistence.Query musicProductionCompanyQuery;
+    private radiostation.gui.ProductionCompanyRenderer productionCompanyRenderer;
     private javax.persistence.EntityManager radioStationPUEntityManager;
     private radiostation.Song song1;
     private java.util.List<radiostation.Song> songList;
@@ -2187,9 +2186,9 @@ public class ApplicationForm extends javax.swing.JFrame {
         jTF_groupalbum_title.setEditable(status);
         jTF_groupalbum_type.setEditable(status);
         jTF_groupalbum_number.setEditable(status);
-        jTF_groupalbum_company.setEditable(status);
+        jCombo_groupalbum_company.setEditable(status);
         jCal_groupAlbumDateInMarket.setEnabled(status);
-        jTF_grouptalbum_artist.setEditable(status);
+        jComboBox_album_group.setEditable(status);
         jPanel_SongsInGroupAlbum.setVisible(true);
         // let the system know that you are editing or not
  	this.jPanel_FileMgr.setEnabled(!status);
