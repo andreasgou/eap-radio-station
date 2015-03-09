@@ -377,11 +377,13 @@ public class AlbumJpaController implements Serializable {
     }
 
     public void addSongInAlbum(ApplicationForm form) {
-        if (form.getjList_AvailableArtists().getSelectedIndex() < 0) {
-            Utility.msgWarning(form, "Δεν έχετε επιλέξει καλλιτέχνη για προσθήκη στο συγκρότημα", "Επεξεργασία συγκροτήματος");
+        int idx;
+        if (form.getjTable_AlbumGroups().getSelectedRow()< 0) {
+            Utility.msgWarning(form, "Δεν έχετε επιλέξει τραγούδι για προσθήκη στο συγκρότημα", "Επεξεργασία συγκροτήματος");
         } else {
             Album album1 = form.getAlbum();
-            Song songToAlbum =  (Song)form.getjList_AvailableArtists().getSelectedValue();
+            idx=form.getjTable_GroupAlbumSongs().getSelectedRow();
+            Song songToAlbum =  (Song)form.getAvailableSongsList().get(idx);//.getjTable_AlbumGroups().getModel().getjList_AvailableArtists().getSelectedValue();
             List songInAlbumList = (List)album1.getSongCollection();
             if (songInAlbumList.contains(songToAlbum)) {
                 Utility.msgWarning(form, "To τραγούδι ανήκει ήδη στο άλμπουμ", "Επεξεργασία αλμπουμ");
