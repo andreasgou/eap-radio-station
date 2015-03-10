@@ -33,8 +33,8 @@ insert into app.artist (genre, firstname, lastname, artisticname, sex, birthday,
 insert into app.musicgroup (name, formationdate) values('AC/DC', date('1942-03-25'));
 
 -- Album
-insert into app.album (COMPANY_ID, MUSICGROUP_ID, TITLE, TYPE1, DISKNUMBER)
-     select mpc.id as company_id, mg.id as group_id, 'Back In Black', 'group', 1 
+insert into app.album (COMPANY_ID, MUSICGROUP_ID, TITLE, TYPE1, DISKNUMBER, RELEASEDATE)
+     select mpc.id as company_id, mg.id as group_id, 'Back In Black', 'group', 1, date('1980-08-21') 
        from app.musicproductioncompany mpc
  cross join app.musicgroup mg
       where mpc.name = 'Albert Productions'

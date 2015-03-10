@@ -244,7 +244,7 @@ public class ArtistJpaController implements Serializable {
 
     public void destroyArtist(ApplicationForm form) {
         if (form.getjTable_Artists().getSelectedRow() < 0) {
-            Utility.msgWarning(form, "Δεν έχετε επιλέξει εγγραφή για τροποποίηση", "Διαγραφή καλλιτέχνη");
+            Utility.msgWarning(form, "Δεν έχετε επιλέξει εγγραφή για τροποποίηση", "Επεξεργασία καλλιτέχνη");
             return;
         }
         try {

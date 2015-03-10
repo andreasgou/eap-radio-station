@@ -245,14 +245,22 @@ public class MusicGroupJpaController implements Serializable {
         try {
             
             MusicGroup musicGroup1 = form.getMusicGroup();
-            if (musicGroup1.getName().equalsIgnoreCase("<New Music Group>")){
+            if ((musicGroup1.getName().equalsIgnoreCase("<New Music Group>")||(musicGroup1.getName().equals("")))&& (musicGroup1.getArtistCollection().size() < 2)){
+            Utility.msgWarning(form, "Το συγκρότημα πρέπει να έχει τουλάχιστον 2 μέλη & να δώσετε όνομα συγκροτήματος", "Επεξεργασία συγκροτήματος");
+            form.highlightGroupName();
+            return;
+            }
+           
+            if (musicGroup1.getName().equalsIgnoreCase("<New Music Group>")||(musicGroup1.getName().equals(""))){
                 Utility.msgWarning(form, "Δεν έχετε δώσει όνομα στο συγκρότημα", "Επεξεργασία συγκροτήματος");
+                form.highlightGroupName();
                 return;
             }
             if (musicGroup1.getArtistCollection().size() < 2) {
                 Utility.msgWarning(form, "Το συγκρότημα πρέπει να έχει τουλάχιστον 2 μέλη", "Επεξεργασία συγκροτήματος");
                 return;
             }
+                        
             if (musicGroup1.getId() == null) {
                 this.create(musicGroup1);
             } else {

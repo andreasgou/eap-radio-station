@@ -8,7 +8,9 @@ package radiostation;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -22,6 +24,8 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
@@ -40,6 +44,11 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Album.findByType1", query = "SELECT a FROM Album a WHERE a.type1 = :type1"),
     @NamedQuery(name = "Album.findByDisknumber", query = "SELECT a FROM Album a WHERE a.disknumber = :disknumber")})
 public class Album implements Serializable {
+    @Column(name = "DISKNUMBER")
+    private Short disknumber;
+    @Column(name = "RELEASEDATE")
+    @Temporal(TemporalType.DATE)
+    private Date releasedate;
     @Transient
     private PropertyChangeSupport changeSupport = new PropertyChangeSupport(this);
     private static final long serialVersionUID = 1L;
@@ -54,9 +63,6 @@ public class Album implements Serializable {
     @Basic(optional = false)
     @Column(name = "TYPE1")
     private String type1;
-    @Basic(optional = false)
-    @Column(name = "DISKNUMBER")
-    private short disknumber;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "albumId")
     private Collection<Song> songCollection;
     @JoinColumn(name = "ARTIST_ID", referencedColumnName = "ID")
@@ -113,14 +119,27 @@ public class Album implements Serializable {
         changeSupport.firePropertyChange("type1", oldType1, type1);
     }
 
-    public short getDisknumber() {
-        return disknumber;
+        /*
+     * This special purpose getter/setter methods is to allow binding 
+     * with radio buttons
+    */
+    public boolean isCdSingle() {
+        return getType1()!=null ? getType1().equals("CS") : false;
     }
-
-    public void setDisknumber(short disknumber) {
-        short oldDisknumber = this.disknumber;
-        this.disknumber = disknumber;
-        changeSupport.firePropertyChange("disknumber", oldDisknumber, disknumber);
+    public void setCdSingle(boolean nl) {
+        if (nl) setType1("CS");
+    }
+    public boolean isExtendedPlay() {
+        return getType1()!=null ? getType1().equals("EP") : false;
+    }
+    public void setExtendedPlay(boolean nl) {
+        if (nl) setType1("EP");
+    }
+    public boolean isLongPlay() {
+        return getType1()!=null ? getType1().equals("LP") : false;
+    }
+    public void setLongPlay(boolean nl) {
+        if (nl) setType1("LP");
     }
 
     @XmlTransient
@@ -195,4 +214,42 @@ public class Album implements Serializable {
         changeSupport.removePropertyChangeListener(listener);
     }
     
+    /**
+     *
+     * 
+     */
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        Object clone = super.clone();
+        // clone list manually
+        Collection<Song> songCollection = new ArrayList<Song>();
+        if (this.songCollection != null) {
+            songCollection.addAll(this.songCollection);
+            ((Album)clone).setSongCollection(songCollection);
+        }
+        return clone;
+    }
+
+    public void restore(Album album) {
+        setTitle(album.getTitle());
+        setType1(album.getType1());
+        setReleasedate(album.getReleasedate());
+        setSongCollection(album.getSongCollection());
+    }
+
+    public Short getDisknumber() {
+        return disknumber;
+    }
+
+    public void setDisknumber(Short disknumber) {
+        this.disknumber = disknumber;
+    }
+
+    public Date getReleasedate() {
+        return releasedate;
+    }
+
+    public void setReleasedate(Date releasedate) {
+        this.releasedate = releasedate;
+    }
 }
