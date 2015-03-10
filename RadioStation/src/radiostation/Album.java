@@ -44,14 +44,6 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Album.findByType1", query = "SELECT a FROM Album a WHERE a.type1 = :type1"),
     @NamedQuery(name = "Album.findByDisknumber", query = "SELECT a FROM Album a WHERE a.disknumber = :disknumber")})
 public class Album implements Serializable {
-    @Column(name = "DISKNUMBER")
-    private Short disknumber;
-    @Column(name = "RELEASEDATE")
-    @Temporal(TemporalType.DATE)
-    private Date releasedate;
-    @Transient
-    private PropertyChangeSupport changeSupport = new PropertyChangeSupport(this);
-    private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Basic(optional = false)
@@ -74,6 +66,16 @@ public class Album implements Serializable {
     @JoinColumn(name = "COMPANY_ID", referencedColumnName = "ID")
     @ManyToOne
     private MusicProductionCompany companyId;
+    @Column(name = "DISKNUMBER")
+    private Short disknumber;
+    @Column(name = "RELEASEDATE")
+    @Temporal(TemporalType.DATE)
+    private Date releasedate;
+    @Transient
+    private PropertyChangeSupport changeSupport = new PropertyChangeSupport(this);
+    @Transient
+    private int totalDisks;
+    private static final long serialVersionUID = 1L;
 
     public Album() {
     }
@@ -251,5 +253,19 @@ public class Album implements Serializable {
 
     public void setReleasedate(Date releasedate) {
         this.releasedate = releasedate;
+    }
+
+    /**
+     * @return the totalDisks
+     */
+    public int getTotalDisks() {
+        return totalDisks;
+    }
+
+    /**
+     * @param totalDisks the totalDisks to set
+     */
+    public void setTotalDisks(int totalDisks) {
+        this.totalDisks = totalDisks;
     }
 }

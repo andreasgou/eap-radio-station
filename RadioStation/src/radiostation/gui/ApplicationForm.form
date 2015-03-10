@@ -61,7 +61,7 @@
         </Property>
       </Properties>
       <AuxValues>
-        <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="java.beans.Beans.isDesignTime() ? null : radioStationPUEntityManager.createQuery(&quot;SELECT a FROM Album a WHERE a.musicgroupId != null&quot;)"/>
+        <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="java.beans.Beans.isDesignTime() ? null : radioStationPUEntityManager.createQuery(&quot;SELECT a, COUNT(a) FROM Album a WHERE a.musicgroupId != null GROUP BY a&quot;)"/>
       </AuxValues>
     </Component>
     <Component class="javax.persistence.Query" name="songQuery">
@@ -134,6 +134,7 @@
         </Property>
       </Properties>
       <AuxValues>
+        <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="java.beans.Beans.isDesignTime() ? java.util.Collections.emptyList() : prepareAlbums(groupAlbumQuery.getResultList())"/>
         <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;radiostation.Album&gt;"/>
       </AuxValues>
     </Component>
@@ -164,6 +165,8 @@
       <Properties>
         <Property name="text" type="java.lang.String" value="musicGenreRenderer1"/>
       </Properties>
+    </Component>
+    <Component class="radiostation.gui.TitleDurationRenderer" name="titleDurationRenderer">
     </Component>
     <Component class="javax.swing.ButtonGroup" name="buttonGroup_artistSex">
       <AuxValues>
@@ -386,7 +389,7 @@
                           <EmptySpace min="-2" pref="51" max="-2" attributes="0"/>
                           <Component id="jButton_AlbumGroups" min="-2" pref="132" max="-2" attributes="0"/>
                           <EmptySpace min="-2" pref="32" max="-2" attributes="0"/>
-                          <Component id="jButton_Artists_GoMenu" min="-2" max="-2" attributes="0"/>
+                          <Component id="jButton_FileMgr_GoMenu" min="-2" max="-2" attributes="0"/>
                           <EmptySpace pref="30" max="32767" attributes="0"/>
                       </Group>
                   </Group>
@@ -406,7 +409,7 @@
                               </Group>
                               <Group type="102" alignment="0" attributes="0">
                                   <EmptySpace min="-2" pref="46" max="-2" attributes="0"/>
-                                  <Component id="jButton_Artists_GoMenu" min="-2" max="-2" attributes="0"/>
+                                  <Component id="jButton_FileMgr_GoMenu" min="-2" max="-2" attributes="0"/>
                               </Group>
                           </Group>
                           <EmptySpace max="32767" attributes="0"/>
@@ -503,7 +506,7 @@
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton_AlbumGroupsActionPerformed"/>
                   </Events>
                 </Component>
-                <Component class="javax.swing.JButton" name="jButton_Artists_GoMenu">
+                <Component class="javax.swing.JButton" name="jButton_FileMgr_GoMenu">
                   <Properties>
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                       <Font name="Lucida Grande" size="12" style="0"/>
@@ -517,7 +520,7 @@
                     <Property name="verticalTextPosition" type="int" value="3"/>
                   </Properties>
                   <Events>
-                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton_Artists_GoMenuActionPerformed"/>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton_FileMgr_GoMenuActionPerformed"/>
                   </Events>
                 </Component>
               </SubComponents>
@@ -1828,11 +1831,13 @@
                           <BindingProperties>
                             <BindingProperty name="elements" source="groupAlbumList" target="jTable_AlbumGroups" targetPath="elements" updateStrategy="0" immediately="true">
                               <Subbinding sourcePath="${title}">
-                                <BindingParameter name="NAME" value="&#x3a4;&#x3af;&#x3c4;&#x3bb;&#x3bf;&#x3c2; &#x391;&#x3bb;&#x3bc;&#x3c0;&#x3bf;&#x3c5;&#x3bc;"/>
                                 <BindingParameter name="javax.swing.binding.ParameterKeys.COLUMN_CLASS" value="String.class"/>
                               </Subbinding>
                             </BindingProperty>
                           </BindingProperties>
+                          <Events>
+                            <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="jTable_AlbumGroupsMouseClicked"/>
+                          </Events>
                         </Component>
                       </SubComponents>
                     </Container>
@@ -1898,12 +1903,12 @@
                                                   <Component id="jRB_groupalbum_lp" min="-2" max="-2" attributes="0"/>
                                               </Group>
                                           </Group>
-                                          <EmptySpace min="-2" pref="95" max="-2" attributes="0"/>
+                                          <EmptySpace min="-2" pref="96" max="-2" attributes="0"/>
                                       </Group>
                                       <Group type="102" alignment="0" attributes="0">
                                           <Group type="103" groupAlignment="1" attributes="0">
                                               <Group type="102" attributes="0">
-                                                  <Component id="jLabel19" min="-2" max="-2" attributes="0"/>
+                                                  <Component id="jL_groupalbum_diskNumber" min="-2" max="-2" attributes="0"/>
                                                   <EmptySpace max="-2" attributes="0"/>
                                                   <Component id="jSP_groupalbum_diskNumber" min="-2" max="-2" attributes="0"/>
                                               </Group>
@@ -1951,7 +1956,7 @@
                                   </Group>
                                   <EmptySpace min="-2" pref="12" max="-2" attributes="0"/>
                                   <Group type="103" groupAlignment="3" attributes="0">
-                                      <Component id="jLabel19" alignment="3" min="-2" pref="20" max="-2" attributes="0"/>
+                                      <Component id="jL_groupalbum_diskNumber" alignment="3" min="-2" pref="20" max="-2" attributes="0"/>
                                       <Component id="jSP_groupalbum_diskNumber" alignment="3" min="-2" max="-2" attributes="0"/>
                                       <Component id="jLabel26" alignment="3" min="-2" max="-2" attributes="0"/>
                                   </Group>
@@ -2055,6 +2060,9 @@
                           <BindingProperties>
                             <BindingProperty name="selected" source="jTable_AlbumGroups" sourcePath="${selectedElement.extendedPlay}" target="jRB_groupalbum_ep" targetPath="selected" updateStrategy="0" immediately="false"/>
                           </BindingProperties>
+                          <Events>
+                            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jRB_groupalbum_epActionPerformed"/>
+                          </Events>
                         </Component>
                         <Component class="javax.swing.JRadioButton" name="jRB_groupalbum_lp">
                           <Properties>
@@ -2066,6 +2074,9 @@
                           <BindingProperties>
                             <BindingProperty name="selected" source="jTable_AlbumGroups" sourcePath="${selectedElement.longPlay}" target="jRB_groupalbum_lp" targetPath="selected" updateStrategy="0" immediately="false"/>
                           </BindingProperties>
+                          <Events>
+                            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jRB_groupalbum_lpActionPerformed"/>
+                          </Events>
                         </Component>
                         <Component class="javax.swing.JLabel" name="jLabel26">
                           <Properties>
@@ -2087,7 +2098,7 @@
                                   </Border>
                                 </Property>
                                 <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor">
-                                  <TableColumnModel selectionModel="0">
+                                  <TableColumnModel selectionModel="1">
                                     <Column maxWidth="100" minWidth="30" prefWidth="60" resizable="true">
                                       <Title/>
                                       <Editor/>
@@ -2101,18 +2112,21 @@
                                     <Column maxWidth="80" minWidth="60" prefWidth="40" resizable="true">
                                       <Title/>
                                       <Editor/>
-                                      <Renderer/>
+                                      <Renderer editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                                        <Connection component="titleDurationRenderer" type="bean"/>
+                                      </Renderer>
                                     </Column>
                                   </TableColumnModel>
                                 </Property>
+                                <Property name="columnSelectionAllowed" type="boolean" value="true"/>
                                 <Property name="tableHeader" type="javax.swing.table.JTableHeader" editor="org.netbeans.modules.form.editors2.JTableHeaderEditor">
-                                  <TableHeader reorderingAllowed="true" resizingAllowed="true"/>
+                                  <TableHeader reorderingAllowed="false" resizingAllowed="true"/>
                                 </Property>
                               </Properties>
                               <BindingProperties>
-                                <BindingProperty name="elements" source="songList" target="jTable_GroupAlbumSongs" targetPath="elements" updateStrategy="0" immediately="true">
+                                <BindingProperty name="elements" source="jTable_AlbumGroups" sourcePath="${selectedElement.songCollection}" target="jTable_GroupAlbumSongs" targetPath="elements" updateStrategy="0" immediately="true">
                                   <Subbinding sourcePath="${tracknr}">
-                                    <BindingParameter name="NAME" value="&#x391;&#x3c1;. &#x3c3;&#x3b5;&#x3b9;&#x3c1;&#x3ac;&#x3c2;"/>
+                                    <BindingParameter name="NAME" value="&#x3a3;&#x3b5;&#x3b9;&#x3c1;&#x3ac;"/>
                                     <BindingParameter name="javax.swing.binding.ParameterKeys.COLUMN_CLASS" value="Short.class"/>
                                   </Subbinding>
                                   <Subbinding sourcePath="${title}">
@@ -2128,12 +2142,17 @@
                             </Component>
                           </SubComponents>
                         </Container>
-                        <Component class="javax.swing.JLabel" name="jLabel19">
+                        <Component class="javax.swing.JLabel" name="jL_groupalbum_diskNumber">
                           <Properties>
                             <Property name="text" type="java.lang.String" value="&#x391;&#x3c1;&#x3b9;&#x3b8;&#x3bc;&#x3cc;&#x3c2; &#x394;&#x3af;&#x3c3;&#x3ba;&#x3bf;&#x3c5;:"/>
                           </Properties>
                         </Component>
                         <Component class="javax.swing.JSpinner" name="jSP_groupalbum_diskNumber">
+                          <Properties>
+                            <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
+                              <SpinnerModel initial="1" maximum="9" minimum="1" numberType="java.lang.Integer" stepSize="1" type="number"/>
+                            </Property>
+                          </Properties>
                         </Component>
                         <Component class="javax.swing.JButton" name="jButton_AddGroupAlbumSong">
                           <Properties>
