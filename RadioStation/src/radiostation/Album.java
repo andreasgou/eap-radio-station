@@ -71,10 +71,18 @@ public class Album implements Serializable {
     @Column(name = "RELEASEDATE")
     @Temporal(TemporalType.DATE)
     private Date releasedate;
+    @OneToMany(mappedBy = "parentalbumId")
+    private Collection<Album> albumCollection;
+    @JoinColumn(name = "PARENTALBUM_ID", referencedColumnName = "ID")
+    @ManyToOne
+    private Album parentalbumId;
+    @Column(name = "TOTALDISKS")
+    private Short totaldisks;
+
     @Transient
     private PropertyChangeSupport changeSupport = new PropertyChangeSupport(this);
     @Transient
-    private int totalDisks;
+    private Short currentDisk;
     private static final long serialVersionUID = 1L;
 
     public Album() {
@@ -146,7 +154,20 @@ public class Album implements Serializable {
 
     @XmlTransient
     public Collection<Song> getSongCollection() {
-        return songCollection;
+        Collection<Song> songs = new ArrayList<>();
+        if (this.getCurrentDisk() == null)
+            this.setCurrentDisk((short)1);
+        if (this.getCurrentDisk() == 1) {
+            songs = songCollection;
+        } else {
+            for (Album album : getAlbumCollection()) {
+                if (album.getDisknumber().equals(this.getCurrentDisk())) {
+                    songs = album.getSongCollection();
+                    break;
+                }
+            }
+        }
+        return songs;
     }
 
     public void setSongCollection(Collection<Song> songCollection) {
@@ -255,17 +276,58 @@ public class Album implements Serializable {
         this.releasedate = releasedate;
     }
 
-    /**
-     * @return the totalDisks
-     */
-    public int getTotalDisks() {
-        return totalDisks;
+    @XmlTransient
+    public Collection<Album> getAlbumCollection() {
+        return albumCollection;
+    }
+
+    public void setAlbumCollection(Collection<Album> albumCollection) {
+        this.albumCollection = albumCollection;
+    }
+
+    @XmlTransient
+    public Collection<Song> getSongCollection(int diskNumber) {
+        Collection<Song> songs = new ArrayList<>();
+        if (diskNumber == 1) {
+            songs = getSongCollection();
+        } else {
+            for (Album album : getAlbumCollection()) {
+                if (album.getDisknumber() == diskNumber) {
+                    songs = album.getSongCollection();
+                    break;
+                }
+            }
+        }
+        return songs;
+    }
+
+    public Album getParentalbumId() {
+        return parentalbumId;
+    }
+
+    public void setParentalbumId(Album parentalbumId) {
+        this.parentalbumId = parentalbumId;
+    }
+
+    public Short getTotaldisks() {
+        return totaldisks;
+    }
+
+    public void setTotaldisks(Short totaldisks) {
+        this.totaldisks = totaldisks;
     }
 
     /**
-     * @param totalDisks the totalDisks to set
+     * @return the currentDisk
      */
-    public void setTotalDisks(int totalDisks) {
-        this.totalDisks = totalDisks;
+    public Short getCurrentDisk() {
+        return currentDisk;
+    }
+
+    /**
+     * @param currentDisk the currentDisk to set
+     */
+    public void setCurrentDisk(Short currentDisk) {
+        this.currentDisk = currentDisk;
     }
 }

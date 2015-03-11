@@ -6,7 +6,7 @@ import javax.swing.table.AbstractTableModel;
 import radiostation.Song;
 
 public class SongTableModel extends AbstractTableModel {
-    private static final String[] columnNames = {"Αριθμός", "Τίτλος", "Διάρκεια"};
+    private static final String[] columnNames = {"Σειρά", "Τίτλος Τραγουδιού", "Διάρκεια"};
     private String[] header;
     private List<Object[]> songs;
     private int songsAdded;

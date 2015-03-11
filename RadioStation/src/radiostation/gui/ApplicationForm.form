@@ -61,7 +61,7 @@
         </Property>
       </Properties>
       <AuxValues>
-        <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="java.beans.Beans.isDesignTime() ? null : radioStationPUEntityManager.createQuery(&quot;SELECT a, COUNT(a) FROM Album a WHERE a.musicgroupId != null GROUP BY a ORDER BY a.title&quot;)"/>
+        <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="java.beans.Beans.isDesignTime() ? null : radioStationPUEntityManager.createQuery(&quot;SELECT a FROM Album a WHERE a.musicgroupId != null AND a.disknumber=1 ORDER BY a.title&quot;)"/>
       </AuxValues>
     </Component>
     <Component class="javax.persistence.Query" name="songQuery">
@@ -71,6 +71,9 @@
           <ComponentRef name="radioStationPUEntityManager"/>
         </Property>
       </Properties>
+      <AuxValues>
+        <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="java.beans.Beans.isDesignTime() ? null : radioStationPUEntityManager.createQuery(&quot;SELECT s FROM Song s WHERE 1=0&quot;)"/>
+      </AuxValues>
     </Component>
     <Component class="java.util.List" name="musicGenreList">
       <Properties>
@@ -134,7 +137,6 @@
         </Property>
       </Properties>
       <AuxValues>
-        <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="java.beans.Beans.isDesignTime() ? java.util.Collections.emptyList() : prepareAlbums(groupAlbumQuery.getResultList())"/>
         <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;radiostation.Album&gt;"/>
       </AuxValues>
     </Component>
@@ -143,6 +145,7 @@
         <Property name="query" type="java.lang.Object" editor="org.netbeans.modules.form.j2ee.J2EEPropertyModifier$QueryBeanProperty$QueryEditor">
           <ComponentRef name="songQuery"/>
         </Property>
+        <Property name="observable" type="boolean" value="true"/>
       </Properties>
       <AuxValues>
         <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;radiostation.Song&gt;"/>
@@ -2100,21 +2103,21 @@
                                 </Property>
                                 <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor">
                                   <TableColumnModel selectionModel="1">
-                                    <Column maxWidth="100" minWidth="30" prefWidth="60" resizable="true">
+                                    <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
                                       <Title/>
                                       <Editor/>
                                       <Renderer/>
                                     </Column>
-                                    <Column maxWidth="-1" minWidth="130" prefWidth="-1" resizable="true">
+                                    <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
                                       <Title/>
                                       <Editor/>
                                       <Renderer/>
                                     </Column>
-                                    <Column maxWidth="80" minWidth="60" prefWidth="40" resizable="true">
+                                    <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
                                       <Title/>
                                       <Editor/>
-                                      <Renderer editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-                                        <Connection component="titleDurationRenderer" type="bean"/>
+                                      <Renderer editor="org.netbeans.modules.form.ComponentChooserEditor">
+                                        <ComponentRef name="titleDurationRenderer"/>
                                       </Renderer>
                                     </Column>
                                   </TableColumnModel>
@@ -2125,17 +2128,17 @@
                                 </Property>
                               </Properties>
                               <BindingProperties>
-                                <BindingProperty name="elements" source="jTable_AlbumGroups" sourcePath="${selectedElement.songCollection}" target="jTable_GroupAlbumSongs" targetPath="elements" updateStrategy="0" immediately="true">
+                                <BindingProperty name="elements" source="songList" target="jTable_GroupAlbumSongs" targetPath="elements" updateStrategy="0" immediately="true">
                                   <Subbinding sourcePath="${tracknr}">
-                                    <BindingParameter name="NAME" value="&#x3a3;&#x3b5;&#x3b9;&#x3c1;&#x3ac;"/>
+                                    <BindingParameter name="NAME" value="Tracknr"/>
                                     <BindingParameter name="javax.swing.binding.ParameterKeys.COLUMN_CLASS" value="Short.class"/>
                                   </Subbinding>
                                   <Subbinding sourcePath="${title}">
-                                    <BindingParameter name="NAME" value="&#x3a4;&#x3af;&#x3c4;&#x3bb;&#x3bf;&#x3c2;"/>
+                                    <BindingParameter name="NAME" value="Title"/>
                                     <BindingParameter name="javax.swing.binding.ParameterKeys.COLUMN_CLASS" value="String.class"/>
                                   </Subbinding>
                                   <Subbinding sourcePath="${duration}">
-                                    <BindingParameter name="NAME" value="&#x394;&#x3b9;&#x3ac;&#x3c1;&#x3ba;&#x3b5;&#x3b9;&#x3b1;"/>
+                                    <BindingParameter name="NAME" value="Duration"/>
                                     <BindingParameter name="javax.swing.binding.ParameterKeys.COLUMN_CLASS" value="Integer.class"/>
                                   </Subbinding>
                                 </BindingProperty>
@@ -2154,6 +2157,9 @@
                               <SpinnerModel initial="1" maximum="9" minimum="1" numberType="java.lang.Integer" stepSize="1" type="number"/>
                             </Property>
                           </Properties>
+                          <Events>
+                            <EventHandler event="stateChanged" listener="javax.swing.event.ChangeListener" parameters="javax.swing.event.ChangeEvent" handler="jSP_groupalbum_diskNumberStateChanged"/>
+                          </Events>
                         </Component>
                         <Component class="javax.swing.JButton" name="jButton_AddGroupAlbumSong">
                           <Properties>

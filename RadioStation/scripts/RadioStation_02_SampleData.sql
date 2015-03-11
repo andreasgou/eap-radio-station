@@ -33,9 +33,6 @@ insert into app.artist (genre, firstname, lastname, artisticname, sex, birthday,
     values ('Classic Rock', 'David', 'Byrne', 'David Byrne', 'M', date('1952-05-14'), 'Dumbarton, Scotland, UK');
 
 insert into app.artist (genre, firstname, lastname, artisticname, sex, birthday, birthplace) 
-    values ('Classic Rock', 'David', 'Byrne', 'David Byrne', 'M', date('1952-05-14'), 'Dumbarton, Scotland, UK');
-
-insert into app.artist (genre, firstname, lastname, artisticname, sex, birthday, birthplace) 
     values ('Classic Rock', 'Keith Noel', 'Emerson', 'Keith Emerson', 'M', date('1944-11-02'), 'Todmorden, West Riding of Yorkshire, England');
 insert into app.artist (genre, firstname, lastname, artisticname, sex, birthday, birthplace) 
     values ('Classic Rock', 'Gregory Stuart', 'Lake', 'Greg Lake', 'M', date('1947-11-10'), 'Poole, Dorset, England');
@@ -72,8 +69,8 @@ insert into app.artistmusicgroup (artist_id, musicgroup_id)
 
 -- Album
 -- AC/DC - Back in Black
-insert into app.album (COMPANY_ID, MUSICGROUP_ID, TITLE, TYPE1, DISKNUMBER, RELEASEDATE)
-     select mpc.id as company_id, mg.id as group_id, 'Back In Black', 'CS', 1, date('1980-08-21') 
+insert into app.album (COMPANY_ID, MUSICGROUP_ID, TITLE, TYPE1, DISKNUMBER, RELEASEDATE, TOTALDISKS)
+     select mpc.id as company_id, mg.id as group_id, 'Back In Black', 'CS', 1, date('1980-08-21'), 1
        from app.musicproductioncompany mpc
  cross join app.musicgroup mg
       where mpc.name = 'Albert Productions'
@@ -94,8 +91,8 @@ insert into app.song (ALBUM_ID, TITLE, DURATION, TRACKNR)
 
 -- Album
 -- David Byrne, Fat Boy Slim - Here Lies Love
-insert into app.album (COMPANY_ID, ARTIST_ID, TITLE, TYPE1, DISKNUMBER, RELEASEDATE)
-     select mpc.id as company_id, ar.id as group_id, 'Here Lies Love', 'LP', 1, date('2010-04-06') 
+insert into app.album (COMPANY_ID, ARTIST_ID, TITLE, TYPE1, DISKNUMBER, RELEASEDATE, TOTALDISKS)
+     select mpc.id as company_id, ar.id as group_id, 'Here Lies Love', 'LP', 1, date('2010-04-06'), 1
        from app.musicproductioncompany mpc
  cross join app.artist ar
       where mpc.name = 'Albert Productions'
@@ -108,16 +105,19 @@ insert into app.song (ALBUM_ID, TITLE, DURATION, TRACKNR)
 
 -- Album
 -- ELP album disk 1
-insert into app.album (COMPANY_ID, MUSICGROUP_ID, TITLE, TYPE1, DISKNUMBER, RELEASEDATE)
-     select mpc.id as company_id, mg.id as group_id, 'Welcome Back My Friends to the Show That Never Ends... Ladies and Gentlemen', 'LP', 1, date('1974-08-19') 
+insert into app.album (COMPANY_ID, MUSICGROUP_ID, TITLE, TYPE1, DISKNUMBER, RELEASEDATE, TOTALDISKS)
+     select mpc.id as company_id, mg.id as group_id, 'Welcome Back My Friends to the Show That Never Ends... Ladies and Gentlemen', 'LP', 1, date('1974-08-19'), 2 
        from app.musicproductioncompany mpc
  cross join app.musicgroup mg
       where mpc.name = 'Albert Productions'
         and mg.name = 'Emerson, Lake & Palmer';
 -- ELP album disk 2
-insert into app.album (COMPANY_ID, MUSICGROUP_ID, TITLE, TYPE1, DISKNUMBER, RELEASEDATE)
-     select mpc.id as company_id, mg.id as group_id, 'Welcome Back My Friends to the Show That Never Ends... Ladies and Gentlemen', 'LP', 2, date('1974-08-19') 
+insert into app.album (COMPANY_ID, MUSICGROUP_ID, TITLE, TYPE1, DISKNUMBER, RELEASEDATE, TOTALDISKS, PARENTALBUM_ID)
+     select mpc.id as company_id, mg.id as group_id, 'Welcome Back My Friends to the Show That Never Ends... Ladies and Gentlemen', 'LP', 2, date('1974-08-19'), 2, al.id 
        from app.musicproductioncompany mpc
+ inner join app.album al 
+         ON al.title = 'Welcome Back My Friends to the Show That Never Ends... Ladies and Gentlemen'
+        AND al.disknumber=1
  cross join app.musicgroup mg
       where mpc.name = 'Albert Productions'
         and mg.name = 'Emerson, Lake & Palmer';
