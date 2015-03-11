@@ -5,6 +5,8 @@
  */
 package radiostation;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.io.Serializable;
 import java.util.Collection;
 import javax.persistence.Basic;
@@ -16,6 +18,7 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -30,6 +33,8 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "MusicGenre.findAll", query = "SELECT m FROM MusicGenre m"),
     @NamedQuery(name = "MusicGenre.findByGenrename", query = "SELECT m FROM MusicGenre m WHERE m.genrename = :genrename")})
 public class MusicGenre implements Serializable {
+    @Transient
+    private PropertyChangeSupport changeSupport = new PropertyChangeSupport(this);
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
@@ -50,7 +55,9 @@ public class MusicGenre implements Serializable {
     }
 
     public void setGenrename(String genrename) {
+        String oldGenrename = this.genrename;
         this.genrename = genrename;
+        changeSupport.firePropertyChange("genrename", oldGenrename, genrename);
     }
 
     @XmlTransient
@@ -85,6 +92,14 @@ public class MusicGenre implements Serializable {
     @Override
     public String toString() {
         return "radiostation.MusicGenre[ genrename=" + genrename + " ]";
+    }
+
+    public void addPropertyChangeListener(PropertyChangeListener listener) {
+        changeSupport.addPropertyChangeListener(listener);
+    }
+
+    public void removePropertyChangeListener(PropertyChangeListener listener) {
+        changeSupport.removePropertyChangeListener(listener);
     }
     
 }

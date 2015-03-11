@@ -8,6 +8,7 @@ package radiostation;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import javax.persistence.Basic;
@@ -46,7 +47,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Artist.findBySex", query = "SELECT a FROM Artist a WHERE a.sex = :sex"),
     @NamedQuery(name = "Artist.findByBirthday", query = "SELECT a FROM Artist a WHERE a.birthday = :birthday"),
     @NamedQuery(name = "Artist.findByBirthplace", query = "SELECT a FROM Artist a WHERE a.birthplace = :birthplace")})
-public class Artist implements Serializable {
+public class Artist implements Serializable, Cloneable {
     @Transient
     private PropertyChangeSupport changeSupport = new PropertyChangeSupport(this);
     private static final long serialVersionUID = 1L;
@@ -151,7 +152,30 @@ public class Artist implements Serializable {
         this.sex = sex;
         changeSupport.firePropertyChange("sex", oldSex, sex);
     }
-
+    
+    /*
+     * This special purpose getter/setter methods is to allow binding 
+     * with radio buttons
+    */
+    public boolean isMale() {
+        return (getSex()!=null) ? getSex()=='M' : false;
+    }
+    public void setMale(boolean nl) {
+        if (nl) setSex('M');
+    }
+    
+    /*
+     * This special purpose getter/setter methods is to allow binding 
+     * with radio buttons
+    */
+    public boolean isFemale() {
+        return (getSex()!=null) ? getSex()=='F' : false;
+    }
+    public void setFemale(boolean nl) {
+        if (nl) setSex('F');
+    }
+    
+    
     public Date getBirthday() {
         return birthday;
     }
@@ -233,4 +257,33 @@ public class Artist implements Serializable {
         changeSupport.removePropertyChangeListener(listener);
     }
     
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        Object clone = super.clone();
+        // clone lists manually
+        Collection<MusicGroup> musicgroupCollection = new ArrayList<MusicGroup>();
+        if (this.musicgroupCollection != null) {
+            musicgroupCollection.addAll(this.musicgroupCollection);
+            ((Artist)clone).setMusicgroupCollection(musicgroupCollection);
+        }
+        Collection<Album> albumCollection = new ArrayList<Album>();
+        if (this.albumCollection != null) {
+            albumCollection.addAll(this.albumCollection);
+            ((Artist)clone).setAlbumCollection(albumCollection);
+        }
+        return clone;
+    }
+
+    public void restore(Artist artist) {
+        setArtisticname(artist.getArtisticname());
+        setFirstname(artist.getFirstname());
+        setLastname(artist.getLastname());
+        setBirthday(artist.getBirthday());
+        setBirthplace(artist.getBirthplace());
+        setGenre(artist.getGenre());
+        setSex(artist.getSex());
+        setMusicgroupCollection(artist.getMusicgroupCollection());
+        setAlbumCollection(artist.getAlbumCollection());
+    }
+
 }

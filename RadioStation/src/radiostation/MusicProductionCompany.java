@@ -47,7 +47,7 @@ public class MusicProductionCompany implements Serializable {
     private String address;
     @Basic(optional = false)
     @Column(name = "TELEPHONE")
-    private int telephone;
+    private String telephone;
     @OneToMany(mappedBy = "companyId")
     private Collection<Album> albumCollection;
 
@@ -58,7 +58,7 @@ public class MusicProductionCompany implements Serializable {
         this.id = id;
     }
 
-    public MusicProductionCompany(Integer id, String address, int telephone) {
+    public MusicProductionCompany(Integer id, String address, String telephone) {
         this.id = id;
         this.address = address;
         this.telephone = telephone;
@@ -88,11 +88,11 @@ public class MusicProductionCompany implements Serializable {
         this.address = address;
     }
 
-    public int getTelephone() {
+    public String getTelephone() {
         return telephone;
     }
 
-    public void setTelephone(int telephone) {
+    public void setTelephone(String telephone) {
         this.telephone = telephone;
     }
 
