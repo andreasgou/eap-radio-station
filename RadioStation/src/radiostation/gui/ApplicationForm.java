@@ -1907,7 +1907,7 @@ public class ApplicationForm extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton_DeleteGroupAlbumActionPerformed
 
     private void jButton_groupAlbumStoreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_groupAlbumStoreActionPerformed
-        // TODO add your handling code here:
+        this.jpaGroupAlbum.commitAlbum(this);
     }//GEN-LAST:event_jButton_groupAlbumStoreActionPerformed
 
     private void jButton_groupAlbumCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_groupAlbumCancelActionPerformed
