@@ -54,7 +54,7 @@ public class ApplicationForm extends javax.swing.JFrame {
             + "join a.musicgroupCollection mg "
             + "where mg = :mg");
         artistAlbumQuery = java.beans.Beans.isDesignTime() ? null : radioStationPUEntityManager.createQuery("SELECT a FROM Album a WHERE a.type1 = 'artist'");
-        groupAlbumQuery = java.beans.Beans.isDesignTime() ? null : radioStationPUEntityManager.createQuery("SELECT a, COUNT(a) FROM Album a WHERE a.musicgroupId != null GROUP BY a");
+        groupAlbumQuery = java.beans.Beans.isDesignTime() ? null : radioStationPUEntityManager.createQuery("SELECT a, COUNT(a) FROM Album a WHERE a.musicgroupId != null GROUP BY a ORDER BY a.title");
         songQuery = java.beans.Beans.isDesignTime() ? null : radioStationPUEntityManager.createQuery("SELECT s FROM Song s");
         musicGenreList = java.beans.Beans.isDesignTime() ? java.util.Collections.emptyList() : org.jdesktop.observablecollections.ObservableCollections.observableList(musicGenreQuery.getResultList());
         artistList = java.beans.Beans.isDesignTime() ? java.util.Collections.emptyList() : org.jdesktop.observablecollections.ObservableCollections.observableList(artistQuery.getResultList());
@@ -1217,6 +1217,7 @@ public class ApplicationForm extends javax.swing.JFrame {
 
         jLabel26.setText("Πίνακας Τραγουδιών:");
 
+        jTable_GroupAlbumSongs.setAutoCreateRowSorter(true);
         jTable_GroupAlbumSongs.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
         jTable_GroupAlbumSongs.setColumnSelectionAllowed(true);
         jTable_GroupAlbumSongs.getTableHeader().setReorderingAllowed(false);
@@ -2263,10 +2264,16 @@ public class ApplicationForm extends javax.swing.JFrame {
       }
     private List prepareAlbums(List results) {
         List<Album> albums = new ArrayList<>();
+        String title = null;
+        Album album = null;
         for (Object res : results) {
             Object[] r = (Object[])res;
-            ((Album)r[0]).setTotalDisks(((Long)r[1]).intValue());
-            albums.add((Album)r[0]);
+            album = ((Album)r[0]);
+            album.setTotalDisks(((Long)r[1]).intValue());
+            if (!album.getTitle().equals(title)) {
+                title = album.getTitle();
+                albums.add((Album)r[0]);
+            }
         }
         return albums;
     }
@@ -2274,11 +2281,13 @@ public class ApplicationForm extends javax.swing.JFrame {
     private void prepareGroupAlbumSongList() {
         if (jTable_AlbumGroups.getSelectedRow() >=0 ) {
             Album album = (Album)groupAlbumList.get(jTable_AlbumGroups.getSelectedRow());
-            if (album.isLongPlay()) {
-                jL_groupalbum_diskNumber.setVisible(true);
-                jSP_groupalbum_diskNumber.setVisible(true);
-                ((javax.swing.SpinnerNumberModel)jSP_groupalbum_diskNumber.getModel()).setMaximum(5);
-            }                
+            // prepare GUI spinner for LP album type or not
+            jL_groupalbum_diskNumber.setVisible(album.isLongPlay());
+            jSP_groupalbum_diskNumber.setVisible(album.isLongPlay());
+            ((javax.swing.SpinnerNumberModel)jSP_groupalbum_diskNumber.getModel()).setMaximum(album.getTotalDisks());
+            // initialize default sort column (1st) only the first time
+            if (jTable_GroupAlbumSongs.getRowSorter().getSortKeys().size() == 0)
+                jTable_GroupAlbumSongs.getRowSorter().toggleSortOrder(0);
         }
         if (jTable_GroupAlbumSongs.getColumnModel().getColumnCount() > 0) {
             // set duration time format to 00:00 using a cell renderer
