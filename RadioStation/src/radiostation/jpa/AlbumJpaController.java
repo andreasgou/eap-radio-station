@@ -365,8 +365,8 @@ public class AlbumJpaController implements Serializable {
                 form.getjTable_AlbumGroups().clearSelection();
             }
         } else {
-            idx = form.getjTable_AlbumGroups().getSelectedRow();
             // cancel from existing entry
+            idx = form.getjTable_AlbumGroups().getSelectedRow();
             album1.restore((Album)form.getClonedObj());
             idx = form.getjTable_AlbumGroups().getSelectedRow();
             form.getAlbumList().set(idx, album1);

@@ -6,7 +6,9 @@ insert into app.MUSICGENRE (genrename) values ('Greek');
 
 -- Music Production Company
 insert into app.musicproductioncompany (name, address, telephone)
-    values ('Albert Productions', '9 Rangers Road, Neutral Bay, New South Wales 2089, Australia', '02 9953 6038');
+    values ('Albert Productions', 'New York City, Detroit, Los Angeles, US', '02 9953 6038');
+insert into app.musicproductioncompany (name, address, telephone)
+    values ('Motown', '9 Rangers Road, Neutral Bay, New South Wales 2089, Australia', '01 4488 2312');
 
 -- Artist
 insert into app.artist (genre, firstname, lastname, artisticname, sex, birthday, birthplace)

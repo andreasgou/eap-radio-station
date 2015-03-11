@@ -43,7 +43,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Album.findByTitle", query = "SELECT a FROM Album a WHERE a.title = :title"),
     @NamedQuery(name = "Album.findByType1", query = "SELECT a FROM Album a WHERE a.type1 = :type1"),
     @NamedQuery(name = "Album.findByDisknumber", query = "SELECT a FROM Album a WHERE a.disknumber = :disknumber")})
-public class Album implements Serializable {
+public class Album implements Serializable, Cloneable {
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Basic(optional = false)
@@ -244,11 +244,16 @@ public class Album implements Serializable {
     @Override
     public Object clone() throws CloneNotSupportedException {
         Object clone = super.clone();
-        // clone list manually
+        // clone lists manually
         Collection<Song> songCollection = new ArrayList<Song>();
         if (this.songCollection != null) {
             songCollection.addAll(this.songCollection);
             ((Album)clone).setSongCollection(songCollection);
+        }
+        Collection<Album> albumCollection = new ArrayList<Album>();
+        if (this.albumCollection != null) {
+            albumCollection.addAll(this.albumCollection);
+            ((Album)clone).setAlbumCollection(albumCollection);
         }
         return clone;
     }
@@ -257,7 +262,11 @@ public class Album implements Serializable {
         setTitle(album.getTitle());
         setType1(album.getType1());
         setReleasedate(album.getReleasedate());
+        setArtistId(album.getArtistId());
+        setMusicgroupId(album.getMusicgroupId());
+        setCompanyId(album.getCompanyId());
         setSongCollection(album.getSongCollection());
+        setAlbumCollection(album.getAlbumCollection());
     }
 
     public Short getDisknumber() {
