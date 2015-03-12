@@ -1502,6 +1502,10 @@
                           <Events>
                             <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="jTable_GroupsMouseClicked"/>
                           </Events>
+                          <AuxValues>
+                            <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new javax.swing.JTable()"/>
+                            <AuxValue name="JavaCodeGenerator_ListenersCodePost" type="java.lang.String" value="jTable_Groups.getSelectionModel().addListSelectionListener(new ListSelectionListener(){&#xa;        public void valueChanged(ListSelectionEvent evt) {&#xa;            // do some actions here, for example&#xa;            // print first column value from selected row&#xa;            jTable_GroupsRowSelectionChanged(evt);&#xa;        }&#xa;    });"/>
+                          </AuxValues>
                         </Component>
                       </SubComponents>
                     </Container>
@@ -1875,6 +1879,10 @@
                           <Events>
                             <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="jTable_AlbumGroupsMouseClicked"/>
                           </Events>
+                          <AuxValues>
+                            <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new javax.swing.JTable()"/>
+                            <AuxValue name="JavaCodeGenerator_ListenersCodePost" type="java.lang.String" value="jTable_AlbumGroups.getSelectionModel().addListSelectionListener(new ListSelectionListener(){&#xa;        public void valueChanged(ListSelectionEvent evt) {&#xa;            // do some actions here, for example&#xa;            // print first column value from selected row&#xa;            jTable_AlbumGroupsRowSelectionChanged(evt);&#xa;        }&#xa;    });"/>
+                          </AuxValues>
                         </Component>
                       </SubComponents>
                     </Container>
@@ -2204,6 +2212,9 @@
                             <Property name="text" type="java.lang.String" value="&#x395;&#x3b9;&#x3c3;&#x3b1;&#x3b3;&#x3c9;&#x3b3;&#x3ae;"/>
                             <Property name="actionCommand" type="java.lang.String" value=""/>
                           </Properties>
+                          <Events>
+                            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton_AddGroupAlbumSongActionPerformed"/>
+                          </Events>
                         </Component>
                         <Component class="javax.swing.JButton" name="jButton_DeleteGroupAlbumSong">
                           <Properties>

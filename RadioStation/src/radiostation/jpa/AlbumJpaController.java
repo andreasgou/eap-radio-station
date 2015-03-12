@@ -352,6 +352,7 @@ public class AlbumJpaController implements Serializable {
         // init object
         album1.setTitle("<New Album>");
         album1.setSongCollection(new ArrayList<Song>());
+        album1.setAlbumCollection(new ArrayList<Album>());
         // add the new entry to the table
         form.getAlbumList().add(album1);
         int idx = form. getjTable_AlbumGroups().getRowCount()-1;
@@ -470,20 +471,16 @@ public class AlbumJpaController implements Serializable {
     }
 
     public void addSongInAlbum(ApplicationForm form) {
-        if (form.getjList_AvailableArtists().getSelectedIndex() < 0) {
-            Utility.msgWarning(form, "Δεν έχετε επιλέξει καλλιτέχνη για προσθήκη στο συγκρότημα", "Επεξεργασία συγκροτήματος");
+        Album album1 = form.getAlbum();
+        Song songToAlbum =  new Song();
+        List songInAlbumList = (List)album1.getSongCollection();
+        if (songInAlbumList.contains(songToAlbum)) {
+            Utility.msgWarning(form, "To τραγούδι ανήκει ήδη στο άλμπουμ", "Επεξεργασία αλμπουμ");
         } else {
-            Album album1 = form.getAlbum();
-            Song songToAlbum =  (Song)form.getjList_AvailableArtists().getSelectedValue();
-            List songInAlbumList = (List)album1.getSongCollection();
-            if (songInAlbumList.contains(songToAlbum)) {
-                Utility.msgWarning(form, "To τραγούδι ανήκει ήδη στο άλμπουμ", "Επεξεργασία αλμπουμ");
-            } else {
-                songInAlbumList.add (songToAlbum);
+            songInAlbumList.add (songToAlbum);
 
-                //form.getjList_GroupAlbumSongs().setListData(songInAlbumList.toArray());
-                //form.getjList_GroupAlbumSongs().setSelectedIndex(songInAlbumList.size()-1);
-            }
+            //form.getjList_GroupAlbumSongs().setListData(songInAlbumList.toArray());
+            //form.getjList_GroupAlbumSongs().setSelectedIndex(songInAlbumList.size()-1);
         }
     }
 

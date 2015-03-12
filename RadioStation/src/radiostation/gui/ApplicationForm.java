@@ -11,6 +11,8 @@ import java.util.Arrays;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.swing.border.TitledBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import radiostation.Album;
 import radiostation.Artist;
 import radiostation.MusicGroup;
@@ -951,6 +953,13 @@ public class ApplicationForm extends javax.swing.JFrame {
                 jTable_GroupsMouseClicked(evt);
             }
         });
+        jTable_Groups.getSelectionModel().addListSelectionListener(new ListSelectionListener(){
+            public void valueChanged(ListSelectionEvent evt) {
+                // do some actions here, for example
+                // print first column value from selected row
+                jTable_GroupsRowSelectionChanged(evt);
+            }
+        });
         jScrollPane3.setViewportView(jTable_Groups);
 
         jPanel_GroupPreview.setBorder(javax.swing.BorderFactory.createTitledBorder("Επισκόπηση Στοιχείων Συγκροτήματος"));
@@ -1150,6 +1159,13 @@ public class ApplicationForm extends javax.swing.JFrame {
                 jTable_AlbumGroupsMouseClicked(evt);
             }
         });
+        jTable_AlbumGroups.getSelectionModel().addListSelectionListener(new ListSelectionListener(){
+            public void valueChanged(ListSelectionEvent evt) {
+                // do some actions here, for example
+                // print first column value from selected row
+                jTable_AlbumGroupsRowSelectionChanged(evt);
+            }
+        });
         jScrollPane8.setViewportView(jTable_AlbumGroups);
 
         jPanel_AlbumGroupPreview.setBorder(javax.swing.BorderFactory.createTitledBorder("Επισκόπηση Δισκογραφίας Συγκροτήματος"));
@@ -1263,6 +1279,11 @@ public class ApplicationForm extends javax.swing.JFrame {
         jButton_AddGroupAlbumSong.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/plus_button_symbol_md_wm.jpg"))); // NOI18N
         jButton_AddGroupAlbumSong.setText("Εισαγωγή");
         jButton_AddGroupAlbumSong.setActionCommand("");
+        jButton_AddGroupAlbumSong.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton_AddGroupAlbumSongActionPerformed(evt);
+            }
+        });
 
         jButton_DeleteGroupAlbumSong.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/minus_button_symbol_md_wm.jpg"))); // NOI18N
         jButton_DeleteGroupAlbumSong.setText("Διαγραφή");
@@ -1885,8 +1906,7 @@ public class ApplicationForm extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton_AddArtistGroupActionPerformed
 
     private void jTable_GroupsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable_GroupsMouseClicked
-        musicGroup1 = musicGroupList.get(getjTable_Groups().getSelectedRow());
-        jList_GroupArtists.setListData(musicGroup1.getArtistCollection().toArray());
+        // nothing
     }//GEN-LAST:event_jTable_GroupsMouseClicked
 
     private void jTF_group_nameFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTF_group_nameFocusLost
@@ -1930,9 +1950,9 @@ public class ApplicationForm extends javax.swing.JFrame {
     }//GEN-LAST:event_jRB_groupalbum_epActionPerformed
 
     private void jTable_AlbumGroupsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable_AlbumGroupsMouseClicked
-        prepareGroupAlbumSongList();
+        //prepareGroupAlbumSongList();
     }//GEN-LAST:event_jTable_AlbumGroupsMouseClicked
-
+        
     private void jSP_groupalbum_diskNumberStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jSP_groupalbum_diskNumberStateChanged
         // The event is fired even if we change the Album selection and not only the disk selector
         Album album = (Album)groupAlbumList.get(jTable_AlbumGroups.getSelectedRow());
@@ -1943,6 +1963,10 @@ public class ApplicationForm extends javax.swing.JFrame {
             }
         }
     }//GEN-LAST:event_jSP_groupalbum_diskNumberStateChanged
+
+    private void jButton_AddGroupAlbumSongActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_AddGroupAlbumSongActionPerformed
+        this.jpaGroupAlbum.addSongInAlbum(this);
+    }//GEN-LAST:event_jButton_AddGroupAlbumSongActionPerformed
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private radiostation.Album album1;
@@ -2138,9 +2162,18 @@ public class ApplicationForm extends javax.swing.JFrame {
     private final List<String> sex = new ArrayList(Arrays.asList("M","F"));
 
     /* Custom methods declaration */
+    // Table event listeners
+    private void jTable_AlbumGroupsRowSelectionChanged(ListSelectionEvent evt) {                                                
+        prepareGroupAlbumSongList();
+    }
 
-        // Switch editable mode in Artists form
-        public void setEditableArtistForm(boolean status, boolean isNew) {
+    private void jTable_GroupsRowSelectionChanged(ListSelectionEvent evt) {                                                
+        musicGroup1 = musicGroupList.get(getjTable_Groups().getSelectedRow());
+        jList_GroupArtists.setListData(musicGroup1.getArtistCollection().toArray());
+    }
+
+    // Switch editable mode in Artists form
+    public void setEditableArtistForm(boolean status, boolean isNew) {
         // set command buttons
         jPanel_artistCRUD_edit1.setVisible(!status);
         jPanel_artistCRUD_edit2.setVisible(status);
@@ -2210,7 +2243,7 @@ public class ApplicationForm extends javax.swing.JFrame {
     }
     
     /**
-     * @return the jTable_Groups
+     * Getters/setters
      */
     public javax.swing.JTable getjTable_Artists() {
         return jTable_Artists;
@@ -2242,7 +2275,6 @@ public class ApplicationForm extends javax.swing.JFrame {
     public void setClonedObj(Object obj) {
         this.clonedObj = obj;
     }
-    
     public Artist getArtist() {
         return this.artist1;
     }
@@ -2252,40 +2284,46 @@ public class ApplicationForm extends javax.swing.JFrame {
     public List<Artist> getArtistList() {
         return this.artistList;
     }
-    
     public MusicGroup getMusicGroup() {
         return this.musicGroup1;
     }
-   public void setMusicGroup(MusicGroup musicGroup) {
+    public void setMusicGroup(MusicGroup musicGroup) {
         this.musicGroup1 = musicGroup;
     }
- 
     public List<MusicGroup> getMusicGroupList() {
         return this.musicGroupList;
     }
-    
-    
-     
-      public Album getAlbum() {
+    public java.util.List<radiostation.Song> getSongList() {
+        return songList;
+    }
+    public void setSongList(java.util.List<radiostation.Song> songList) {
+        this.songList = songList;
+    }
+    public Album getAlbum() {
         return this.album1;
     }
-      public void setAlbum(Album album) {
+    public void setAlbum(Album album) {
         this.album1 = album;
     }
- 
-      public List<Album> getAlbumList() {
+    public List<Album> getAlbumList() {
         return this.groupAlbumList;
     }
-       public void highlightGroupName(){
+    
+    /**
+     * GUI controls process methods
+     */
+    public void highlightGroupName(){
         jTF_group_name.selectAll();
         jTF_group_name.setSelectedTextColor(Color.red);
         jTF_group_name.requestFocus(true);
     }
+
     public void highlightAlbumTitle(){
           jTF_groupalbum_title.selectAll();
           jTF_groupalbum_title.setSelectedTextColor(Color.red);
           jTF_groupalbum_title.requestFocus(true);
-      }
+    }
+
     private List prepareAlbums(List results) {
         List<Album> albums = new ArrayList<>();
         String title = null;
@@ -2330,4 +2368,5 @@ public class ApplicationForm extends javax.swing.JFrame {
             }
         }
     }
+
 }
