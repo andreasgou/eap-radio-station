@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
+import radiostation.Playlist;
 import radiostation.gui.ApplicationForm;
 import radiostation.gui.SongTableModel;
 import radiostation.gui.Utility;
@@ -122,11 +122,13 @@ public class AlbumJpaController implements Serializable {
         }
     }
 
-    public void edit(Album album) throws IllegalOrphanException, NonexistentEntityException, Exception {
+    public void edit(Album album, ApplicationForm form) throws IllegalOrphanException, NonexistentEntityException, Exception {
         EntityManager em = null;
         try {
             em = getEntityManager();
-            em.getTransaction().begin();
+            //em.getTransaction().begin();
+            
+            // get a fresh copy of Album and related objects from db
             Album persistentAlbum = em.find(Album.class, album.getId());
             Artist artistIdOld = persistentAlbum.getArtistId();
             Artist artistIdNew = album.getArtistId();
@@ -138,15 +140,9 @@ public class AlbumJpaController implements Serializable {
             Collection<Song> songCollectionNew = album.getSongCollection();
             Collection<Album> albumCollectionOld = persistentAlbum.getAlbumCollection();
             Collection<Album> albumCollectionNew = album.getAlbumCollection();
+
+            // Check for orphan songs after album update (they should be deleted with a warning)
             List<String> illegalOrphanMessages = null;
-            for (Song songCollectionOldSong : songCollectionOld) {
-                if (!songCollectionNew.contains(songCollectionOldSong)) {
-                    if (illegalOrphanMessages == null) {
-                        illegalOrphanMessages = new ArrayList<String>();
-                    }
-                    illegalOrphanMessages.add("You must retain Song " + songCollectionOldSong + " since its albumId field is not nullable.");
-                }
-            }
             for (Song songCollectionOldSong : songCollectionOld) {
                 if (!songCollectionNew.contains(songCollectionOldSong)) {
                     if (illegalOrphanMessages == null) {
@@ -158,25 +154,52 @@ public class AlbumJpaController implements Serializable {
             if (illegalOrphanMessages != null) {
                 throw new IllegalOrphanException(illegalOrphanMessages);
             }
+
+            // refresh artist from db
             if (artistIdNew != null) {
                 artistIdNew = em.getReference(artistIdNew.getClass(), artistIdNew.getId());
                 album.setArtistId(artistIdNew);
             }
+            // refresh production company from db
             if (companyIdNew != null) {
                 companyIdNew = em.getReference(companyIdNew.getClass(), companyIdNew.getId());
                 album.setCompanyId(companyIdNew);
             }
+            // refresh parent album from db
             if (parentalbumIdNew != null) {
                 parentalbumIdNew = em.getReference(parentalbumIdNew.getClass(), parentalbumIdNew.getId());
                 album.setParentalbumId(parentalbumIdNew);
             }
-            Collection<Song> attachedSongCollectionNew = new ArrayList<Song>();
+            
+            // refresh song collection 
+            // Add new songs
+            em.getTransaction().begin();
+            Collection<Song> detachedSongCollectionNew = new ArrayList<Song>();
             for (Song songCollectionNewSongToAttach : songCollectionNew) {
-                songCollectionNewSongToAttach = em.getReference(songCollectionNewSongToAttach.getClass(), songCollectionNewSongToAttach.getId());
-                attachedSongCollectionNew.add(songCollectionNewSongToAttach);
+                // new Song entry
+                if (songCollectionNewSongToAttach.getId() == null) {
+                    songCollectionNewSongToAttach.setAlbumId(album);
+                    em.persist(songCollectionNewSongToAttach);
+
+                } else if (songCollectionNewSongToAttach.getAlbumId() == null) {
+                    detachedSongCollectionNew.add(songCollectionNewSongToAttach);
+                }
             }
-            songCollectionNew = attachedSongCollectionNew;
-            album.setSongCollection(songCollectionNew);
+            // Destroy removed songs
+            for (Song songCollectionSongToDetach : form.getSongsToRemoveList()) {
+                // Remove song from album
+                em.remove(songCollectionSongToDetach);
+                // Remove song references from playlists
+                Collection<Playlist> playlistCollection = songCollectionSongToDetach.getPlaylistCollection();
+                for (Playlist playlistCollectionPlaylist : playlistCollection) {
+                    playlistCollectionPlaylist.getSongCollection().remove(songCollectionSongToDetach);
+                    playlistCollectionPlaylist = em.merge(playlistCollectionPlaylist);
+                }
+            }
+            em.getTransaction().commit();
+
+            em.getTransaction().begin();
+            // refresh album collection 
             Collection<Album> attachedAlbumCollectionNew = new ArrayList<Album>();
             for (Album albumCollectionNewAlbumToAttach : albumCollectionNew) {
                 albumCollectionNewAlbumToAttach = em.getReference(albumCollectionNewAlbumToAttach.getClass(), albumCollectionNewAlbumToAttach.getId());
@@ -184,53 +207,68 @@ public class AlbumJpaController implements Serializable {
             }
             albumCollectionNew = attachedAlbumCollectionNew;
             album.setAlbumCollection(albumCollectionNew);
+
+            // merge relations 
             album = em.merge(album);
+
+            // if artist changed, remove album reference from the old artist's collection
             if (artistIdOld != null && !artistIdOld.equals(artistIdNew)) {
                 artistIdOld.getAlbumCollection().remove(album);
                 artistIdOld = em.merge(artistIdOld);
             }
+            // if artist changed, add album reference to the new artist's collection
             if (artistIdNew != null && !artistIdNew.equals(artistIdOld)) {
                 artistIdNew.getAlbumCollection().add(album);
                 artistIdNew = em.merge(artistIdNew);
             }
+            // if company changed, remove album reference from the old company's collection
             if (companyIdOld != null && !companyIdOld.equals(companyIdNew)) {
                 companyIdOld.getAlbumCollection().remove(album);
                 companyIdOld = em.merge(companyIdOld);
             }
+            // if company changed, add album reference to the new company's collection
             if (companyIdNew != null && !companyIdNew.equals(companyIdOld)) {
                 companyIdNew.getAlbumCollection().add(album);
                 companyIdNew = em.merge(companyIdNew);
             }
+            // if parent album changed, remove album reference from the old parent's collection
             if (parentalbumIdOld != null && !parentalbumIdOld.equals(parentalbumIdNew)) {
                 parentalbumIdOld.getAlbumCollection().remove(album);
                 parentalbumIdOld = em.merge(parentalbumIdOld);
             }
+            // if parent album changed, add album reference to the new parent's collection
             if (parentalbumIdNew != null && !parentalbumIdNew.equals(parentalbumIdOld)) {
                 parentalbumIdNew.getAlbumCollection().add(album);
                 parentalbumIdNew = em.merge(parentalbumIdNew);
             }
+            
+            // Update album references in new songs
             for (Song songCollectionNewSong : songCollectionNew) {
                 if (!songCollectionOld.contains(songCollectionNewSong)) {
                     Album oldAlbumIdOfSongCollectionNewSong = songCollectionNewSong.getAlbumId();
                     songCollectionNewSong.setAlbumId(album);
                     songCollectionNewSong = em.merge(songCollectionNewSong);
+                    // remove songs from old album's song collection 
                     if (oldAlbumIdOfSongCollectionNewSong != null && !oldAlbumIdOfSongCollectionNewSong.equals(album)) {
                         oldAlbumIdOfSongCollectionNewSong.getSongCollection().remove(songCollectionNewSong);
                         oldAlbumIdOfSongCollectionNewSong = em.merge(oldAlbumIdOfSongCollectionNewSong);
                     }
                 }
             }
+            // Update parent album references in detached albums
             for (Album albumCollectionOldAlbum : albumCollectionOld) {
                 if (!albumCollectionNew.contains(albumCollectionOldAlbum)) {
                     albumCollectionOldAlbum.setParentalbumId(null);
                     albumCollectionOldAlbum = em.merge(albumCollectionOldAlbum);
                 }
             }
+            // Update album references in new child albums (LP type)
             for (Album albumCollectionNewAlbum : albumCollectionNew) {
                 if (!albumCollectionOld.contains(albumCollectionNewAlbum)) {
                     Album oldParentalbumIdOfAlbumCollectionNewAlbum = albumCollectionNewAlbum.getParentalbumId();
                     albumCollectionNewAlbum.setParentalbumId(album);
                     albumCollectionNewAlbum = em.merge(albumCollectionNewAlbum);
+                    // remove albums from old parent album's collection
                     if (oldParentalbumIdOfAlbumCollectionNewAlbum != null && !oldParentalbumIdOfAlbumCollectionNewAlbum.equals(album)) {
                         oldParentalbumIdOfAlbumCollectionNewAlbum.getAlbumCollection().remove(albumCollectionNewAlbum);
                         oldParentalbumIdOfAlbumCollectionNewAlbum = em.merge(oldParentalbumIdOfAlbumCollectionNewAlbum);
@@ -345,22 +383,29 @@ public class AlbumJpaController implements Serializable {
     
     /* Methods triggered by form events */
     public void newAlbum(ApplicationForm form) {
-        // create object
-        Album album1 = new Album();
+        // create new object
+        Album album1 = new Album(null, "<New Album>", "CS", (short)1);
+        
         // keep the object in the form
         form.setAlbum(album1);
+        
         // init object
-        album1.setTitle("<New Album>");
+        album1.setTotaldisks((short)1);
         album1.setSongCollection(new ArrayList<Song>());
         album1.setAlbumCollection(new ArrayList<Album>());
+        
         // add the new entry to the table
         form.getAlbumList().add(album1);
         int idx = form. getjTable_AlbumGroups().getRowCount()-1;
         form. getjTable_AlbumGroups().setRowSelectionInterval(idx, idx);
-        // reset the list
-        form.getjTable_GroupAlbumSongs().setModel(new SongTableModel(new ArrayList<Song>()));
-        //.setListData(album1.getSongCollection().toArray());
+        addSongInAlbum(form);
+        
+        // prepare form for editing
+        form.setSongsToRemoveList(new ArrayList<Song>());
         form.setEditableGroupAlbumForm(true, true);
+        
+        // set focus on Album title
+        form.getjTF_groupalbum_title().requestFocus();
     }
 
    /* public void destroyAlbum(ApplicationForm form) {
@@ -396,6 +441,7 @@ public class AlbumJpaController implements Serializable {
             // clone original object - used when cancel editing
             form.setClonedObj(album1.clone());
             // enable edit form 
+            form.setSongsToRemoveList(new ArrayList<Song>());
             form.setEditableGroupAlbumForm(true, false);
 
         } catch (CloneNotSupportedException ex) {
@@ -408,7 +454,7 @@ public class AlbumJpaController implements Serializable {
             
             Album album1 = form.getAlbum();
             if ((album1.getTitle().equalsIgnoreCase("<New Album>")||(album1.getTitle().equals("")))&& (album1.getSongCollection().size() ==0)){
-                Utility.msgWarning(form, "Το άλμπουμ πρέπει να έχει τουλάχιστον 1 τραγούδι & να δώσετε τίτλο άλμπουμ", "Επεξεργασία αλμπουμ");
+                Utility.msgWarning(form, "Το άλμπουμ πρέπει να έχει τουλάχιστον 1 τραγούδι & να δώσετε τίτλο άλμπουμ.", "Επεξεργασία αλμπουμ");
                 form.highlightAlbumTitle();
                 return;
             }
@@ -419,14 +465,14 @@ public class AlbumJpaController implements Serializable {
                 return;
             }
             if (album1.getSongCollection().size()==0) {
-                Utility.msgWarning(form, "Το άλμπουμ πρέπει να έχει τουλάχιστον 1 τραγουδι", "Επεξεργασία αλμπουμ");
+                Utility.msgWarning(form, "Το άλμπουμ πρέπει να έχει τουλάχιστον 1 τραγούδι.", "Επεξεργασία αλμπουμ");
                 return;
             }
                         
             if (album1.getId() == null) {
                 this.create(album1);
             } else {
-                this.edit(album1);
+                this.edit(album1, form);
             }
             form.setEditableGroupAlbumForm(false, false);
             Utility.msgInfo(form, "Τα στοιχεία του άλμπουμ αποθηκεύτηκαν επιτυχώς!");
@@ -472,26 +518,44 @@ public class AlbumJpaController implements Serializable {
 
     public void addSongInAlbum(ApplicationForm form) {
         Album album1 = form.getAlbum();
-        Song songToAlbum =  new Song();
+        int row = album1.getSongCollection().size();
+        int col = 1;    // song title column
+        
+        // create a Song and append to album
+        Song songToAlbum =  new Song(null, 0, (short)(row+1));
         List songInAlbumList = (List)album1.getSongCollection();
-        if (songInAlbumList.contains(songToAlbum)) {
-            Utility.msgWarning(form, "To τραγούδι ανήκει ήδη στο άλμπουμ", "Επεξεργασία αλμπουμ");
-        } else {
-            songInAlbumList.add (songToAlbum);
-
-            //form.getjList_GroupAlbumSongs().setListData(songInAlbumList.toArray());
-            //form.getjList_GroupAlbumSongs().setSelectedIndex(songInAlbumList.size()-1);
-        }
+        songInAlbumList.add (songToAlbum);
+        // append to GUI control's bounded list
+        form.getSongList().add(songToAlbum);
+        
+        // ensure we can select cells
+        form.getjTable_GroupAlbumSongs().setColumnSelectionAllowed(true);
+        // set focus on table
+        form.getjTable_GroupAlbumSongs().requestFocusInWindow();
+        // set edit mode on title cell 
+        form.getjTable_GroupAlbumSongs().editCellAt(row, col);
+        // put cursor in the cell
+        form.getjTable_GroupAlbumSongs().getEditorComponent().requestFocus();
     }
 
     public void removeSongFromAlbum(ApplicationForm form) {
         if (form.getjTable_GroupAlbumSongs().getSelectedRow() < 0) {
-            Utility.msgWarning(form, "Δεν έχετε επιλέξει τραγούδι για αφαίρεση", "Επεξεργασία αλμπουμ");
+            Utility.msgWarning(form, "Δεν έχετε επιλέξει τραγούδι για αφαίρεση", "Επεξεργασία άλμπουμ");
         } else {
-            List songInAlbumList = (List)form.getAlbum().getSongCollection();
-            songInAlbumList.remove(form.getjTable_GroupAlbumSongs().getSelectedRow());
-            //form.getjList_GroupAlbumSongs().setListData(songInAlbumList.toArray());
-            //form.getjTable_GroupAlbumSongs().setSelectedRow(songInAlbumList.size()-1);
+            //List songInAlbumList = (List)form.getAlbum().getSongCollection();
+            //songInAlbumList.remove(form.getjTable_GroupAlbumSongs().getSelectedRow());
+
+            int idx = form.getjTable_GroupAlbumSongs().getSelectedRow();
+            Song song = form.getSongList().get(idx);
+            int ans = Utility.msgPrompt(form, song.getTitle()+ "\n\nΕίσαι σίγουρος για τη διαγραφή?", "Διαγραφή Τραγουδιού");
+            if (ans == 0) {
+                form.getSongList().remove(song);
+                //List songInAlbumList = (List)form.getAlbum().getSongCollection();
+                form.getAlbum().getSongCollection().remove(song);
+                song.setAlbumId(null);
+                form.getSongsToRemoveList().add(song);
+                form.getjTable_GroupAlbumSongs().clearSelection();
+            }            
         }       
     }
     

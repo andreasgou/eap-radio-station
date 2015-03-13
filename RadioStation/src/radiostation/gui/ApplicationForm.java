@@ -1287,6 +1287,11 @@ public class ApplicationForm extends javax.swing.JFrame {
 
         jButton_DeleteGroupAlbumSong.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/minus_button_symbol_md_wm.jpg"))); // NOI18N
         jButton_DeleteGroupAlbumSong.setText("Διαγραφή");
+        jButton_DeleteGroupAlbumSong.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton_DeleteGroupAlbumSongActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel_AlbumGroupPreviewLayout = new javax.swing.GroupLayout(jPanel_AlbumGroupPreview);
         jPanel_AlbumGroupPreview.setLayout(jPanel_AlbumGroupPreviewLayout);
@@ -1950,7 +1955,7 @@ public class ApplicationForm extends javax.swing.JFrame {
     }//GEN-LAST:event_jRB_groupalbum_epActionPerformed
 
     private void jTable_AlbumGroupsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable_AlbumGroupsMouseClicked
-        //prepareGroupAlbumSongList();
+        // nothing
     }//GEN-LAST:event_jTable_AlbumGroupsMouseClicked
         
     private void jSP_groupalbum_diskNumberStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jSP_groupalbum_diskNumberStateChanged
@@ -1967,6 +1972,10 @@ public class ApplicationForm extends javax.swing.JFrame {
     private void jButton_AddGroupAlbumSongActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_AddGroupAlbumSongActionPerformed
         this.jpaGroupAlbum.addSongInAlbum(this);
     }//GEN-LAST:event_jButton_AddGroupAlbumSongActionPerformed
+
+    private void jButton_DeleteGroupAlbumSongActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_DeleteGroupAlbumSongActionPerformed
+        this.jpaGroupAlbum.removeSongFromAlbum(this);
+    }//GEN-LAST:event_jButton_DeleteGroupAlbumSongActionPerformed
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private radiostation.Album album1;
@@ -2159,17 +2168,23 @@ public class ApplicationForm extends javax.swing.JFrame {
     private MusicGroupJpaController jpaMusicGroup;
     private AlbumJpaController jpaGroupAlbum;
     private Object clonedObj;
+    private java.util.List<radiostation.Song> songsToRemoveList;
     private final List<String> sex = new ArrayList(Arrays.asList("M","F"));
 
     /* Custom methods declaration */
     // Table event listeners
     private void jTable_AlbumGroupsRowSelectionChanged(ListSelectionEvent evt) {                                                
-        prepareGroupAlbumSongList();
+        // check if a row is selected
+        if (jTable_AlbumGroups.getSelectedRow() >= 0 )
+            prepareGroupAlbumSongList();
     }
 
     private void jTable_GroupsRowSelectionChanged(ListSelectionEvent evt) {                                                
-        musicGroup1 = musicGroupList.get(getjTable_Groups().getSelectedRow());
-        jList_GroupArtists.setListData(musicGroup1.getArtistCollection().toArray());
+        // check if a row is selected
+        if (getjTable_Groups().getSelectedRow() >= 0) {
+            musicGroup1 = musicGroupList.get(getjTable_Groups().getSelectedRow());
+            jList_GroupArtists.setListData(musicGroup1.getArtistCollection().toArray());
+        }
     }
 
     // Switch editable mode in Artists form
@@ -2299,6 +2314,12 @@ public class ApplicationForm extends javax.swing.JFrame {
     public void setSongList(java.util.List<radiostation.Song> songList) {
         this.songList = songList;
     }
+    public java.util.List<radiostation.Song> getSongsToRemoveList() {
+        return this.songsToRemoveList;
+    }
+    public void setSongsToRemoveList(java.util.List<radiostation.Song> songList) {
+        this.songsToRemoveList = songList;
+    }
     public Album getAlbum() {
         return this.album1;
     }
@@ -2308,7 +2329,11 @@ public class ApplicationForm extends javax.swing.JFrame {
     public List<Album> getAlbumList() {
         return this.groupAlbumList;
     }
-    
+
+    public javax.swing.JTextField getjTF_groupalbum_title() {
+        return this.jTF_groupalbum_title;
+    }
+            
     /**
      * GUI controls process methods
      */
@@ -2324,47 +2349,30 @@ public class ApplicationForm extends javax.swing.JFrame {
           jTF_groupalbum_title.requestFocus(true);
     }
 
-    private List prepareAlbums(List results) {
-        List<Album> albums = new ArrayList<>();
-        String title = null;
-        for (Object res : results) {
-            Object[] r = (Object[])res;
-            Album album = ((Album)r[0]);
-            if (!album.getTitle().equals(title)) {
-                title = album.getTitle();
-                albums.add((Album)r[0]);
-            }
-        }
-        return albums;
-    }
-    
     private void prepareGroupAlbumSongList() {
-        if (jTable_AlbumGroups.getSelectedRow() >=0 ) {
-            
-            // refresh the song list
-            Album album = (Album)groupAlbumList.get(jTable_AlbumGroups.getSelectedRow());
-            this.songList.clear();
-            for (Song song : album.getSongCollection(album.getDisknumber())) {
-                this.songList.add(song);
-            }
-            
-            // prepare GUI spinner for LP album type or not
-            jL_groupalbum_diskNumber.setVisible(album.isLongPlay());
-            jSP_groupalbum_diskNumber.setVisible(album.isLongPlay());
-            ((javax.swing.SpinnerNumberModel)jSP_groupalbum_diskNumber.getModel()).setValue(1);
-            ((javax.swing.SpinnerNumberModel)jSP_groupalbum_diskNumber.getModel()).setMaximum(album.getTotaldisks().intValue());
-            
-            // initialize default sort by 1st column, only the first time
-            if (jTable_GroupAlbumSongs.getRowSorter().getSortKeys().size() == 0) {
-                jTable_GroupAlbumSongs.getRowSorter().toggleSortOrder(0);
-                if (jTable_GroupAlbumSongs.getColumnModel().getColumnCount() > 0) {
-                    // set duration time format to 00:00 using a cell renderer
-                    jTable_GroupAlbumSongs.getColumnModel().getColumn(2).setCellRenderer(titleDurationRenderer);
-                    // set default column widths
-                    jTable_GroupAlbumSongs.getColumnModel().getColumn(0).setMaxWidth(46);
-                    jTable_GroupAlbumSongs.getColumnModel().getColumn(1).setMinWidth(130);
-                    jTable_GroupAlbumSongs.getColumnModel().getColumn(2).setMaxWidth(60);
-                }
+        // refresh the song list
+        Album album = (Album)groupAlbumList.get(jTable_AlbumGroups.getSelectedRow());
+        this.songList.clear();
+        for (Song song : album.getSongCollection(album.getDisknumber())) {
+            this.songList.add(song);
+        }
+
+        // prepare GUI spinner for LP album type or not
+        jL_groupalbum_diskNumber.setVisible(album.isLongPlay());
+        jSP_groupalbum_diskNumber.setVisible(album.isLongPlay());
+        ((javax.swing.SpinnerNumberModel)jSP_groupalbum_diskNumber.getModel()).setValue(1);
+        ((javax.swing.SpinnerNumberModel)jSP_groupalbum_diskNumber.getModel()).setMaximum(album.getTotaldisks().intValue());
+
+        // initialize default sort by 1st column, only the first time
+        if (jTable_GroupAlbumSongs.getRowSorter().getSortKeys().size() == 0) {
+            jTable_GroupAlbumSongs.getRowSorter().toggleSortOrder(0);
+            if (jTable_GroupAlbumSongs.getColumnModel().getColumnCount() > 0) {
+                // set duration time format to 00:00 using a cell renderer
+                jTable_GroupAlbumSongs.getColumnModel().getColumn(2).setCellRenderer(titleDurationRenderer);
+                // set default column widths
+                jTable_GroupAlbumSongs.getColumnModel().getColumn(0).setMaxWidth(46);
+                jTable_GroupAlbumSongs.getColumnModel().getColumn(1).setMinWidth(130);
+                jTable_GroupAlbumSongs.getColumnModel().getColumn(2).setMaxWidth(60);
             }
         }
     }
