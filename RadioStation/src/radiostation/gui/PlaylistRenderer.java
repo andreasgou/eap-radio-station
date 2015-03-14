@@ -5,25 +5,25 @@
  */
 package radiostation.gui;
 
-import java.awt.Component;
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.JList;
-import radiostation.Song;
-
 /**
  *
  * @author user
  */
-public class SongRenderer extends DefaultListCellRenderer {
- 
+
+import java.awt.Component;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.JList;
+import radiostation.Playlist;
+
+public class PlaylistRenderer extends DefaultListCellRenderer {
     @Override
     public Component getListCellRendererComponent(
             JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
         super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-        if (value instanceof Song) {
-            Song a = (Song) value;
-            setText(a.getTitle());
+        if (value instanceof Playlist) {
+            Playlist a = (Playlist) value;
+            setText(a.getName());
         }
         return this;
-    }   
+    }
 }

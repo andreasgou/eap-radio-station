@@ -30,7 +30,7 @@ import radiostation.jpa.exceptions.NonexistentEntityException;
 public class MusicGroupJpaController implements Serializable {
 
     public MusicGroupJpaController(EntityManager em) {
-        this.em = em;
+    this.em = em;
     }
     private EntityManager em = null;
     

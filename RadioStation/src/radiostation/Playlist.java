@@ -8,7 +8,9 @@ package radiostation;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -21,6 +23,8 @@ import javax.persistence.ManyToMany;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
@@ -47,6 +51,9 @@ public class Playlist implements Serializable {
     private Integer id;
     @Column(name = "NAME")
     private String name;
+    @Column(name = "CREATIONDATE")
+    @Temporal(TemporalType.DATE)
+    private Date creationdate;
     @JoinTable(name = "PLAYLIST_SONG", joinColumns = {
         @JoinColumn(name = "PLAYLIST_ID", referencedColumnName = "ID")}, inverseJoinColumns = {
         @JoinColumn(name = "SONG_ID", referencedColumnName = "ID")})
@@ -80,6 +87,19 @@ public class Playlist implements Serializable {
         changeSupport.firePropertyChange("name", oldName, name);
     }
 
+    public void setCreationdate(Date creationdate) {
+        Date oldDate=this.creationdate;
+        this.creationdate=creationdate;
+        changeSupport.firePropertyChange("creationdate", oldDate, creationdate);
+    }
+
+    public Date getCreationdate() {
+        return creationdate;
+    }
+     
+    
+    
+    
     @XmlTransient
     public Collection<Song> getSongCollection() {
         return songCollection;
@@ -121,5 +141,21 @@ public class Playlist implements Serializable {
     public void removePropertyChangeListener(PropertyChangeListener listener) {
         changeSupport.removePropertyChangeListener(listener);
     }
-    
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        Object clone = super.clone();
+        // clone list manually
+        Collection<Song> songCollection = new ArrayList<Song>();
+        if (this.songCollection != null) {
+            songCollection.addAll(this.songCollection);
+            ((Playlist)clone).setSongCollection(songCollection);
+        }
+        return clone;
+    }
+
+    public void restore(Playlist playlist) {
+        setName(playlist.getName());
+        setCreationdate(playlist.getCreationdate());
+        setSongCollection(playlist.getSongCollection());
+    }
 }
