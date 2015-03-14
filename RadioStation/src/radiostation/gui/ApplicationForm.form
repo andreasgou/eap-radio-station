@@ -2762,6 +2762,15 @@
               <SubComponents>
                 <Component class="javax.swing.JTable" name="jTable_PlayLists">
                   <Properties>
+                    <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor">
+                      <TableColumnModel selectionModel="0">
+                        <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
+                          <Title/>
+                          <Editor/>
+                          <Renderer/>
+                        </Column>
+                      </TableColumnModel>
+                    </Property>
                     <Property name="tableHeader" type="javax.swing.table.JTableHeader" editor="org.netbeans.modules.form.editors2.JTableHeaderEditor">
                       <TableHeader reorderingAllowed="true" resizingAllowed="true"/>
                     </Property>
@@ -2772,10 +2781,15 @@
                         <ComponentRef name="null"/>
                       </Property>
                       <Subbinding sourcePath="${name}">
+                        <BindingParameter name="NAME" value="Name"/>
                         <BindingParameter name="javax.swing.binding.ParameterKeys.COLUMN_CLASS" value="String.class"/>
                       </Subbinding>
                     </BindingProperty>
                   </BindingProperties>
+                  <AuxValues>
+                    <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new javax.swing.JTable()"/>
+                    <AuxValue name="JavaCodeGenerator_ListenersCodePost" type="java.lang.String" value="jTable_PlayLists.getSelectionModel().addListSelectionListener(new ListSelectionListener(){&#xa;        public void valueChanged(ListSelectionEvent evt) {&#xa;            // do some actions here, for example&#xa;            // print first column value from selected row&#xa;            jTable_PlayListsRowSelectionChanged(evt);&#xa;        }&#xa;    });"/>
+                  </AuxValues>
                 </Component>
               </SubComponents>
             </Container>

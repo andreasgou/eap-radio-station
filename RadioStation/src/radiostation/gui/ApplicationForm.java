@@ -1710,6 +1710,13 @@ public class ApplicationForm extends javax.swing.JFrame {
         jTableBinding.setSourceNullValue(null);
         bindingGroup.addBinding(jTableBinding);
         jTableBinding.bind();
+        jTable_PlayLists.getSelectionModel().addListSelectionListener(new ListSelectionListener(){
+            public void valueChanged(ListSelectionEvent evt) {
+                // do some actions here, for example
+                // print first column value from selected row
+                jTable_PlayListsRowSelectionChanged(evt);
+            }
+        });
         jScrollPane9.setViewportView(jTable_PlayLists);
 
         javax.swing.GroupLayout jPanel_SongMgrLayout = new javax.swing.GroupLayout(jPanel_SongMgr);
@@ -2262,6 +2269,13 @@ public class ApplicationForm extends javax.swing.JFrame {
         if (getjTable_Groups().getSelectedRow() >= 0) {
             musicGroup1 = musicGroupList.get(getjTable_Groups().getSelectedRow());
             jList_GroupArtists.setListData(musicGroup1.getArtistCollection().toArray());
+        }
+    }
+    private void jTable_PlayListsRowSelectionChanged(ListSelectionEvent evt) {                                                
+        // check if a row is selected
+        if (getjTable_PlayLists().getSelectedRow() >= 0) {
+            playlist1 = musicGroupList.get(getjTable_PlayLists().getSelectedRow());
+            jList_GroupArtists.setListData(playlist1.getArtistCollection().toArray());
         }
     }
 
