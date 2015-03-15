@@ -148,8 +148,16 @@ public class AlbumJpaController implements Serializable {
                 album.setParentalbumId(parentalbumIdNew);
             }
             
+             // Add new albums in a separate transaction
+            for (Album albumCollectionNewAlbumToAttach : albumCollectionNew) {
+                // new Song entry
+                if (albumCollectionNewAlbumToAttach.getId() == null) {
+                    this.create(albumCollectionNewAlbumToAttach, form);
+                }
+            }
+
             // refresh song collection 
-            // Add new songs
+            // Add new songs in a separate transaction
             em.getTransaction().begin();
             for (Song songCollectionNewSongToAttach : songCollectionNew) {
                 // new Song entry
@@ -158,19 +166,14 @@ public class AlbumJpaController implements Serializable {
                     em.persist(songCollectionNewSongToAttach);
                 }
             }
+            em.getTransaction().commit();
+            
+            em.getTransaction().begin();
             // refresh album collection 
             Collection<Album> attachedAlbumCollectionNew = new ArrayList<Album>();
             for (Album albumCollectionNewAlbumToAttach : albumCollectionNew) {
                 albumCollectionNewAlbumToAttach = em.getReference(albumCollectionNewAlbumToAttach.getClass(), albumCollectionNewAlbumToAttach.getId());
                 attachedAlbumCollectionNew.add(albumCollectionNewAlbumToAttach);
-                // Add new songs in child albums
-                for (Song songCollectionChildAlbumNewSongToAttach : albumCollectionNewAlbumToAttach.getSongCollection()) {
-                    // new Song entry
-                    if (songCollectionChildAlbumNewSongToAttach.getId() == null) {
-                        songCollectionChildAlbumNewSongToAttach.setAlbumId(albumCollectionNewAlbumToAttach);
-                        em.persist(songCollectionChildAlbumNewSongToAttach);
-                    }
-                }
             }
             albumCollectionNew = attachedAlbumCollectionNew;
             album.setAlbumCollection(albumCollectionNew);
@@ -455,11 +458,11 @@ public class AlbumJpaController implements Serializable {
                     return;
                 }
             }
-            // Delete silently child albums with no songs
+            // Mark child albums with no songs            
+            Collection<Album> albumsToRemove = new ArrayList<Album>();
             for (Album child : album1.getAlbumCollection()) {
                 if (child.getSongCollection().size()==0) {
-                    album1.getAlbumCollection().remove(child);
-                    child.setParentalbumId(null);
+                    albumsToRemove.add(child);
                     album1.setTotaldisks((short)(album1.getTotaldisks().shortValue() - 1));
                 } else {
                     for (Song song : child.getSongCollection()) {
@@ -469,6 +472,11 @@ public class AlbumJpaController implements Serializable {
                         }
                     }
                 }
+            }
+            // Delete silently marked child albums with no songs            
+            for (Album child : albumsToRemove) {
+                album1.getAlbumCollection().remove(child);
+                child.setParentalbumId(null);
             }
                         
             if (album1.getId() == null) {
