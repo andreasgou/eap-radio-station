@@ -274,7 +274,7 @@ public class PlaylistJpaController implements Serializable {
         }
     }
 
-    public void revertPalylist(ApplicationForm form) {
+    public void revertPlaylist(ApplicationForm form) {
         int idx;
         // reset list
         Playlist playlist1 = form.getPlaylist();
@@ -308,12 +308,20 @@ public class PlaylistJpaController implements Serializable {
     }
 
     public void addSongInList(ApplicationForm form) {
-        if (form.getjList_AvailableSongs().getSelectedIndex() < 0) {
+        if (form.getjTable_AvailableSongs().getSelectedRow() < 0) {
             Utility.msgWarning(form, "Δεν έχετε επιλέξει τραγούδι για προσθήκη στη λίστα", "Επεξεργασία λίστας");
         } else {
             Playlist playlist1 = form.getPlaylist();
-            Song songToPlaylist =  (Song)form.getjList_AvailableSongs().getSelectedValue();
+            
+            int column=form.getjTable_AvailableSongs().getModel().getColumnCount();
+            Song songToPlaylist = null;
+            for (int i=0;i<column;i++){
+               
+               songToPlaylist = (Song)form.getjTable_AvailableSongs().getModel().getValueAt((form.getjTable_AvailableSongs().getSelectedRow()),i);
+            }
+            
             List songInPlayList = (List)playlist1.getSongCollection();
+            
             if (songInPlayList.contains(songToPlaylist)) {
                 Utility.msgWarning(form, "To τραγούδι ανήκει ήδη στη λίστα", "Επεξεργασία λίστας");
             } else {

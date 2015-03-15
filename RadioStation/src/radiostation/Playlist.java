@@ -40,7 +40,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Playlist.findAll", query = "SELECT p FROM Playlist p"),
     @NamedQuery(name = "Playlist.findById", query = "SELECT p FROM Playlist p WHERE p.id = :id"),
     @NamedQuery(name = "Playlist.findByName", query = "SELECT p FROM Playlist p WHERE p.name = :name")})
-public class Playlist implements Serializable {
+public class Playlist implements Serializable,Cloneable {
     @Transient
     private PropertyChangeSupport changeSupport = new PropertyChangeSupport(this);
     private static final long serialVersionUID = 1L;
@@ -145,7 +145,7 @@ public class Playlist implements Serializable {
     public Object clone() throws CloneNotSupportedException {
         Object clone = super.clone();
         // clone list manually
-        Collection<Song> songCollection = new ArrayList<Song>();
+        Collection<Song> songCollection= new ArrayList<Song>();
         if (this.songCollection != null) {
             songCollection.addAll(this.songCollection);
             ((Playlist)clone).setSongCollection(songCollection);
