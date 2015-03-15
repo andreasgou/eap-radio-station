@@ -435,7 +435,7 @@ public class AlbumJpaController implements Serializable {
             
             Album album1 = form.getAlbum();
             if ((album1.getTitle().equalsIgnoreCase("<New Album>")||(album1.getTitle().equals("")))&& (album1.getSongCollection().size() ==0)){
-                Utility.msgWarning(form, "Το άλμπουμ πρέπει να έχει τουλάχιστον 1 τραγούδι & να δώσετε τίτλο άλμπουμ.", "Επεξεργασία αλμπουμ");
+                Utility.msgWarning(form, "Το άλμπουμ πρέπει να έχει τουλάχιστον 1 τραγούδι & να δώσετε τίτλο άλμπουμ.", "Επεξεργασία άλμπουμ");
                 form.highlightAlbumTitle();
                 return;
             }
@@ -446,8 +446,29 @@ public class AlbumJpaController implements Serializable {
                 return;
             }
             if (album1.getSongCollection().size()==0) {
-                Utility.msgWarning(form, "Το άλμπουμ πρέπει να έχει τουλάχιστον 1 τραγούδι.", "Επεξεργασία αλμπουμ");
+                Utility.msgWarning(form, "Το άλμπουμ πρέπει να έχει τουλάχιστον 1 τραγούδι.", "Επεξεργασία άλμπουμ");
                 return;
+            }
+            for (Song song : album1.getSongCollection()) {
+                if (song.getTitle().trim().equals("")) {
+                    Utility.msgWarning(form, "Υπάρχουν τραγούδια χωρίς τίτλο στο άλμουμ.", "Επεξεργασία άλμπουμ");
+                    return;
+                }
+            }
+            // Delete silently child albums with no songs
+            for (Album child : album1.getAlbumCollection()) {
+                if (child.getSongCollection().size()==0) {
+                    album1.getAlbumCollection().remove(child);
+                    child.setParentalbumId(null);
+                    album1.setTotaldisks((short)(album1.getTotaldisks().shortValue() - 1));
+                } else {
+                    for (Song song : child.getSongCollection()) {
+                        if (song.getTitle().trim().equals("")) {
+                            Utility.msgWarning(form, "Υπάρχουν τραγούδια χωρίς τίτλο τουλάχιστον σε ένα δίσκο του άλμπουμ.", "Επεξεργασία άλμπουμ");
+                            return;
+                        }
+                    }
+                }
             }
                         
             if (album1.getId() == null) {
