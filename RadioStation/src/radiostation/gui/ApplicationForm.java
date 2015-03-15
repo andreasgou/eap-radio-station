@@ -2258,6 +2258,11 @@ public class ApplicationForm extends javax.swing.JFrame {
         jCal_groupAlbumDateInMarket.setEnabled(status);
         jCombo_grouptalbum_artist.setEnabled(status);
         jTable_GroupAlbumSongs.setEnabled(status);
+        // set disk
+        if (status) {
+            ((javax.swing.SpinnerNumberModel)jSP_groupalbum_diskNumber.getModel())
+                    .setMaximum((Integer)((javax.swing.SpinnerNumberModel)jSP_groupalbum_diskNumber.getModel()).getMaximum()+1);
+        }
     }
     
     /**
