@@ -313,26 +313,31 @@ public class PlaylistJpaController implements Serializable {
         } else {
             Playlist playlist1 = form.getPlaylist();
             
-            int column=form.getjTable_AvailableSongs().getModel().getColumnCount();
-            Song songToPlaylist = null;
-            for (int i=0;i<column;i++){
-               
-               songToPlaylist = (Song)form.getjTable_AvailableSongs().getModel().getValueAt((form.getjTable_AvailableSongs().getSelectedRow()),i);
-            }
+            int row=playlist1.getSongCollection().size();//form.getjTable_AvailableSongs().getModel().getColumnCount();
+            int col=1;
+            Song songToList =new Song (null,0,(short)(row+1));//Song songToPlaylist = null;
+            //for (int i=0;i<column;i++){
+            //    songToPlaylist = (Song)form.getjTable_AvailableSongs().getModel().getValueAt((form.getjTable_AvailableSongs().getSelectedRow()),i);
+            List songInPlayList=(List)playlist1.getSongCollection();
             
-            List songInPlayList = (List)playlist1.getSongCollection();
-            
-            if (songInPlayList.contains(songToPlaylist)) {
+            if (songInPlayList.contains(songToList)) {
                 Utility.msgWarning(form, "To τραγούδι ανήκει ήδη στη λίστα", "Επεξεργασία λίστας");
             } else {
-                songInPlayList.add (songToPlaylist);
+                songInPlayList.add(songToList);
+                form.getSongList().add(songToList);//songInPlayList.add (songToPlaylist);
 
                 form.getjList_ListSongs().setListData(songInPlayList.toArray());
                 form.getjList_ListSongs().setSelectedIndex(songInPlayList.size()-1);
             }
         }
-    }
+            
+            
+            //List songInPlayList = (List)playlist1.getSongCollection();
+            
+         
+    
 
+    }
     public void removeSongFromPlaylist(ApplicationForm form) {
         if (form.getjList_ListSongs().getSelectedIndex() < 0) {
             Utility.msgWarning(form, "Δεν έχετε επιλέξει τραγούδι για αφαίρεση", "Επεξεργασία λίστας");

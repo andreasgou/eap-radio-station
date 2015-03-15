@@ -10,9 +10,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.table.DefaultTableModel;
 import radiostation.Album;
 import radiostation.Artist;
 import radiostation.MusicGroup;
@@ -22,6 +24,7 @@ import radiostation.jpa.ArtistJpaController;
 import radiostation.jpa.MusicGroupJpaController;
 import radiostation.jpa.AlbumJpaController;
 import radiostation.jpa.PlaylistJpaController;
+import radiostation.gui.SongTableModel;
 /**
  *
  * @author a.gounaris
@@ -29,6 +32,7 @@ import radiostation.jpa.PlaylistJpaController;
 public class ApplicationForm extends javax.swing.JFrame {
     /**
      * Creates new form ArtistsForm
+     * @param em
      */
     public ApplicationForm(EntityManager em) {
         this.em = em;
@@ -85,7 +89,9 @@ public class ApplicationForm extends javax.swing.JFrame {
         buttonGroup_groupAlbumType = new javax.swing.ButtonGroup();
         playlist1 = new radiostation.Playlist();
         playlistQuery = java.beans.Beans.isDesignTime() ? null : radioStationPUEntityManager.createQuery("SELECT p FROM Playlist p");
-        playlistList = java.beans.Beans.isDesignTime() ? java.util.Collections.emptyList() : playlistQuery.getResultList();
+        playlistList = java.beans.Beans.isDesignTime() ? java.util.Collections.emptyList() : org.jdesktop.observablecollections.ObservableCollections.observableList(playlistQuery.getResultList());
+        songQuery2 = java.beans.Beans.isDesignTime() ? null : radioStationPUEntityManager.createQuery("SELECT s FROM Song s");
+        songList2 = java.beans.Beans.isDesignTime() ? java.util.Collections.emptyList() : org.jdesktop.observablecollections.ObservableCollections.observableList(songQuery2.getResultList());
         jPanel1 = new javax.swing.JPanel();
         jPanel_Menu = new javax.swing.JPanel();
         jButton_FileMgr = new javax.swing.JButton();
@@ -1510,6 +1516,11 @@ public class ApplicationForm extends javax.swing.JFrame {
 
         jButton_SearchSong.setText("Αναζήτηση");
         jButton_SearchSong.setInheritsPopupMenu(true);
+        jButton_SearchSong.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton_SearchSongActionPerformed(evt);
+            }
+        });
 
         jLabel23.setText("Αναζήτηση");
 
@@ -1533,17 +1544,6 @@ public class ApplicationForm extends javax.swing.JFrame {
             }
         });
 
-        jTable_AvailableSongs.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null}
-            },
-            new String [] {
-                "Title 1", "Title 2", "Title 3"
-            }
-        ));
         jScrollPane13.setViewportView(jTable_AvailableSongs);
 
         javax.swing.GroupLayout jPanel_SongsInPlaylistLayout = new javax.swing.GroupLayout(jPanel_SongsInPlaylist);
@@ -1566,7 +1566,7 @@ public class ApplicationForm extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jButton_SearchSong, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jLabel23))
-                .addContainerGap(41, Short.MAX_VALUE))
+                .addContainerGap(20, Short.MAX_VALUE))
         );
         jPanel_SongsInPlaylistLayout.setVerticalGroup(
             jPanel_SongsInPlaylistLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1576,9 +1576,9 @@ public class ApplicationForm extends javax.swing.JFrame {
                 .addGroup(jPanel_SongsInPlaylistLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton_SearchSong)
                     .addComponent(jTF_song_search, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
+                .addGap(30, 30, 30)
                 .addComponent(jLabel27)
-                .addGap(23, 23, 23)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel_SongsInPlaylistLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel_SongsInPlaylistLayout.createSequentialGroup()
                         .addComponent(jButton_AddSong)
@@ -1660,7 +1660,7 @@ public class ApplicationForm extends javax.swing.JFrame {
                     .addComponent(jScrollPane11, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel_SongsInPlaylist, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 32, Short.MAX_VALUE))
+                .addGap(0, 26, Short.MAX_VALUE))
             .addGroup(jPanel_SongListsPreviewLayout.createSequentialGroup()
                 .addGap(42, 42, 42)
                 .addComponent(jPanel_playListCRUD_cmd1, javax.swing.GroupLayout.PREFERRED_SIZE, 482, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1741,7 +1741,7 @@ public class ApplicationForm extends javax.swing.JFrame {
                             .addComponent(jScrollPane9, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jPanel_SongListsPreview, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(224, 224, 224))
+                        .addGap(251, 251, 251))
                     .addGroup(jPanel_SongMgrLayout.createSequentialGroup()
                         .addComponent(jButton_InsertXML)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -1773,7 +1773,7 @@ public class ApplicationForm extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 796, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(37, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1784,7 +1784,7 @@ public class ApplicationForm extends javax.swing.JFrame {
 
         bindingGroup.bind();
 
-        setSize(new java.awt.Dimension(832, 724));
+        setSize(new java.awt.Dimension(859, 724));
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
@@ -2058,6 +2058,24 @@ public class ApplicationForm extends javax.swing.JFrame {
     private void jButton_DeleteSongActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_DeleteSongActionPerformed
         this.jpaPlayList.removeSongFromPlaylist(this);
     }//GEN-LAST:event_jButton_DeleteSongActionPerformed
+
+    private void jButton_SearchSongActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_SearchSongActionPerformed
+        String criteria=jTF_song_search.getText().toString().trim();
+        Query query = this.em.createQuery("select s,ar,mg from Song s, Artist ar, MusicGroup mg "
+                +"join s.albumId a"
+                +"join a.artistId ar"
+                +"join a.musicgroupId mg "
+                +"where s.title like '%"+criteria+"%' "//=: title"
+                +"or ar.artisticname like '%"+criteria+"%' "//=:artisticname"
+                +"or mg.name like '%"+criteria+"%' ");//=:name") 
+                //.setParameter("name",criteria)
+                //.setParameter("artisticname",criteria)
+                //.setParameter("name",criteria);
+        
+        List<Song>songs=query.getResultList();
+        SongTableModel SongTableModeFilter=new SongTableModel(songs);
+        jTable_AvailableSongs.setModel(SongTableModeFilter);
+    }//GEN-LAST:event_jButton_SearchSongActionPerformed
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private radiostation.Album album1;
@@ -2247,7 +2265,9 @@ public class ApplicationForm extends javax.swing.JFrame {
     private javax.persistence.EntityManager radioStationPUEntityManager;
     private radiostation.Song song1;
     private java.util.List<radiostation.Song> songList;
+    private java.util.List<radiostation.Song> songList2;
     private javax.persistence.Query songQuery;
+    private javax.persistence.Query songQuery2;
     private radiostation.gui.SongRenderer songRenderer;
     private radiostation.gui.TitleDurationRenderer titleDurationRenderer;
     private org.jdesktop.beansbinding.BindingGroup bindingGroup;
@@ -2374,6 +2394,13 @@ public class ApplicationForm extends javax.swing.JFrame {
         jTF_songlist_description.setEditable(status);
         jCAL_songlist_datecreated.setEnabled(status);
         jPanel_SongsInPlaylist.setVisible(status);
+        
+        SongTableModel songtablemodel=new SongTableModel(songList2);    
+        jTable_AvailableSongs.setModel(songtablemodel);
+        if (status==true){
+        jTable_AvailableSongs.getColumnModel().getColumn(2).setCellRenderer(titleDurationRenderer);
+        }
+        
         //jButton_AddSong.setEnabled(status);
         //jButton_DeleteSong.setEnabled(status);
        // jTF_song_search.setVisible(status);
@@ -2403,14 +2430,16 @@ public class ApplicationForm extends javax.swing.JFrame {
     public javax.swing.JTable getjTable_AvailableSongs() {
         return jTable_AvailableSongs;
     }
-   
+    
     public javax.swing.JList getjList_GroupArtists() {
         return jList_GroupArtists;
     }
     public javax.swing.JList getjList_ListSongs() {
         return jList_ListSongs;
     }
-     
+    public List<Song> getList_songList2() {
+        return this.songList2;
+    }
     public javax.swing.JList getjList_AvailableArtists() {
         return jList_AvailableArtists;
     }
