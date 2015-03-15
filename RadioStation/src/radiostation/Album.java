@@ -237,24 +237,21 @@ public class Album implements Serializable, Cloneable {
         changeSupport.removePropertyChangeListener(listener);
     }
     
-    /**
-     *
-     * 
-     */
     @Override
     public Object clone() throws CloneNotSupportedException {
         Object clone = super.clone();
         // clone lists manually
         Collection<Song> songCollection = new ArrayList<Song>();
-        if (this.songCollection != null) {
-            songCollection.addAll(this.songCollection);
-            ((Album)clone).setSongCollection(songCollection);
+        for (Song song : this.songCollection) {
+            songCollection.add((Song)song.clone());
         }
+        ((Album)clone).setSongCollection(songCollection);
+
         Collection<Album> albumCollection = new ArrayList<Album>();
-        if (this.albumCollection != null) {
-            albumCollection.addAll(this.albumCollection);
-            ((Album)clone).setAlbumCollection(albumCollection);
+        for (Album album : this.albumCollection) {
+            albumCollection.add((Album)album.clone());
         }
+        ((Album)clone).setAlbumCollection(albumCollection);
         return clone;
     }
 
@@ -292,6 +289,20 @@ public class Album implements Serializable, Cloneable {
 
     public void setAlbumCollection(Collection<Album> albumCollection) {
         this.albumCollection = albumCollection;
+    }
+
+    @XmlTransient
+    public Album getAlbum(int diskNumber) {
+        Album album = this;
+        if (diskNumber >= 1) {
+            for (Album al : getAlbumCollection()) {
+                if (al.getDisknumber() == diskNumber) {
+                    album = al;
+                    break;
+                }
+            }
+        }
+        return album;
     }
 
     @XmlTransient

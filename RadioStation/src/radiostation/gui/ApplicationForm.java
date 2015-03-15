@@ -429,12 +429,14 @@ public class ApplicationForm extends javax.swing.JFrame {
                         .addGroup(jPanel_FileMgrMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jButton_AlbumGroups, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jButton_Artists, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jButton_AlbumArtists, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jButton_Groups, javax.swing.GroupLayout.PREFERRED_SIZE, 141, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(jPanel_FileMgrMenuLayout.createSequentialGroup()
                         .addGap(46, 46, 46)
                         .addComponent(jButton_FileMgr_GoMenu)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel_FileMgrMenuLayout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(jButton_AlbumArtists, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         jPanel_FileMgr.add(jPanel_FileMgrMenu, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 800, -1));
@@ -1051,7 +1053,7 @@ public class ApplicationForm extends javax.swing.JFrame {
                     .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
         );
 
-        jPanel_GroupPreview.add(jPanel_ArtistsInGroup, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 114, -1, 240));
+        jPanel_GroupPreview.add(jPanel_ArtistsInGroup, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 110, -1, 240));
 
         jCAL_group_DateCreated.setDateFormatString("dd/MM/yyyy");
 
@@ -1960,7 +1962,8 @@ public class ApplicationForm extends javax.swing.JFrame {
         
     private void jSP_groupalbum_diskNumberStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jSP_groupalbum_diskNumberStateChanged
         // The event is fired even if we change the Album selection and not only the disk selector
-        Album album = (Album)groupAlbumList.get(jTable_AlbumGroups.getSelectedRow());
+        //Album album = (Album)groupAlbumList.get(jTable_AlbumGroups.getSelectedRow());
+        Album album = (Album)groupAlbumList.get(jTable_AlbumGroups.convertRowIndexToModel(jTable_AlbumGroups.getSelectedRow()));
         if (album.isLongPlay()) {
             this.songList.clear();
             for (Song song : album.getSongCollection(((Integer)jSP_groupalbum_diskNumber.getValue()).intValue())) {
@@ -2349,7 +2352,7 @@ public class ApplicationForm extends javax.swing.JFrame {
           jTF_groupalbum_title.requestFocus(true);
     }
 
-    private void prepareGroupAlbumSongList() {
+    public void prepareGroupAlbumSongList() {
         // refresh the song list
         Album album = (Album)groupAlbumList.get(jTable_AlbumGroups.getSelectedRow());
         this.songList.clear();
@@ -2375,6 +2378,20 @@ public class ApplicationForm extends javax.swing.JFrame {
                 jTable_GroupAlbumSongs.getColumnModel().getColumn(2).setMaxWidth(60);
             }
         }
+    }
+
+    /**
+     * @return the jSP_groupalbum_diskNumber
+     */
+    public javax.swing.JSpinner getjSP_groupalbum_diskNumber() {
+        return jSP_groupalbum_diskNumber;
+    }
+
+    /**
+     * @param jSP_groupalbum_diskNumber the jSP_groupalbum_diskNumber to set
+     */
+    public void setjSP_groupalbum_diskNumber(javax.swing.JSpinner jSP_groupalbum_diskNumber) {
+        this.jSP_groupalbum_diskNumber = jSP_groupalbum_diskNumber;
     }
 
 }

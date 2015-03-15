@@ -24,7 +24,6 @@ import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 import radiostation.Playlist;
 import radiostation.gui.ApplicationForm;
-import radiostation.gui.SongTableModel;
 import radiostation.gui.Utility;
 
 /**
@@ -152,18 +151,30 @@ public class AlbumJpaController implements Serializable {
             // refresh song collection 
             // Add new songs
             em.getTransaction().begin();
-            Collection<Song> detachedSongCollectionNew = new ArrayList<Song>();
             for (Song songCollectionNewSongToAttach : songCollectionNew) {
                 // new Song entry
                 if (songCollectionNewSongToAttach.getId() == null) {
                     songCollectionNewSongToAttach.setAlbumId(album);
                     em.persist(songCollectionNewSongToAttach);
-
-                // removed Song entry
-                } else if (songCollectionNewSongToAttach.getAlbumId() == null) {
-                    detachedSongCollectionNew.add(songCollectionNewSongToAttach);
                 }
             }
+            // refresh album collection 
+            Collection<Album> attachedAlbumCollectionNew = new ArrayList<Album>();
+            for (Album albumCollectionNewAlbumToAttach : albumCollectionNew) {
+                albumCollectionNewAlbumToAttach = em.getReference(albumCollectionNewAlbumToAttach.getClass(), albumCollectionNewAlbumToAttach.getId());
+                attachedAlbumCollectionNew.add(albumCollectionNewAlbumToAttach);
+                // Add new songs in child albums
+                for (Song songCollectionChildAlbumNewSongToAttach : albumCollectionNewAlbumToAttach.getSongCollection()) {
+                    // new Song entry
+                    if (songCollectionChildAlbumNewSongToAttach.getId() == null) {
+                        songCollectionChildAlbumNewSongToAttach.setAlbumId(albumCollectionNewAlbumToAttach);
+                        em.persist(songCollectionChildAlbumNewSongToAttach);
+                    }
+                }
+            }
+            albumCollectionNew = attachedAlbumCollectionNew;
+            album.setAlbumCollection(albumCollectionNew);
+
             // Destroy removed songs
             for (Song songCollectionSongToDetach : form.getSongsToRemoveList()) {
                 // Remove song from album
@@ -175,20 +186,11 @@ public class AlbumJpaController implements Serializable {
                     playlistCollectionPlaylist = em.merge(playlistCollectionPlaylist);
                 }
             }
+            // merge relations 
+            album = em.merge(album);
             em.getTransaction().commit();
 
             em.getTransaction().begin();
-            // refresh album collection 
-            Collection<Album> attachedAlbumCollectionNew = new ArrayList<Album>();
-            for (Album albumCollectionNewAlbumToAttach : albumCollectionNew) {
-                albumCollectionNewAlbumToAttach = em.getReference(albumCollectionNewAlbumToAttach.getClass(), albumCollectionNewAlbumToAttach.getId());
-                attachedAlbumCollectionNew.add(albumCollectionNewAlbumToAttach);
-            }
-            albumCollectionNew = attachedAlbumCollectionNew;
-            album.setAlbumCollection(albumCollectionNew);
-
-            // merge relations 
-            album = em.merge(album);
 
             // if artist changed, remove album reference from the old artist's collection
             if (artistIdOld != null && !artistIdOld.equals(artistIdNew)) {
@@ -483,13 +485,13 @@ public class AlbumJpaController implements Serializable {
             }
         } else {
             // cancel from existing entry
-            idx = form.getjTable_AlbumGroups().getSelectedRow();
             album1.restore((Album)form.getClonedObj());
             idx = form.getjTable_AlbumGroups().getSelectedRow();
             form.getAlbumList().set(idx, album1);
             // reset selection
             form.getjTable_AlbumGroups().clearSelection();
             form.getjTable_AlbumGroups().setRowSelectionInterval(idx, idx);
+            form.prepareGroupAlbumSongList();
         }
         //form.getjList_GroupAlbumSongs().setListData(album1.getSongCollection().toArray());
         form.setEditableGroupAlbumForm(false, false);
@@ -497,6 +499,9 @@ public class AlbumJpaController implements Serializable {
 
     public void addSongInAlbum(ApplicationForm form) {
         Album album1 = form.getAlbum();
+        if (album1.isLongPlay()) {
+            album1 = album1.getAlbum(((Integer)form.getjSP_groupalbum_diskNumber().getValue()).intValue());
+        }
         int row = album1.getSongCollection().size();
         int col = 1;    // song title column
         
@@ -522,12 +527,16 @@ public class AlbumJpaController implements Serializable {
             Utility.msgWarning(form, "Δεν έχετε επιλέξει τραγούδι για αφαίρεση", "Επεξεργασία άλμπουμ");
         } else {
             int idx = form.getjTable_GroupAlbumSongs().getSelectedRow();
-            Song song = form.getSongList().get(idx);
+            Song song = form.getSongList().get(form.getjTable_GroupAlbumSongs().convertRowIndexToModel(idx));
             int ans = Utility.msgPrompt(form, song.getTitle()+ "\n\nΕίσαι σίγουρος για τη διαγραφή?", "Διαγραφή Τραγουδιού");
             if (ans == 0) {
                 form.getSongList().remove(song);
                 //List songInAlbumList = (List)form.getAlbum().getSongCollection();
-                form.getAlbum().getSongCollection().remove(song);
+                Album album = form.getAlbum();
+                if (album.isLongPlay()) {
+                    album = album.getAlbum(((Integer)form.getjSP_groupalbum_diskNumber().getValue()).intValue());
+                }
+                album.getSongCollection().remove(song);
                 song.setAlbumId(null);
                 // don't add the song in the queue for deletion if it doesn't exist 
                 if (song.getId() != null)
