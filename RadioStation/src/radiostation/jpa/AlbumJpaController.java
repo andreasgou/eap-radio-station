@@ -366,7 +366,7 @@ public class AlbumJpaController implements Serializable {
     }
     
     /* Methods triggered by form events */
-    public void newAlbum(ApplicationForm form) {
+    public void newAlbum(ApplicationForm form, javax.swing.JTable sourceList) {
         // create new object
         Album album1 = new Album(null, "<New Album>", "CS", (short)1);
         
@@ -380,16 +380,19 @@ public class AlbumJpaController implements Serializable {
         
         // add the new entry to the table
         form.getAlbumList().add(album1);
-        int idx = form. getjTable_AlbumGroups().getRowCount()-1;
-        form. getjTable_AlbumGroups().setRowSelectionInterval(idx, idx);
+        int idx = sourceList.getRowCount()-1;
+        sourceList.setRowSelectionInterval(idx, idx);
         addSongInAlbum(form);
         
         // prepare form for editing
         form.setSongsToRemoveList(new ArrayList<Song>());
-        form.setEditableGroupAlbumForm(true, true);
-        
-        // set focus on Album title
-        form.getjTF_groupalbum_title().requestFocus();
+        if (sourceList.equals(form.getjTable_AlbumArtists())) {
+            form.setEditableArtistAlbumForm(true, false);
+            form.getjTF_artistalbum_title().requestFocus();
+        } else {
+            form.setEditableGroupAlbumForm(true, false);
+            form.getjTF_groupalbum_title().requestFocus();
+        }
     }
 
    /* public void destroyAlbum(ApplicationForm form) {
@@ -413,20 +416,23 @@ public class AlbumJpaController implements Serializable {
         }
     }*/
 
-    public void editAlbum(ApplicationForm form) {
-        if (form. getjTable_AlbumGroups().getSelectedRow() < 0) {
-            Utility.msgWarning(form, "Δεν έχετε επιλέξει εγγραφή για τροποποίηση", "Επεξεργασία συγκροτήματος");
+    public void editAlbum(ApplicationForm form, javax.swing.JTable sourceList) {
+        if (sourceList.getSelectedRow() < 0) {
+            Utility.msgWarning(form, "Δεν έχετε επιλέξει εγγραφή για τροποποίηση", "Επεξεργασία άλμπουμ");
             return;
         }
         try {
             // prepare user selection for editing
-            Album album1 = form.getAlbumList().get(form. getjTable_AlbumGroups().getSelectedRow());
+            Album album1 = form.getAlbumList().get(sourceList.getSelectedRow());
             form.setAlbum(album1);
             // clone original object - used when cancel editing
             form.setClonedObj(album1.clone());
             // enable edit form 
             form.setSongsToRemoveList(new ArrayList<Song>());
-            form.setEditableGroupAlbumForm(true, false);
+            if (sourceList.equals(form.getjTable_AlbumArtists()))
+                form.setEditableArtistAlbumForm(true, false);
+            else
+                form.setEditableGroupAlbumForm(true, false);
 
         } catch (CloneNotSupportedException ex) {
             Logger.getLogger(ApplicationForm.class.getName()).log(Level.SEVERE, null, ex);
@@ -493,37 +499,42 @@ public class AlbumJpaController implements Serializable {
         }
     }
 
-    public void revertAlbum(ApplicationForm form) {
+    public void revertAlbum(ApplicationForm form, javax.swing.JTable sourceList) {
         int idx;
         // reset list
         Album album1 = form.getAlbum();
         if (album1.getId() == null) {
             // cancel from new entry
             form.getAlbumList().remove(album1);
-            idx = form.getjTable_AlbumGroups().getRowCount()-1;
+            idx = sourceList.getRowCount()-1;
             if (idx > -1) {
                 // has rows
-                form.getjTable_AlbumGroups().clearSelection();
-                form.getjTable_AlbumGroups().setRowSelectionInterval(idx, idx);
+                sourceList.clearSelection();
+                sourceList.setRowSelectionInterval(idx, idx);
                 album1 = form.getAlbumList().get(idx);
                 form.setAlbum(album1);
             } else {
                 // no rows
                 album1.setSongCollection(new ArrayList<Song>());
-                form.getjTable_AlbumGroups().clearSelection();
+                sourceList.clearSelection();
             }
         } else {
             // cancel from existing entry
             album1.restore((Album)form.getClonedObj());
-            idx = form.getjTable_AlbumGroups().getSelectedRow();
+            idx = sourceList.getSelectedRow();
             form.getAlbumList().set(idx, album1);
             // reset selection
-            form.getjTable_AlbumGroups().clearSelection();
-            form.getjTable_AlbumGroups().setRowSelectionInterval(idx, idx);
-            form.prepareGroupAlbumSongList();
+            sourceList.clearSelection();
+            sourceList.setRowSelectionInterval(idx, idx);
+            if (sourceList.equals(form.getjTable_AlbumArtists()))
+                form.prepareArtistAlbumSongList();
+            else
+                form.prepareGroupAlbumSongList();
         }
-        //form.getjList_GroupAlbumSongs().setListData(album1.getSongCollection().toArray());
-        form.setEditableGroupAlbumForm(false, false);
+        if (sourceList.equals(form.getjTable_AlbumArtists()))
+            form.setEditableArtistAlbumForm(false, false);
+        else
+            form.setEditableGroupAlbumForm(false, false);
     }
 
     public void addSongInAlbum(ApplicationForm form) {
