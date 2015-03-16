@@ -31,11 +31,11 @@ import radiostation.jpa.exceptions.PreexistingEntityException;
  */
 public class ArtistJpaController implements Serializable {
 
+    private EntityManager em = null;
+
     public ArtistJpaController(EntityManager em) {
         this.em = em;
     }
-    private EntityManager em = null;
-
     public EntityManager getEntityManager() {
         return em;
     }

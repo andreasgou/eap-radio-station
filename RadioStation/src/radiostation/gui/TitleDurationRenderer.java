@@ -13,7 +13,7 @@ public class TitleDurationRenderer implements TableCellRenderer {
         JLabel editor = new JLabel();
         SimpleDateFormat sdf = new SimpleDateFormat("mm:ss");
         if (value != null)
-            editor.setText(sdf.format(new java.util.Date(((int)value)*1000)));
+            editor.setText(sdf.format(new java.util.Date(((Integer)value).longValue()*1000)));
         return editor;
     }
 }

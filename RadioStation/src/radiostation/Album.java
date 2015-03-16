@@ -237,27 +237,35 @@ public class Album implements Serializable, Cloneable {
         changeSupport.removePropertyChangeListener(listener);
     }
     
-    /**
-     *
-     * 
-     */
     @Override
     public Object clone() throws CloneNotSupportedException {
         Object clone = super.clone();
         // clone lists manually
         Collection<Song> songCollection = new ArrayList<Song>();
-        if (this.songCollection != null) {
-            songCollection.addAll(this.songCollection);
-            ((Album)clone).setSongCollection(songCollection);
+        for (Song song : this.songCollection) {
+            songCollection.add((Song)song.clone());
         }
+        ((Album)clone).setSongCollection(songCollection);
+
         Collection<Album> albumCollection = new ArrayList<Album>();
-        if (this.albumCollection != null) {
-            albumCollection.addAll(this.albumCollection);
-            ((Album)clone).setAlbumCollection(albumCollection);
+        for (Album album : this.albumCollection) {
+            albumCollection.add((Album)album.clone());
         }
+        ((Album)clone).setAlbumCollection(albumCollection);
         return clone;
     }
 
+    public Album addDiskToAlbum() throws CloneNotSupportedException {
+        this.setTotaldisks((short)(this.getTotaldisks().intValue() + 1));
+        Album clone = (Album)super.clone();
+        clone.setId(null);
+        clone.setParentalbumId(this);
+        clone.setDisknumber(this.getTotaldisks());
+        clone.setSongCollection(new ArrayList<Song>());
+        clone.setAlbumCollection(new ArrayList<Album>());
+        this.getAlbumCollection().add(clone);
+        return clone;
+    }
     public void restore(Album album) {
         setTitle(album.getTitle());
         setType1(album.getType1());
@@ -265,6 +273,8 @@ public class Album implements Serializable, Cloneable {
         setArtistId(album.getArtistId());
         setMusicgroupId(album.getMusicgroupId());
         setCompanyId(album.getCompanyId());
+        setParentalbumId(album.getParentalbumId());
+        setTotaldisks(album.getTotaldisks());
         setSongCollection(album.getSongCollection());
         setAlbumCollection(album.getAlbumCollection());
     }
@@ -292,6 +302,20 @@ public class Album implements Serializable, Cloneable {
 
     public void setAlbumCollection(Collection<Album> albumCollection) {
         this.albumCollection = albumCollection;
+    }
+
+    @XmlTransient
+    public Album getAlbum(int diskNumber) {
+        Album album = this;
+        if (diskNumber >= 1) {
+            for (Album al : getAlbumCollection()) {
+                if (al.getDisknumber() == diskNumber) {
+                    album = al;
+                    break;
+                }
+            }
+        }
+        return album;
     }
 
     @XmlTransient
@@ -339,4 +363,5 @@ public class Album implements Serializable, Cloneable {
     public void setCurrentDisk(Short currentDisk) {
         this.currentDisk = currentDisk;
     }
+
 }
