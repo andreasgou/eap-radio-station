@@ -210,6 +210,8 @@
         <AuxValue name="JavaCodeGenerator_SerializeTo" type="java.lang.String" value="ApplicationForm_buttonGroup1"/>
       </AuxValues>
     </Component>
+    <Component class="javax.swing.ButtonGroup" name="buttonGroup_artistAlbumType">
+    </Component>
     <Component class="javax.swing.ButtonGroup" name="buttonGroup_groupAlbumType">
     </Component>
   </NonVisualComponents>
@@ -1243,7 +1245,7 @@
                         <Component class="javax.swing.JRadioButton" name="jRB_artistalbum_cs">
                           <Properties>
                             <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-                              <Connection component="buttonGroup_groupAlbumType" type="bean"/>
+                              <Connection component="buttonGroup_artistAlbumType" type="bean"/>
                             </Property>
                             <Property name="text" type="java.lang.String" value="CD Single"/>
                           </Properties>
@@ -1257,7 +1259,7 @@
                         <Component class="javax.swing.JRadioButton" name="jRB_artistalbum_ep">
                           <Properties>
                             <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-                              <Connection component="buttonGroup_groupAlbumType" type="bean"/>
+                              <Connection component="buttonGroup_artistAlbumType" type="bean"/>
                             </Property>
                             <Property name="text" type="java.lang.String" value="Extended Play"/>
                           </Properties>
@@ -1271,7 +1273,7 @@
                         <Component class="javax.swing.JRadioButton" name="jRB_artistalbum_lp">
                           <Properties>
                             <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-                              <Connection component="buttonGroup_groupAlbumType" type="bean"/>
+                              <Connection component="buttonGroup_artistAlbumType" type="bean"/>
                             </Property>
                             <Property name="text" type="java.lang.String" value="Long Play"/>
                           </Properties>
@@ -1410,7 +1412,7 @@
                         <Container class="javax.swing.JPanel" name="jPanel_albumArtistCRUD_edit1">
                           <Constraints>
                             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignCardLayout" value="org.netbeans.modules.form.compat2.layouts.DesignCardLayout$CardConstraintsDescription">
-                              <CardConstraints cardName="card2"/>
+                              <CardConstraints cardName="cardAlbumArtistCRUD_edit1"/>
                             </Constraint>
                           </Constraints>
 
@@ -1457,7 +1459,7 @@
                         <Container class="javax.swing.JPanel" name="jPanel_albumArtistCRUD_edit2">
                           <Constraints>
                             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignCardLayout" value="org.netbeans.modules.form.compat2.layouts.DesignCardLayout$CardConstraintsDescription">
-                              <CardConstraints cardName="cardArtistCRUD_edit2"/>
+                              <CardConstraints cardName="cardAlbumArtistCRUD_edit2"/>
                             </Constraint>
                           </Constraints>
 
@@ -1795,7 +1797,7 @@
                         <Container class="javax.swing.JPanel" name="jPanel_groupCRUD_edit1">
                           <Constraints>
                             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignCardLayout" value="org.netbeans.modules.form.compat2.layouts.DesignCardLayout$CardConstraintsDescription">
-                              <CardConstraints cardName="card2"/>
+                              <CardConstraints cardName="cardGroupCRUD_edit1"/>
                             </Constraint>
                           </Constraints>
 
@@ -1842,7 +1844,7 @@
                         <Container class="javax.swing.JPanel" name="jPanel_groupCRUD_edit2">
                           <Constraints>
                             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignCardLayout" value="org.netbeans.modules.form.compat2.layouts.DesignCardLayout$CardConstraintsDescription">
-                              <CardConstraints cardName="cardArtistCRUD_edit2"/>
+                              <CardConstraints cardName="cardGroupCRUD_edit2"/>
                             </Constraint>
                           </Constraints>
 
@@ -2317,7 +2319,7 @@
                         <Container class="javax.swing.JPanel" name="jPanel_albumGroupCRUD_edit1">
                           <Constraints>
                             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignCardLayout" value="org.netbeans.modules.form.compat2.layouts.DesignCardLayout$CardConstraintsDescription">
-                              <CardConstraints cardName="card2"/>
+                              <CardConstraints cardName="cardAlbumGroupCRUD_edit1"/>
                             </Constraint>
                           </Constraints>
 
@@ -2364,7 +2366,7 @@
                         <Container class="javax.swing.JPanel" name="jPanel_albumGroupCRUD_edit2">
                           <Constraints>
                             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignCardLayout" value="org.netbeans.modules.form.compat2.layouts.DesignCardLayout$CardConstraintsDescription">
-                              <CardConstraints cardName="cardArtistCRUD_edit2"/>
+                              <CardConstraints cardName="cardAlbumGroupCRUD_edit2"/>
                             </Constraint>
                           </Constraints>
 

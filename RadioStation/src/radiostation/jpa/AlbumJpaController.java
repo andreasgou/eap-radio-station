@@ -382,7 +382,7 @@ public class AlbumJpaController implements Serializable {
         form.getAlbumList().add(album1);
         int idx = sourceList.getRowCount()-1;
         sourceList.setRowSelectionInterval(idx, idx);
-        addSongInAlbum(form);
+        addSongInAlbum(form, sourceList);
         
         // prepare form for editing
         form.setSongsToRemoveList(new ArrayList<Song>());
@@ -490,6 +490,7 @@ public class AlbumJpaController implements Serializable {
             } else {
                 this.edit(album1, form);
             }
+            form.setEditableArtistAlbumForm(false, false);
             form.setEditableGroupAlbumForm(false, false);
             Utility.msgInfo(form, "Τα στοιχεία του άλμπουμ αποθηκεύτηκαν επιτυχώς!");
 
@@ -537,10 +538,14 @@ public class AlbumJpaController implements Serializable {
             form.setEditableGroupAlbumForm(false, false);
     }
 
-    public void addSongInAlbum(ApplicationForm form) {
+    public void addSongInAlbum(ApplicationForm form, javax.swing.JTable sourceList) {
         Album album1 = form.getAlbum();
+        javax.swing.JTable targetList;
         if (album1.isLongPlay()) {
-            album1 = album1.getAlbum(((Integer)form.getjSP_groupalbum_diskNumber().getValue()).intValue());
+            if (sourceList.equals(form.getjTable_AlbumArtists()))
+                album1 = album1.getAlbum(((Integer)form.getjSP_artistalbum_diskNumber().getValue()).intValue());
+            else
+                album1 = album1.getAlbum(((Integer)form.getjSP_groupalbum_diskNumber().getValue()).intValue());
         }
         int row = album1.getSongCollection().size();
         int col = 1;    // song title column
@@ -552,36 +557,48 @@ public class AlbumJpaController implements Serializable {
         // append to GUI control's bounded list
         form.getSongList().add(songToAlbum);
         
+        if (sourceList.equals(form.getjTable_AlbumArtists()))
+            targetList = form.getjTable_ArtistAlbumSongs();
+        else
+            targetList = form.getjTable_GroupAlbumSongs();
         // ensure we can select cells
-        form.getjTable_GroupAlbumSongs().setColumnSelectionAllowed(true);
+        targetList.setColumnSelectionAllowed(true);
         // set focus on table
-        form.getjTable_GroupAlbumSongs().requestFocusInWindow();
+        targetList.requestFocusInWindow();
         // set edit mode on title cell 
-        form.getjTable_GroupAlbumSongs().editCellAt(row, col);
+        targetList.editCellAt(row, col);
         // put cursor in the cell
-        form.getjTable_GroupAlbumSongs().getEditorComponent().requestFocus();
+        targetList.getEditorComponent().requestFocus();
     }
 
-    public void removeSongFromAlbum(ApplicationForm form) {
-        if (form.getjTable_GroupAlbumSongs().getSelectedRow() < 0) {
+    public void removeSongFromAlbum(ApplicationForm form, javax.swing.JTable sourceList) {
+        javax.swing.JTable targetList;
+        if (sourceList.getSelectedRow() < 0) {
             Utility.msgWarning(form, "Δεν έχετε επιλέξει τραγούδι για αφαίρεση", "Επεξεργασία άλμπουμ");
         } else {
-            int idx = form.getjTable_GroupAlbumSongs().getSelectedRow();
-            Song song = form.getSongList().get(form.getjTable_GroupAlbumSongs().convertRowIndexToModel(idx));
+            if (sourceList.equals(form.getjTable_AlbumArtists()))
+                targetList = form.getjTable_ArtistAlbumSongs();
+            else
+                targetList = form.getjTable_GroupAlbumSongs();
+            int idx = targetList.getSelectedRow();
+            Song song = form.getSongList().get(targetList.convertRowIndexToModel(idx));
             int ans = Utility.msgPrompt(form, song.getTitle()+ "\n\nΕίσαι σίγουρος για τη διαγραφή?", "Διαγραφή Τραγουδιού");
             if (ans == 0) {
                 form.getSongList().remove(song);
                 //List songInAlbumList = (List)form.getAlbum().getSongCollection();
                 Album album = form.getAlbum();
                 if (album.isLongPlay()) {
-                    album = album.getAlbum(((Integer)form.getjSP_groupalbum_diskNumber().getValue()).intValue());
+                    if (sourceList.equals(form.getjTable_AlbumArtists()))
+                        album = album.getAlbum(((Integer)form.getjSP_artistalbum_diskNumber().getValue()).intValue());
+                    else
+                        album = album.getAlbum(((Integer)form.getjSP_groupalbum_diskNumber().getValue()).intValue());
                 }
                 album.getSongCollection().remove(song);
                 song.setAlbumId(null);
                 // don't add the song in the queue for deletion if it doesn't exist 
                 if (song.getId() != null)
                     form.getSongsToRemoveList().add(song);
-                form.getjTable_GroupAlbumSongs().clearSelection();
+                targetList.clearSelection();
             }            
         }       
     }

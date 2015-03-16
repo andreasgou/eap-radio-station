@@ -81,6 +81,7 @@ public class ApplicationForm extends javax.swing.JFrame {
         musicGroupRenderer = new radiostation.gui.MusicGroupRenderer();
         productionCompanyRenderer = new radiostation.gui.ProductionCompanyRenderer();
         buttonGroup_artistSex = new javax.swing.ButtonGroup();
+        buttonGroup_artistAlbumType = new javax.swing.ButtonGroup();
         buttonGroup_groupAlbumType = new javax.swing.ButtonGroup();
         jPanel1 = new javax.swing.JPanel();
         jPanel_Menu = new javax.swing.JPanel();
@@ -762,7 +763,7 @@ public class ApplicationForm extends javax.swing.JFrame {
 
         jLabel32.setText("Τύπος Άλμπουμ:");
 
-        buttonGroup_groupAlbumType.add(jRB_artistalbum_cs);
+        buttonGroup_artistAlbumType.add(jRB_artistalbum_cs);
         jRB_artistalbum_cs.setText("CD Single");
 
         binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, jTable_AlbumArtists, org.jdesktop.beansbinding.ELProperty.create("${selectedElement.cdSingle}"), jRB_artistalbum_cs, org.jdesktop.beansbinding.BeanProperty.create("selected"));
@@ -774,7 +775,7 @@ public class ApplicationForm extends javax.swing.JFrame {
             }
         });
 
-        buttonGroup_groupAlbumType.add(jRB_artistalbum_ep);
+        buttonGroup_artistAlbumType.add(jRB_artistalbum_ep);
         jRB_artistalbum_ep.setText("Extended Play");
 
         binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, jTable_AlbumArtists, org.jdesktop.beansbinding.ELProperty.create("${selectedElement.extendedPlay}"), jRB_artistalbum_ep, org.jdesktop.beansbinding.BeanProperty.create("selected"));
@@ -786,7 +787,7 @@ public class ApplicationForm extends javax.swing.JFrame {
             }
         });
 
-        buttonGroup_groupAlbumType.add(jRB_artistalbum_lp);
+        buttonGroup_artistAlbumType.add(jRB_artistalbum_lp);
         jRB_artistalbum_lp.setText("Long Play");
 
         binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, jTable_AlbumArtists, org.jdesktop.beansbinding.ELProperty.create("${selectedElement.longPlay}"), jRB_artistalbum_lp, org.jdesktop.beansbinding.BeanProperty.create("selected"));
@@ -991,7 +992,7 @@ public class ApplicationForm extends javax.swing.JFrame {
         });
         jPanel_albumArtistCRUD_edit1.add(jButton_DeleteArtistAlbum);
 
-        jPanel_albumArtistCRUD_cmd.add(jPanel_albumArtistCRUD_edit1, "card2");
+        jPanel_albumArtistCRUD_cmd.add(jPanel_albumArtistCRUD_edit1, "cardAlbumArtistCRUD_edit1");
 
         jButton_artistAlbumStore.setText("Αποθήκευση");
         jButton_artistAlbumStore.addActionListener(new java.awt.event.ActionListener() {
@@ -1009,7 +1010,7 @@ public class ApplicationForm extends javax.swing.JFrame {
         });
         jPanel_albumArtistCRUD_edit2.add(jButton_artistAlbumCancel);
 
-        jPanel_albumArtistCRUD_cmd.add(jPanel_albumArtistCRUD_edit2, "cardArtistCRUD_edit2");
+        jPanel_albumArtistCRUD_cmd.add(jPanel_albumArtistCRUD_edit2, "cardAlbumArtistCRUD_edit2");
 
         jPanel_ArtistsAlbums.add(jPanel_albumArtistCRUD_cmd, new org.netbeans.lib.awtextra.AbsoluteConstraints(204, 411, 482, -1));
 
@@ -1169,7 +1170,7 @@ public class ApplicationForm extends javax.swing.JFrame {
         });
         jPanel_groupCRUD_edit1.add(jButton_DeleteGroup);
 
-        jPanel_groupCRUD_cmd.add(jPanel_groupCRUD_edit1, "card2");
+        jPanel_groupCRUD_cmd.add(jPanel_groupCRUD_edit1, "cardGroupCRUD_edit1");
 
         jButton_groupStore.setText("Αποθήκευση");
         jButton_groupStore.addActionListener(new java.awt.event.ActionListener() {
@@ -1187,7 +1188,7 @@ public class ApplicationForm extends javax.swing.JFrame {
         });
         jPanel_groupCRUD_edit2.add(jButton_groupCancel);
 
-        jPanel_groupCRUD_cmd.add(jPanel_groupCRUD_edit2, "cardArtistCRUD_edit2");
+        jPanel_groupCRUD_cmd.add(jPanel_groupCRUD_edit2, "cardGroupCRUD_edit2");
 
         javax.swing.GroupLayout jPanel_GroupsLayout = new javax.swing.GroupLayout(jPanel_Groups);
         jPanel_Groups.setLayout(jPanel_GroupsLayout);
@@ -1515,7 +1516,7 @@ public class ApplicationForm extends javax.swing.JFrame {
         });
         jPanel_albumGroupCRUD_edit1.add(jButton_DeleteGroupAlbum);
 
-        jPanel_alboumGroupCRUD_cmd.add(jPanel_albumGroupCRUD_edit1, "card2");
+        jPanel_alboumGroupCRUD_cmd.add(jPanel_albumGroupCRUD_edit1, "cardAlbumGroupCRUD_edit1");
 
         jButton_groupAlbumStore.setText("Αποθήκευση");
         jButton_groupAlbumStore.addActionListener(new java.awt.event.ActionListener() {
@@ -1533,7 +1534,7 @@ public class ApplicationForm extends javax.swing.JFrame {
         });
         jPanel_albumGroupCRUD_edit2.add(jButton_groupAlbumCancel);
 
-        jPanel_alboumGroupCRUD_cmd.add(jPanel_albumGroupCRUD_edit2, "cardArtistCRUD_edit2");
+        jPanel_alboumGroupCRUD_cmd.add(jPanel_albumGroupCRUD_edit2, "cardAlbumGroupCRUD_edit2");
 
         jPanel_GroupsAlbums.add(jPanel_alboumGroupCRUD_cmd, new org.netbeans.lib.awtextra.AbsoluteConstraints(204, 411, 482, -1));
 
@@ -1847,46 +1848,72 @@ public class ApplicationForm extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton_ExitActionPerformed
 
     private void jButton_FileMgr_GoMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_FileMgr_GoMenuActionPerformed
-        jPanel_FileMgr.setVisible(false);
-        jPanel_Menu.setVisible(true);
+        if (this.isEditMode()) {
+            Utility.msgWarning(this, "Είστε σε κατάσταση επεξεργασίας αρχείων.\nΘα πρέπει πρώτα να κάνετε Αποθήκευση ή Ακύρωση της τρέχουσας επεξεργασίας.", "Διαχείριση Αρχείων");
+        } else {
+            jPanel_FileMgr.setVisible(false);
+            jPanel_Menu.setVisible(true);
+        }
     }//GEN-LAST:event_jButton_FileMgr_GoMenuActionPerformed
 
     private void jButton_ArtistsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_ArtistsActionPerformed
-        jPanel_Artists.setVisible(true);
-        jPanel_ArtistsAlbums.setVisible(false);
-        jPanel_Groups.setVisible(false);
-        jPanel_GroupsAlbums.setVisible(false);
+        if (this.isEditMode()) {
+            Utility.msgWarning(this, "Είστε σε κατάσταση επεξεργασίας αρχείων.\nΘα πρέπει πρώτα να κάνετε Αποθήκευση ή Ακύρωση της τρέχουσας επεξεργασίας.", "Διαχείριση Αρχείων");
+        } else {
+            jPanel_Artists.setVisible(true);
+            jPanel_ArtistsAlbums.setVisible(false);
+            jPanel_Groups.setVisible(false);
+            jPanel_GroupsAlbums.setVisible(false);
+        }
     }//GEN-LAST:event_jButton_ArtistsActionPerformed
 
     private void jButton_AlbumArtistsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_AlbumArtistsActionPerformed
-        jPanel_Artists.setVisible(false);
-        jPanel_ArtistsAlbums.setVisible(true);
-        jPanel_Groups.setVisible(false);
-        jPanel_GroupsAlbums.setVisible(false);
-        if (jTable_AlbumArtists.getSelectedRow() < 0) {
-            jSP_artistalbum_diskNumber.setVisible(false);
-            jL_artistalbum_diskNumber.setVisible(false);
-            jButton_artistalbum_addDisk.setVisible(false);
+        if (this.isEditMode()) {
+            Utility.msgWarning(this, "Είστε σε κατάσταση επεξεργασίας αρχείων.\nΘα πρέπει πρώτα να κάνετε Αποθήκευση ή Ακύρωση της τρέχουσας επεξεργασίας.", "Διαχείριση Αρχείων");
+        } else {
+            jPanel_Artists.setVisible(false);
+            jPanel_ArtistsAlbums.setVisible(true);
+            jPanel_Groups.setVisible(false);
+            jPanel_GroupsAlbums.setVisible(false);
+            if (jTable_AlbumArtists.getSelectedRow() < 0) {
+                jSP_artistalbum_diskNumber.setVisible(false);
+                jL_artistalbum_diskNumber.setVisible(false);
+                jButton_artistalbum_addDisk.setVisible(false);
+                this.songList.clear();
+            } else {
+                prepareArtistAlbumSongList();
+            }
         }
     }//GEN-LAST:event_jButton_AlbumArtistsActionPerformed
 
     private void jButton_GroupsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_GroupsActionPerformed
-        jPanel_Artists.setVisible(false);
-        jPanel_ArtistsAlbums.setVisible(false);
-        jPanel_Groups.setVisible(true);
-        jPanel_GroupsAlbums.setVisible(false);
-        jPanel_ArtistsInGroup.setVisible(false);        
+        if (this.isEditMode()) {
+            Utility.msgWarning(this, "Είστε σε κατάσταση επεξεργασίας αρχείων.\nΘα πρέπει πρώτα να κάνετε Αποθήκευση ή Ακύρωση της τρέχουσας επεξεργασίας.", "Διαχείριση Αρχείων");
+        } else {
+            jPanel_Artists.setVisible(false);
+            jPanel_ArtistsAlbums.setVisible(false);
+            jPanel_Groups.setVisible(true);
+            jPanel_GroupsAlbums.setVisible(false);
+            jPanel_ArtistsInGroup.setVisible(false);        
+        }
     }//GEN-LAST:event_jButton_GroupsActionPerformed
 
     private void jButton_AlbumGroupsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_AlbumGroupsActionPerformed
-        jPanel_Artists.setVisible(false);
-        jPanel_ArtistsAlbums.setVisible(false);
-        jPanel_Groups.setVisible(false);
-        jPanel_GroupsAlbums.setVisible(true);
-        if (jTable_AlbumGroups.getSelectedRow() < 0) {
-            jSP_groupalbum_diskNumber.setVisible(false);
-            jL_groupalbum_diskNumber.setVisible(false);
-            jButton_groupalbum_addDisk.setVisible(false);
+        if (this.isEditMode()) {
+            Utility.msgWarning(this, "Είστε σε κατάσταση επεξεργασίας αρχείων.\nΘα πρέπει πρώτα να κάνετε Αποθήκευση ή Ακύρωση της τρέχουσας επεξεργασίας.", "Διαχείριση Αρχείων");
+        } else {
+            jPanel_Artists.setVisible(false);
+            jPanel_ArtistsAlbums.setVisible(false);
+            jPanel_Groups.setVisible(false);
+            jPanel_GroupsAlbums.setVisible(true);
+            if (jTable_AlbumGroups.getSelectedRow() < 0) {
+                jSP_groupalbum_diskNumber.setVisible(false);
+                jL_groupalbum_diskNumber.setVisible(false);
+                jButton_groupalbum_addDisk.setVisible(false);
+                this.songList.clear();
+            } else {
+                prepareGroupAlbumSongList();
+            }
         }
     }//GEN-LAST:event_jButton_AlbumGroupsActionPerformed
 
@@ -1916,27 +1943,32 @@ public class ApplicationForm extends javax.swing.JFrame {
 
     private void jButton_artistStoreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_artistStoreActionPerformed
         this.jpaArtist.commitArtist(this);
+        this.setEditMode(false);
     }//GEN-LAST:event_jButton_artistStoreActionPerformed
 
     private void jButton_artistCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_artistCancelActionPerformed
         this.jpaArtist.revertArtist(this);
+        this.setEditMode(false);
     }//GEN-LAST:event_jButton_artistCancelActionPerformed
 
     private void jButton_AddArtistActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_AddArtistActionPerformed
+        this.setEditMode(true);
         this.jpaArtist.newArtist(this);
     }//GEN-LAST:event_jButton_AddArtistActionPerformed
 
     private void jButton_EditArtistActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_EditArtistActionPerformed
+        this.setEditMode(true);
         this.jpaArtist.editArtist(this);
     }//GEN-LAST:event_jButton_EditArtistActionPerformed
 
     private void jButton_groupStoreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_groupStoreActionPerformed
-        
         this.jpaMusicGroup.commitMusicGroup(this);
+        this.setEditMode(false);
     }//GEN-LAST:event_jButton_groupStoreActionPerformed
 
     private void jButton_groupCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_groupCancelActionPerformed
         this.jpaMusicGroup.revertGroup(this);
+        this.setEditMode(false);
     }//GEN-LAST:event_jButton_groupCancelActionPerformed
 
     private void jRB_femaleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRB_femaleActionPerformed
@@ -1948,10 +1980,12 @@ public class ApplicationForm extends javax.swing.JFrame {
     }//GEN-LAST:event_jRB_maleActionPerformed
 
     private void jButton_AddGroupActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_AddGroupActionPerformed
+        this.setEditMode(true);
         this.jpaMusicGroup.newGroup(this);
     }//GEN-LAST:event_jButton_AddGroupActionPerformed
 
     private void jButton_EditGroupActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_EditGroupActionPerformed
+        this.setEditMode(true);
         this.jpaMusicGroup.editMusicGroup(this);
     }//GEN-LAST:event_jButton_EditGroupActionPerformed
 
@@ -1968,10 +2002,12 @@ public class ApplicationForm extends javax.swing.JFrame {
     }//GEN-LAST:event_jTF_group_nameFocusLost
 
     private void jButton_AddGroupAlbumActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_AddGroupAlbumActionPerformed
-         this.jpaGroupAlbum.newAlbum(this, jTable_AlbumGroups);
+        this.setEditMode(true);
+        this.jpaGroupAlbum.newAlbum(this, jTable_AlbumGroups);
     }//GEN-LAST:event_jButton_AddGroupAlbumActionPerformed
 
     private void jButton_EditGroupAlbumActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_EditGroupAlbumActionPerformed
+        this.setEditMode(true);
         this.jpaGroupAlbum.editAlbum(this, jTable_AlbumGroups);
     }//GEN-LAST:event_jButton_EditGroupAlbumActionPerformed
 
@@ -1981,25 +2017,30 @@ public class ApplicationForm extends javax.swing.JFrame {
 
     private void jButton_groupAlbumStoreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_groupAlbumStoreActionPerformed
         this.jpaGroupAlbum.commitAlbum(this);
+        this.setEditMode(false);
     }//GEN-LAST:event_jButton_groupAlbumStoreActionPerformed
 
     private void jButton_groupAlbumCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_groupAlbumCancelActionPerformed
         this.jpaGroupAlbum.revertAlbum(this, jTable_AlbumGroups);
+        this.setEditMode(false);
     }//GEN-LAST:event_jButton_groupAlbumCancelActionPerformed
 
     private void jRB_groupalbum_csActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRB_groupalbum_csActionPerformed
         jL_groupalbum_diskNumber.setVisible(false);
         jSP_groupalbum_diskNumber.setVisible(false);
+        jButton_groupalbum_addDisk.setVisible(false);
     }//GEN-LAST:event_jRB_groupalbum_csActionPerformed
 
     private void jRB_groupalbum_lpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRB_groupalbum_lpActionPerformed
         jL_groupalbum_diskNumber.setVisible(true);
         jSP_groupalbum_diskNumber.setVisible(true);
+        jButton_groupalbum_addDisk.setVisible(true);
     }//GEN-LAST:event_jRB_groupalbum_lpActionPerformed
 
     private void jRB_groupalbum_epActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRB_groupalbum_epActionPerformed
         jL_groupalbum_diskNumber.setVisible(false);
         jSP_groupalbum_diskNumber.setVisible(false);
+        jButton_groupalbum_addDisk.setVisible(false);
     }//GEN-LAST:event_jRB_groupalbum_epActionPerformed
 
     private void jTable_AlbumGroupsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable_AlbumGroupsMouseClicked
@@ -2008,7 +2049,6 @@ public class ApplicationForm extends javax.swing.JFrame {
         
     private void jSP_groupalbum_diskNumberStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jSP_groupalbum_diskNumberStateChanged
         // The event is fired even if we change the Album selection and not only the disk selector
-        //Album album = (Album)groupAlbumList.get(jTable_AlbumGroups.getSelectedRow());
         Album album = (Album)groupAlbumList.get(jTable_AlbumGroups.convertRowIndexToModel(jTable_AlbumGroups.getSelectedRow()));
         if (album.isLongPlay()) {
             this.songList.clear();
@@ -2019,11 +2059,11 @@ public class ApplicationForm extends javax.swing.JFrame {
     }//GEN-LAST:event_jSP_groupalbum_diskNumberStateChanged
 
     private void jButton_AddGroupAlbumSongActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_AddGroupAlbumSongActionPerformed
-        this.jpaGroupAlbum.addSongInAlbum(this);
+        this.jpaGroupAlbum.addSongInAlbum(this, jTable_AlbumGroups);
     }//GEN-LAST:event_jButton_AddGroupAlbumSongActionPerformed
 
     private void jButton_DeleteGroupAlbumSongActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_DeleteGroupAlbumSongActionPerformed
-        this.jpaGroupAlbum.removeSongFromAlbum(this);
+        this.jpaGroupAlbum.removeSongFromAlbum(this, jTable_AlbumGroups);
     }//GEN-LAST:event_jButton_DeleteGroupAlbumSongActionPerformed
 
     private void jButton_groupalbum_addDiskActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_groupalbum_addDiskActionPerformed
@@ -2048,38 +2088,62 @@ public class ApplicationForm extends javax.swing.JFrame {
     }//GEN-LAST:event_jTF_artistalbum_titleActionPerformed
 
     private void jRB_artistalbum_csActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRB_artistalbum_csActionPerformed
-        // TODO add your handling code here:
+        jL_artistalbum_diskNumber.setVisible(false);
+        jSP_artistalbum_diskNumber.setVisible(false);
+        jButton_artistalbum_addDisk.setVisible(false);
     }//GEN-LAST:event_jRB_artistalbum_csActionPerformed
 
     private void jRB_artistalbum_epActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRB_artistalbum_epActionPerformed
-        // TODO add your handling code here:
+        jL_artistalbum_diskNumber.setVisible(false);
+        jSP_artistalbum_diskNumber.setVisible(false);
+        jButton_artistalbum_addDisk.setVisible(false);
     }//GEN-LAST:event_jRB_artistalbum_epActionPerformed
 
     private void jRB_artistalbum_lpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRB_artistalbum_lpActionPerformed
-        // TODO add your handling code here:
+        jL_artistalbum_diskNumber.setVisible(true);
+        jSP_artistalbum_diskNumber.setVisible(true);
+        jButton_artistalbum_addDisk.setVisible(true);
     }//GEN-LAST:event_jRB_artistalbum_lpActionPerformed
 
     private void jSP_artistalbum_diskNumberStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jSP_artistalbum_diskNumberStateChanged
-        // TODO add your handling code here:
+        // The event is fired even if we change the Album selection and not only the disk selector
+        Album album = (Album)groupAlbumList.get(jTable_AlbumArtists.convertRowIndexToModel(jTable_AlbumArtists.getSelectedRow()));
+        if (album.isLongPlay()) {
+            this.songList.clear();
+            for (Song song : album.getSongCollection(((Integer)jSP_artistalbum_diskNumber.getValue()).intValue())) {
+                this.songList.add(song);
+            }
+        }
     }//GEN-LAST:event_jSP_artistalbum_diskNumberStateChanged
 
     private void jButton_artistalbum_addDiskActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_artistalbum_addDiskActionPerformed
-        // TODO add your handling code here:
+        try {
+            Album album = (Album)groupAlbumList.get(jTable_AlbumArtists.convertRowIndexToModel(jTable_AlbumArtists.getSelectedRow()));
+            Album childAlbum = album.addDiskToAlbum();
+            // set disk
+            javax.swing.SpinnerNumberModel spinner = ((javax.swing.SpinnerNumberModel)jSP_artistalbum_diskNumber.getModel());
+            spinner.setMaximum((Integer)album.getTotaldisks().intValue());
+            spinner.setValue(spinner.getMaximum());
+        } catch (CloneNotSupportedException ex) {
+            Logger.getLogger(ApplicationForm.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_jButton_artistalbum_addDiskActionPerformed
 
     private void jButton_AddArtistAlbumSongActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_AddArtistAlbumSongActionPerformed
-        // TODO add your handling code here:
+        this.jpaGroupAlbum.addSongInAlbum(this, jTable_AlbumArtists);
     }//GEN-LAST:event_jButton_AddArtistAlbumSongActionPerformed
 
     private void jButton_DeleteArtistAlbumSongActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_DeleteArtistAlbumSongActionPerformed
-        // TODO add your handling code here:
+        this.jpaGroupAlbum.removeSongFromAlbum(this, jTable_AlbumArtists);
     }//GEN-LAST:event_jButton_DeleteArtistAlbumSongActionPerformed
 
     private void jButton_AddArtistAlbumActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_AddArtistAlbumActionPerformed
-         this.jpaGroupAlbum.newAlbum(this, jTable_AlbumArtists);
+        this.setEditMode(true);
+        this.jpaGroupAlbum.newAlbum(this, jTable_AlbumArtists);
     }//GEN-LAST:event_jButton_AddArtistAlbumActionPerformed
 
     private void jButton_EditArtistAlbumActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_EditArtistAlbumActionPerformed
+        this.setEditMode(true);
         this.jpaGroupAlbum.editAlbum(this, jTable_AlbumArtists);
     }//GEN-LAST:event_jButton_EditArtistAlbumActionPerformed
 
@@ -2088,11 +2152,13 @@ public class ApplicationForm extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton_DeleteArtistAlbumActionPerformed
 
     private void jButton_artistAlbumStoreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_artistAlbumStoreActionPerformed
-        // TODO add your handling code here:
+        this.jpaGroupAlbum.commitAlbum(this);
+        this.setEditMode(false);
     }//GEN-LAST:event_jButton_artistAlbumStoreActionPerformed
 
     private void jButton_artistAlbumCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_artistAlbumCancelActionPerformed
         this.jpaGroupAlbum.revertAlbum(this, jTable_AlbumArtists);
+        this.setEditMode(false);
     }//GEN-LAST:event_jButton_artistAlbumCancelActionPerformed
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -2105,6 +2171,7 @@ public class ApplicationForm extends javax.swing.JFrame {
     private java.util.List<radiostation.Artist> artistList;
     private javax.persistence.Query artistQuery;
     private radiostation.gui.ArtistRenderer artistRenderer;
+    private javax.swing.ButtonGroup buttonGroup_artistAlbumType;
     private javax.swing.ButtonGroup buttonGroup_artistSex;
     private javax.swing.ButtonGroup buttonGroup_groupAlbumType;
     private java.util.List<radiostation.Album> groupAlbumList;
@@ -2291,6 +2358,7 @@ public class ApplicationForm extends javax.swing.JFrame {
     private Object clonedObj;
     private java.util.List<radiostation.Song> songsToRemoveList;
     private final List<String> sex = new ArrayList(Arrays.asList("M","F"));
+    private boolean editMode = false;
 
     /* Custom methods declaration */
     // Table event listeners
@@ -2492,12 +2560,23 @@ public class ApplicationForm extends javax.swing.JFrame {
         else
             return this.groupAlbumList;
     }
-
     public javax.swing.JTextField getjTF_groupalbum_title() {
         return this.jTF_groupalbum_title;
     }
     public javax.swing.JTextField getjTF_artistalbum_title() {
         return this.jTF_artistalbum_title;
+    }
+    public javax.swing.JSpinner getjSP_groupalbum_diskNumber() {
+        return jSP_groupalbum_diskNumber;
+    }
+    public javax.swing.JSpinner getjSP_artistalbum_diskNumber() {
+        return jSP_artistalbum_diskNumber;
+    }
+    public boolean isEditMode() {
+        return editMode;
+    }
+    public void setEditMode(boolean editMode) {
+        this.editMode = editMode;
     }
             
     /**
@@ -2510,9 +2589,15 @@ public class ApplicationForm extends javax.swing.JFrame {
     }
 
     public void highlightAlbumTitle(){
-          jTF_groupalbum_title.selectAll();
-          jTF_groupalbum_title.setSelectedTextColor(Color.red);
-          jTF_groupalbum_title.requestFocus(true);
+        if (jPanel_ArtistsAlbums.isVisible()) {
+            jTF_artistalbum_title.selectAll();
+            jTF_artistalbum_title.setSelectedTextColor(Color.red);
+            jTF_artistalbum_title.requestFocus(true);
+        } else { 
+            jTF_groupalbum_title.selectAll();
+            jTF_groupalbum_title.setSelectedTextColor(Color.red);
+            jTF_groupalbum_title.requestFocus(true);
+        }
     }
 
     public void prepareGroupAlbumSongList() {
@@ -2571,20 +2656,6 @@ public class ApplicationForm extends javax.swing.JFrame {
                 jTable_ArtistAlbumSongs.getColumnModel().getColumn(2).setMaxWidth(60);
             }
         }
-    }
-
-    /**
-     * @return the jSP_groupalbum_diskNumber
-     */
-    public javax.swing.JSpinner getjSP_groupalbum_diskNumber() {
-        return jSP_groupalbum_diskNumber;
-    }
-
-    /**
-     * @param jSP_groupalbum_diskNumber the jSP_groupalbum_diskNumber to set
-     */
-    public void setjSP_groupalbum_diskNumber(javax.swing.JSpinner jSP_groupalbum_diskNumber) {
-        this.jSP_groupalbum_diskNumber = jSP_groupalbum_diskNumber;
     }
 
 }
