@@ -8,6 +8,7 @@ package radiostation;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import javax.persistence.Basic;
@@ -39,7 +40,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Playlist.findAll", query = "SELECT p FROM Playlist p"),
     @NamedQuery(name = "Playlist.findById", query = "SELECT p FROM Playlist p WHERE p.id = :id"),
     @NamedQuery(name = "Playlist.findByName", query = "SELECT p FROM Playlist p WHERE p.name = :name")})
-public class Playlist implements Serializable {
+public class Playlist implements Serializable, Cloneable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
@@ -135,5 +136,22 @@ public class Playlist implements Serializable {
     public void setCreationdate(Date creationdate) {
         this.creationdate = creationdate;
     }
-    
+
+    public Object clone() throws CloneNotSupportedException {
+        Object clone = super.clone();
+        // clone lists manually
+        Collection<Song> songCollection = new ArrayList<Song>();
+        if (this.songCollection != null) {
+            songCollection.addAll(this.songCollection);
+            ((Playlist)clone).setSongCollection(songCollection);
+        }    
+        return clone;
+    }
+
+    public void restore(Playlist playlist) {
+        setName(playlist.getName());
+        setCreationdate(playlist.getCreationdate());
+        setSongCollection(playlist.getSongCollection());
+    }
+
 }

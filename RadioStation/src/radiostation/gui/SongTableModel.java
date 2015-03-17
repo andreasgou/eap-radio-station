@@ -10,10 +10,12 @@ public class SongTableModel extends AbstractTableModel {
     private final String[] header;
     private final List<Object[]> songs1;
     private int songsAdded;
+    private final List<Song> songsModel;
 
     public SongTableModel(List<Song> songs) {
         songsAdded = 0;
         this.header = columnNames;
+        this.songsModel = songs;
         this.songs1 = new ArrayList<>();
         if( songs != null && songs.size() > 0 ){
             for(Song song:songs) {   
@@ -55,7 +57,7 @@ public class SongTableModel extends AbstractTableModel {
 
     @Override
     public boolean isCellEditable(int rowIndex, int columnIndex) {
-        return true;
+        return false;
     }
     
     public void addRow(){
@@ -81,4 +83,17 @@ public class SongTableModel extends AbstractTableModel {
     public int getSongsAdded() {
         return songsAdded;
     }
+
+    public List<Song> getSongsModel() {
+        return songsModel;
+    }
+    
+    public void addSong(Song song) {
+        addRow();
+        setValueAt(song.getTitle(), getRowCount()-1, 0);
+        setValueAt((song.getAlbumId().getArtistId()!=null) ? song.getAlbumId().getArtistId().getArtisticname()
+                            : song.getAlbumId().getMusicgroupId().getName(), getRowCount()-1, 1);
+        setValueAt(song.getDuration(), getRowCount()-1, 2);
+    } 
+
 }
