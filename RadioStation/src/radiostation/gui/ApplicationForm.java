@@ -19,10 +19,12 @@ import javax.swing.event.ListSelectionListener;
 import radiostation.Album;
 import radiostation.Artist;
 import radiostation.MusicGroup;
+import radiostation.Playlist;
 import radiostation.Song;
 import radiostation.jpa.ArtistJpaController;
 import radiostation.jpa.MusicGroupJpaController;
 import radiostation.jpa.AlbumJpaController;
+import radiostation.jpa.PlaylistJpaController;
 /**
  *
  * @author a.gounaris
@@ -36,11 +38,13 @@ public class ApplicationForm extends javax.swing.JFrame {
         this.jpaArtist = new ArtistJpaController(em);
         this.jpaMusicGroup = new MusicGroupJpaController(em);
         this.jpaGroupAlbum=new AlbumJpaController(em); 
+        this.jpaPlaylist = new PlaylistJpaController(em);
         initComponents();
         setEditableArtistForm(false, false);
         setEditableGroupForm(false, false);
         setEditableGroupAlbumForm(false, false);
         setEditableArtistAlbumForm(false, false);
+        setEditablePlaylistForm(false, false);
     }
 
     /**
@@ -78,11 +82,13 @@ public class ApplicationForm extends javax.swing.JFrame {
         musicGroup1 = new radiostation.MusicGroup();
         album1 = new radiostation.Album();
         song1 = new radiostation.Song();
+        playlist1 = new radiostation.Playlist();
         artistRenderer = new radiostation.gui.ArtistRenderer();
         musicGenreRenderer = new radiostation.gui.MusicGenreRenderer();
         titleDurationRenderer = new radiostation.gui.TitleDurationRenderer();
         musicGroupRenderer = new radiostation.gui.MusicGroupRenderer();
         productionCompanyRenderer = new radiostation.gui.ProductionCompanyRenderer();
+        playlistArtistOrGroupRenderer = new radiostation.gui.PlaylistArtistGroupRenderer();
         buttonGroup_artistSex = new javax.swing.ButtonGroup();
         buttonGroup_artistAlbumType = new javax.swing.ButtonGroup();
         buttonGroup_groupAlbumType = new javax.swing.ButtonGroup();
@@ -111,6 +117,7 @@ public class ApplicationForm extends javax.swing.JFrame {
         jLabel6 = new javax.swing.JLabel();
         jTF_artist_lastname = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
+        jCAL_artist_birthdate = new com.toedter.calendar.JDateChooser();
         jLabel2 = new javax.swing.JLabel();
         jLabel13 = new javax.swing.JLabel();
         jRB_male = new javax.swing.JRadioButton();
@@ -118,7 +125,6 @@ public class ApplicationForm extends javax.swing.JFrame {
         jTF_artist_birthplace = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
         jCombo_artist_genre = new javax.swing.JComboBox();
-        jCAL_artist_birthdate = new com.toedter.calendar.JDateChooser();
         jPanel_artistCRUD_cmd = new javax.swing.JPanel();
         jPanel_artistCRUD_edit1 = new javax.swing.JPanel();
         jButton_AddArtist = new javax.swing.JButton();
@@ -234,15 +240,15 @@ public class ApplicationForm extends javax.swing.JFrame {
         jButton_SearchSong = new javax.swing.JButton();
         jButton_SaveSongList = new javax.swing.JButton();
         jButton_CancelSongList = new javax.swing.JButton();
-        jPanel_SongListsPreview = new javax.swing.JPanel();
+        jPanel_PlaylistPreview = new javax.swing.JPanel();
         jLabel30 = new javax.swing.JLabel();
-        jTF_songlist_description = new javax.swing.JTextField();
+        jTF_playlist_description = new javax.swing.JTextField();
         jLabel31 = new javax.swing.JLabel();
-        jFTF_songlist_datecreated = new javax.swing.JFormattedTextField();
+        jCal_playlist_dateCreated = new com.toedter.calendar.JDateChooser();
         jScrollPane2 = new javax.swing.JScrollPane();
         jTable_playlistSongs = new javax.swing.JTable();
-        jButton_AddSong = new javax.swing.JButton();
-        jButton_DeleteSong = new javax.swing.JButton();
+        jButton_AddPlaylistSong = new javax.swing.JButton();
+        jButton_DeletePlaylistSong = new javax.swing.JButton();
 
         artistRenderer.setText("artistRenderer1");
 
@@ -501,6 +507,9 @@ public class ApplicationForm extends javax.swing.JFrame {
 
         jLabel3.setText("Ημερ./νία Γέννησης:");
 
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, jTable_Artists, org.jdesktop.beansbinding.ELProperty.create("${selectedElement.birthday}"), jCAL_artist_birthdate, org.jdesktop.beansbinding.BeanProperty.create("date"));
+        bindingGroup.addBinding(binding);
+
         jLabel2.setText("Πόλη:");
 
         jLabel13.setText("Φύλο:");
@@ -545,9 +554,6 @@ public class ApplicationForm extends javax.swing.JFrame {
         org.jdesktop.swingbinding.JComboBoxBinding jComboBoxBinding = org.jdesktop.swingbinding.SwingBindings.createJComboBoxBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, musicGenreList, jCombo_artist_genre);
         bindingGroup.addBinding(jComboBoxBinding);
         binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, jTable_Artists, org.jdesktop.beansbinding.ELProperty.create("${selectedElement.genre}"), jCombo_artist_genre, org.jdesktop.beansbinding.BeanProperty.create("selectedItem"));
-        bindingGroup.addBinding(binding);
-
-        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, jTable_Artists, org.jdesktop.beansbinding.ELProperty.create("${selectedElement.birthday}"), jCAL_artist_birthdate, org.jdesktop.beansbinding.BeanProperty.create("date"));
         bindingGroup.addBinding(binding);
 
         javax.swing.GroupLayout jPanel_ArtistPreviewLayout = new javax.swing.GroupLayout(jPanel_ArtistPreview);
@@ -1564,19 +1570,30 @@ public class ApplicationForm extends javax.swing.JFrame {
         });
         jPanel_SongMgr.add(jButton_SongLists_GoMenu, new org.netbeans.lib.awtextra.AbsoluteConstraints(690, 570, -1, -1));
 
-        jTable_Playlist.setColumnSelectionAllowed(true);
-
         jTableBinding = org.jdesktop.swingbinding.SwingBindings.createJTableBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, playlistList, jTable_Playlist);
         columnBinding = jTableBinding.addColumnBinding(org.jdesktop.beansbinding.ELProperty.create("${name}"));
         columnBinding.setColumnName("Περιγραφή");
         columnBinding.setColumnClass(String.class);
+        columnBinding.setEditable(false);
         columnBinding = jTableBinding.addColumnBinding(org.jdesktop.beansbinding.ELProperty.create("${creationdate}"));
-        columnBinding.setColumnName("Ημερομηνία Δημιουργίας");
+        columnBinding.setColumnName("Ημερομηνία");
         columnBinding.setColumnClass(java.util.Date.class);
+        columnBinding.setEditable(false);
         bindingGroup.addBinding(jTableBinding);
         jTableBinding.bind();
+        jTable_Playlist.getSelectionModel().addListSelectionListener(new ListSelectionListener(){
+            public void valueChanged(ListSelectionEvent evt) {
+                // do some actions here, for example
+                // print first column value from selected row
+                jTable_PlaylistRowSelectionChanged(evt);
+            }
+        });
         jScrollPane11.setViewportView(jTable_Playlist);
         jTable_Playlist.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        if (jTable_Playlist.getColumnModel().getColumnCount() > 0) {
+            jTable_Playlist.getColumnModel().getColumn(1).setMinWidth(90);
+            jTable_Playlist.getColumnModel().getColumn(1).setMaxWidth(100);
+        }
 
         jPanel_SongMgr.add(jScrollPane11, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 30, 275, 260));
 
@@ -1595,6 +1612,11 @@ public class ApplicationForm extends javax.swing.JFrame {
         jButton_EditSongList.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/images14.jpg"))); // NOI18N
         jButton_EditSongList.setText("Ενημέρωση Λίστας");
         jButton_EditSongList.setToolTipText("Ενημέρωση υπάρχοντος άλμπουμ");
+        jButton_EditSongList.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton_EditSongListActionPerformed(evt);
+            }
+        });
 
         jButton_DeleteSongList.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/removeFromDatabase.jpg"))); // NOI18N
         jButton_DeleteSongList.setText("Διαγραφή Λίστας");
@@ -1670,10 +1692,31 @@ public class ApplicationForm extends javax.swing.JFrame {
                 {null, null, null}
             },
             new String [] {
-                "Τίιτλος", "Καλλιτέχνης/Συγκρότημα", "Διάρκεια"
+                "Τίτλος", "Καλλιτέχνης/Συγκρότημα", "Διάρκεια"
             }
-        ));
+        ) {
+            Class[] types = new Class [] {
+                java.lang.String.class, java.lang.String.class, java.lang.Integer.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false, false, false
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jTable_Available_Songs.setColumnSelectionAllowed(true);
+        jTable_Available_Songs.getTableHeader().setReorderingAllowed(false);
         jScrollPane14.setViewportView(jTable_Available_Songs);
+        jTable_Available_Songs.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        if (jTable_Available_Songs.getColumnModel().getColumnCount() > 0) {
+            jTable_Available_Songs.getColumnModel().getColumn(2).setCellRenderer(titleDurationRenderer);
+        }
 
         jButton_SearchSong.setText("Go");
         jButton_SearchSong.addActionListener(new java.awt.event.ActionListener() {
@@ -1684,6 +1727,11 @@ public class ApplicationForm extends javax.swing.JFrame {
 
         jButton_SaveSongList.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/images12.jpg"))); // NOI18N
         jButton_SaveSongList.setText("Αποθήκευση");
+        jButton_SaveSongList.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton_SaveSongListActionPerformed(evt);
+            }
+        });
 
         jButton_CancelSongList.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/images2.jpg"))); // NOI18N
         jButton_CancelSongList.setText("Ακύρωση");
@@ -1731,97 +1779,84 @@ public class ApplicationForm extends javax.swing.JFrame {
 
         jPanel_SongMgr.add(jPanel_playlistCRUD_cmd, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 300, 280, 330));
 
-        jPanel_SongListsPreview.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Επισκόπηση Λίστας Τραγουδιών", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Arial", 0, 14), new java.awt.Color(0, 0, 255))); // NOI18N
+        jPanel_PlaylistPreview.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Επισκόπηση Λίστας Τραγουδιών", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Arial", 0, 14), new java.awt.Color(0, 0, 255))); // NOI18N
+        jPanel_PlaylistPreview.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel30.setText("Περιγραφή:");
+        jPanel_PlaylistPreview.add(jLabel30, new org.netbeans.lib.awtextra.AbsoluteConstraints(109, 31, -1, -1));
 
-        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, jTable_Playlist, org.jdesktop.beansbinding.ELProperty.create("${selectedElement.name}"), jTF_songlist_description, org.jdesktop.beansbinding.BeanProperty.create("text"));
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, jTable_Playlist, org.jdesktop.beansbinding.ELProperty.create("${selectedElement.name}"), jTF_playlist_description, org.jdesktop.beansbinding.BeanProperty.create("text"));
         bindingGroup.addBinding(binding);
 
-        jTF_songlist_description.addActionListener(new java.awt.event.ActionListener() {
+        jTF_playlist_description.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTF_songlist_descriptionActionPerformed(evt);
+                jTF_playlist_descriptionActionPerformed(evt);
             }
         });
+        jPanel_PlaylistPreview.add(jTF_playlist_description, new org.netbeans.lib.awtextra.AbsoluteConstraints(191, 25, 297, -1));
 
-        jLabel31.setText("Ημ/νια Δημιουργίας:");
+        jLabel31.setText("Ημερομηνία Δημιουργίας:");
+        jPanel_PlaylistPreview.add(jLabel31, new org.netbeans.lib.awtextra.AbsoluteConstraints(21, 59, -1, 28));
 
-        jFTF_songlist_datecreated.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.DateFormatter(java.text.DateFormat.getDateInstance(java.text.DateFormat.LONG))));
-
-        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, jTable_Playlist, org.jdesktop.beansbinding.ELProperty.create("${selectedElement.creationdate}"), jFTF_songlist_datecreated, org.jdesktop.beansbinding.BeanProperty.create("value"));
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, jTable_Playlist, org.jdesktop.beansbinding.ELProperty.create("${selectedElement.creationdate}"), jCal_playlist_dateCreated, org.jdesktop.beansbinding.BeanProperty.create("date"));
         bindingGroup.addBinding(binding);
 
-        org.jdesktop.beansbinding.ELProperty eLProperty = org.jdesktop.beansbinding.ELProperty.create("${selectedElement.songCollection}");
-        jTableBinding = org.jdesktop.swingbinding.SwingBindings.createJTableBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, jTable_Playlist, eLProperty, jTable_playlistSongs);
-        columnBinding = jTableBinding.addColumnBinding(org.jdesktop.beansbinding.ELProperty.create("${title}"));
-        columnBinding.setColumnName("Title");
-        columnBinding.setColumnClass(String.class);
-        columnBinding = jTableBinding.addColumnBinding(org.jdesktop.beansbinding.ELProperty.create("${albumId.artistId.artisticname}"));
-        columnBinding.setColumnName("Καλλιτέχνης");
-        columnBinding.setColumnClass(String.class);
-        columnBinding = jTableBinding.addColumnBinding(org.jdesktop.beansbinding.ELProperty.create("${albumId.musicgroupId.name}"));
-        columnBinding.setColumnName("Συγκρότημα");
-        columnBinding.setColumnClass(String.class);
-        columnBinding = jTableBinding.addColumnBinding(org.jdesktop.beansbinding.ELProperty.create("${duration}"));
-        columnBinding.setColumnName("Διάρκεια");
-        columnBinding.setColumnClass(Integer.class);
-        bindingGroup.addBinding(jTableBinding);
-        jTableBinding.bind();
+        jPanel_PlaylistPreview.add(jCal_playlist_dateCreated, new org.netbeans.lib.awtextra.AbsoluteConstraints(194, 59, 294, -1));
+
+        jTable_playlistSongs.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Τίτλος", "Καλλιτέχνης/Συγκρότημα", "Διάρκεια"
+            }
+        ) {
+            Class[] types = new Class [] {
+                java.lang.String.class, java.lang.Object.class, java.lang.Integer.class
+            };
+            boolean[] canEdit = new boolean [] {
+                true, false, true
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jTable_playlistSongs.setColumnSelectionAllowed(true);
         jScrollPane2.setViewportView(jTable_playlistSongs);
+        jTable_playlistSongs.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        if (jTable_playlistSongs.getColumnModel().getColumnCount() > 0) {
+            jTable_playlistSongs.getColumnModel().getColumn(1).setCellRenderer(playlistArtistOrGroupRenderer);
+            jTable_playlistSongs.getColumnModel().getColumn(2).setMaxWidth(60);
+            jTable_playlistSongs.getColumnModel().getColumn(2).setCellRenderer(titleDurationRenderer);
+        }
 
-        jButton_AddSong.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/plus_button_symbol_md_wm.jpg"))); // NOI18N
-        jButton_AddSong.setText("<<Εισαγωγή");
-        jButton_AddSong.setActionCommand("");
+        jPanel_PlaylistPreview.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 93, 476, 410));
 
-        jButton_DeleteSong.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/minus_button_symbol_md_wm.jpg"))); // NOI18N
-        jButton_DeleteSong.setText("Διαγραφή>>");
+        jButton_AddPlaylistSong.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/plus_button_symbol_md_wm.jpg"))); // NOI18N
+        jButton_AddPlaylistSong.setText("Εισαγωγή Τραγουδιού");
+        jButton_AddPlaylistSong.setActionCommand("");
+        jButton_AddPlaylistSong.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton_AddPlaylistSongActionPerformed(evt);
+            }
+        });
+        jPanel_PlaylistPreview.add(jButton_AddPlaylistSong, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 509, -1, -1));
 
-        javax.swing.GroupLayout jPanel_SongListsPreviewLayout = new javax.swing.GroupLayout(jPanel_SongListsPreview);
-        jPanel_SongListsPreview.setLayout(jPanel_SongListsPreviewLayout);
-        jPanel_SongListsPreviewLayout.setHorizontalGroup(
-            jPanel_SongListsPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel_SongListsPreviewLayout.createSequentialGroup()
-                .addGap(12, 12, 12)
-                .addGroup(jPanel_SongListsPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jLabel30)
-                    .addComponent(jLabel31))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel_SongListsPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jFTF_songlist_datecreated, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jTF_songlist_description, javax.swing.GroupLayout.PREFERRED_SIZE, 245, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(jPanel_SongListsPreviewLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 476, Short.MAX_VALUE)
-                .addContainerGap())
-            .addGroup(jPanel_SongListsPreviewLayout.createSequentialGroup()
-                .addGap(82, 82, 82)
-                .addComponent(jButton_AddSong, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jButton_DeleteSong, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(63, 63, 63))
-        );
-        jPanel_SongListsPreviewLayout.setVerticalGroup(
-            jPanel_SongListsPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel_SongListsPreviewLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel_SongListsPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel30)
-                    .addComponent(jTF_songlist_description, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel_SongListsPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jFTF_songlist_datecreated, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel31))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 382, Short.MAX_VALUE)
-                .addGap(18, 18, 18)
-                .addGroup(jPanel_SongListsPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jButton_DeleteSong)
-                    .addComponent(jButton_AddSong))
-                .addGap(19, 19, 19))
-        );
+        jButton_DeletePlaylistSong.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/minus_button_symbol_md_wm.jpg"))); // NOI18N
+        jButton_DeletePlaylistSong.setText("Διαγραφή Τραγουδιού");
+        jButton_DeletePlaylistSong.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton_DeletePlaylistSongActionPerformed(evt);
+            }
+        });
+        jPanel_PlaylistPreview.add(jButton_DeletePlaylistSong, new org.netbeans.lib.awtextra.AbsoluteConstraints(268, 509, -1, -1));
 
-        jPanel_SongMgr.add(jPanel_SongListsPreview, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 20, 500, -1));
+        jPanel_SongMgr.add(jPanel_PlaylistPreview, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 20, 500, 550));
 
         jPanel1.add(jPanel_SongMgr, "cardSongMgr");
 
@@ -1971,9 +2006,9 @@ public class ApplicationForm extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_jTF_groupalbum_titleActionPerformed
 
-    private void jTF_songlist_descriptionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTF_songlist_descriptionActionPerformed
+    private void jTF_playlist_descriptionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTF_playlist_descriptionActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTF_songlist_descriptionActionPerformed
+    }//GEN-LAST:event_jTF_playlist_descriptionActionPerformed
 
     private void jButton_DeleteSongListActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_DeleteSongListActionPerformed
         // TODO add your handling code here:
@@ -2209,19 +2244,39 @@ public class ApplicationForm extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton_artistAlbumCancelActionPerformed
 
     private void jButton_SearchSongActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_SearchSongActionPerformed
-        readSongsForPlaylist(jTF_song_search.getText());
+        List<Song>songs = this.jpaPlaylist.readSongsForPlaylist(jTF_song_search.getText(), this);
+        SongTableModel songsFiltered = new SongTableModel(songs);
+        getjTable_Available_Songs().setModel(songsFiltered);
+        prepareSongsForPlaylist();
     }//GEN-LAST:event_jButton_SearchSongActionPerformed
 
     private void jButton_AddSongListActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_AddSongListActionPerformed
-        jPanel_playlistCRUD_edit1.setVisible(false);
-        jPanel_playlistCRUD_edit2.setVisible(true);
-        readSongsForPlaylist("");
+        this.setEditMode(true);
+        this.jpaPlaylist.newPlaylist(this, jTable_Playlist);
     }//GEN-LAST:event_jButton_AddSongListActionPerformed
 
     private void jButton_CancelSongListActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_CancelSongListActionPerformed
-        jPanel_playlistCRUD_edit1.setVisible(true);
-        jPanel_playlistCRUD_edit2.setVisible(false);
+        this.jpaPlaylist.revertPlaylist(this, jTable_Playlist);
+        this.setEditMode(false);
     }//GEN-LAST:event_jButton_CancelSongListActionPerformed
+
+    private void jButton_EditSongListActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_EditSongListActionPerformed
+        this.setEditMode(true);
+        this.jpaPlaylist.editPlaylist(this, jTable_Playlist);
+    }//GEN-LAST:event_jButton_EditSongListActionPerformed
+
+    private void jButton_AddPlaylistSongActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_AddPlaylistSongActionPerformed
+        this.jpaPlaylist.addSongInPlaylist(this);
+    }//GEN-LAST:event_jButton_AddPlaylistSongActionPerformed
+
+    private void jButton_SaveSongListActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_SaveSongListActionPerformed
+        this.jpaPlaylist.commitPlaylist(this);
+        this.setEditMode(false);
+    }//GEN-LAST:event_jButton_SaveSongListActionPerformed
+
+    private void jButton_DeletePlaylistSongActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_DeletePlaylistSongActionPerformed
+        this.jpaPlaylist.removeSongFromPlaylist(this, jTable_playlistSongs);
+    }//GEN-LAST:event_jButton_DeletePlaylistSongActionPerformed
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private radiostation.Album album1;
@@ -2245,7 +2300,7 @@ public class ApplicationForm extends javax.swing.JFrame {
     private javax.swing.JButton jButton_AddGroup;
     private javax.swing.JButton jButton_AddGroupAlbum;
     private javax.swing.JButton jButton_AddGroupAlbumSong;
-    private javax.swing.JButton jButton_AddSong;
+    private javax.swing.JButton jButton_AddPlaylistSong;
     private javax.swing.JButton jButton_AddSongList;
     private javax.swing.JButton jButton_AlbumArtists;
     private javax.swing.JButton jButton_AlbumGroups;
@@ -2258,7 +2313,7 @@ public class ApplicationForm extends javax.swing.JFrame {
     private javax.swing.JButton jButton_DeleteGroup;
     private javax.swing.JButton jButton_DeleteGroupAlbum;
     private javax.swing.JButton jButton_DeleteGroupAlbumSong;
-    private javax.swing.JButton jButton_DeleteSong;
+    private javax.swing.JButton jButton_DeletePlaylistSong;
     private javax.swing.JButton jButton_DeleteSongList;
     private javax.swing.JButton jButton_EditArtist;
     private javax.swing.JButton jButton_EditArtistAlbum;
@@ -2289,12 +2344,12 @@ public class ApplicationForm extends javax.swing.JFrame {
     private com.toedter.calendar.JDateChooser jCAL_group_DateCreated;
     private com.toedter.calendar.JDateChooser jCal_artistAlbumDateInMarket;
     private com.toedter.calendar.JDateChooser jCal_groupAlbumDateInMarket;
+    private com.toedter.calendar.JDateChooser jCal_playlist_dateCreated;
     private javax.swing.JComboBox jCombo_artist_genre;
     private javax.swing.JComboBox jCombo_artistalbum_company;
     private javax.swing.JComboBox jCombo_artisttalbum_artist;
     private javax.swing.JComboBox jCombo_groupalbum_company;
     private javax.swing.JComboBox jCombo_grouptalbum_artist;
-    private javax.swing.JFormattedTextField jFTF_songlist_datecreated;
     private javax.swing.JLabel jL_artistalbum_diskNumber;
     private javax.swing.JLabel jL_groupalbum_diskNumber;
     private javax.swing.JLabel jLabel1;
@@ -2339,7 +2394,7 @@ public class ApplicationForm extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel_Groups;
     private javax.swing.JPanel jPanel_GroupsAlbums;
     private javax.swing.JPanel jPanel_Menu;
-    private javax.swing.JPanel jPanel_SongListsPreview;
+    private javax.swing.JPanel jPanel_PlaylistPreview;
     private javax.swing.JPanel jPanel_SongMgr;
     private javax.swing.JPanel jPanel_alboumGroupCRUD_cmd;
     private javax.swing.JPanel jPanel_albumArtistCRUD_cmd;
@@ -2384,8 +2439,8 @@ public class ApplicationForm extends javax.swing.JFrame {
     private javax.swing.JTextField jTF_artistalbum_title;
     private javax.swing.JTextField jTF_group_name;
     private javax.swing.JTextField jTF_groupalbum_title;
+    private javax.swing.JTextField jTF_playlist_description;
     private javax.swing.JTextField jTF_song_search;
-    private javax.swing.JTextField jTF_songlist_description;
     private javax.swing.JTable jTable_AlbumArtists;
     private javax.swing.JTable jTable_AlbumGroups;
     private javax.swing.JTable jTable_ArtistAlbumSongs;
@@ -2402,6 +2457,8 @@ public class ApplicationForm extends javax.swing.JFrame {
     private java.util.List<radiostation.MusicGroup> musicGroupList;
     private javax.persistence.Query musicGroupQuery;
     private radiostation.gui.MusicGroupRenderer musicGroupRenderer;
+    private radiostation.Playlist playlist1;
+    private radiostation.gui.PlaylistArtistGroupRenderer playlistArtistOrGroupRenderer;
     private java.util.List<radiostation.Playlist> playlistList;
     private javax.persistence.Query playlistQuery;
     private java.util.List<radiostation.MusicProductionCompany> productionCompanyList;
@@ -2420,6 +2477,7 @@ public class ApplicationForm extends javax.swing.JFrame {
     private ArtistJpaController jpaArtist;
     private MusicGroupJpaController jpaMusicGroup;
     private AlbumJpaController jpaGroupAlbum;
+    private PlaylistJpaController jpaPlaylist;
     private Object clonedObj;
     private java.util.List<radiostation.Song> songsToRemoveList;
     private final List<String> sex = new ArrayList(Arrays.asList("M","F"));
@@ -2441,9 +2499,16 @@ public class ApplicationForm extends javax.swing.JFrame {
 
     private void jTable_GroupsRowSelectionChanged(ListSelectionEvent evt) {                                                
         // check if a row is selected
-        if (getjTable_Groups().getSelectedRow() >= 0) {
+        if (jTable_Groups.getSelectedRow() >= 0) {
             musicGroup1 = musicGroupList.get(getjTable_Groups().getSelectedRow());
             jList_GroupArtists.setListData(musicGroup1.getArtistCollection().toArray());
+        }
+    }
+
+    private void jTable_PlaylistRowSelectionChanged(ListSelectionEvent evt) {                                                
+        // check if a row is selected
+        if (jTable_Playlist.getSelectedRow() >= 0) {
+            prepareSongsInPlaylist();
         }
     }
 
@@ -2522,8 +2587,8 @@ public class ApplicationForm extends javax.swing.JFrame {
         // set command buttons
         jPanel_albumGroupCRUD_edit1.setVisible(!status);
         jPanel_albumGroupCRUD_edit2.setVisible(status);
-        jButton_AddGroupAlbumSong.setEnabled(status); //setVisible(status);
-        jButton_DeleteGroupAlbumSong.setEnabled(status); //.setVisible(status);
+        jButton_AddGroupAlbumSong.setEnabled(status);
+        jButton_DeleteGroupAlbumSong.setEnabled(status);
         
         // set panel title
         TitledBorder border = (TitledBorder)jPanel_AlbumGroupPreview.getBorder();
@@ -2544,6 +2609,26 @@ public class ApplicationForm extends javax.swing.JFrame {
         jTable_GroupAlbumSongs.setEnabled(status);
     }
     
+    public void setEditablePlaylistForm(boolean status, boolean isNew) {
+        // set command buttons
+        jPanel_playlistCRUD_edit1.setVisible(!status);
+        jPanel_playlistCRUD_edit2.setVisible(status);
+        jButton_AddPlaylistSong.setEnabled(status);
+        jButton_DeletePlaylistSong.setEnabled(status);
+        
+        // set panel title
+        TitledBorder border = (TitledBorder)jPanel_PlaylistPreview.getBorder();
+        border.setTitle(status ? (isNew ? "Δημιουργία Εγγραφής" : "Επεξεργασία Στοιχείων"): "Επισκόπηση Στοιχείων");   
+        border.setTitleColor(status ? Color.RED : Color.BLACK);
+        jPanel_PlaylistPreview.repaint();
+
+        // set form fields
+        jTable_Playlist.setEnabled(!status);
+        jTF_playlist_description.setEditable(status);
+        jCal_playlist_dateCreated.setEnabled(status);
+        jTable_playlistSongs.setEnabled(status);
+    }
+
     /**
      * Getters/setters
      */
@@ -2564,6 +2649,15 @@ public class ApplicationForm extends javax.swing.JFrame {
     }
     public javax.swing.JTable getjTable_GroupAlbumSongs() {
         return jTable_GroupAlbumSongs;
+    }
+    public javax.swing.JTable getjTable_Available_Songs() {
+        return jTable_Available_Songs;
+    }
+    public javax.swing.JTable getjTable_Playlist() {
+        return jTable_Playlist;
+    }
+    public javax.swing.JTable getjTable_PlaylistSongs() {
+        return jTable_playlistSongs;
     }
     public javax.swing.JList getjList_GroupArtists() {
         return jList_GroupArtists;
@@ -2616,11 +2710,20 @@ public class ApplicationForm extends javax.swing.JFrame {
     public void setAlbum(Album album) {
         this.album1 = album;
     }
+    public Playlist getPlaylist() {
+        return this.playlist1;
+    }
+    public void setPlaylist(Playlist playlist) {
+        this.playlist1 = playlist;
+    }
     public List<Album> getAlbumList() {
         if (jPanel_ArtistsAlbums.isVisible())
             return this.artistAlbumList;
         else
             return this.groupAlbumList;
+    }
+    public List<Playlist> getPlaylistList() {
+        return this.playlistList;
     }
     public javax.swing.JTextField getjTF_groupalbum_title() {
         return this.jTF_groupalbum_title;
@@ -2633,6 +2736,9 @@ public class ApplicationForm extends javax.swing.JFrame {
     }
     public javax.swing.JSpinner getjSP_artistalbum_diskNumber() {
         return jSP_artistalbum_diskNumber;
+    }
+    public javax.swing.JTextField getjTF_song_search() {
+        return jTF_song_search;
     }
     public boolean isEditMode() {
         return editMode;
@@ -2720,23 +2826,33 @@ public class ApplicationForm extends javax.swing.JFrame {
         }
     }
 
-    private void readSongsForPlaylist(String string) {
-        String criteria = "%" + jTF_song_search.getText().toString().trim() + "%";
-        Query query = this.em.createNativeQuery(
-            "SELECT s.* " 
-                + "FROM app.SONG s "
-                + "INNER JOIN app.ALBUM al ON al.ID=s.ALBUM_ID "
-                + "LEFT JOIN app.ARTIST ar ON ar.ID=al.ARTIST_ID "
-                + "LEFT JOIN app.MUSICGROUP mg ON mg.ID=al.MUSICGROUP_ID "
-                + "WHERE s.TITLE LIKE ? OR ar.ARTISTICNAME LIKE ? OR mg.NAME LIKE ? OR al.TITLE LIKE ?",
-            Song.class
-        ).setParameter(1, criteria)
-         .setParameter(2, criteria)
-         .setParameter(3, criteria)
-         .setParameter(4, criteria);
-        
-        List<Song>songs = query.getResultList();
-        SongTableModel songsFiltered = new SongTableModel(songs);
-        jTable_Available_Songs.setModel(songsFiltered);    }
+    public void prepareSongsForPlaylist() {
+        if (jTable_Available_Songs.getColumnModel().getColumnCount() > 0) {
+            // set duration time format to 00:00 using a cell renderer
+            jTable_Available_Songs.getColumnModel().getColumn(2).setCellRenderer(titleDurationRenderer);
+            // set default column widths
+            jTable_Available_Songs.getColumnModel().getColumn(0).setMinWidth(100);
+            jTable_Available_Songs.getColumnModel().getColumn(1).setMinWidth(100);
+            jTable_Available_Songs.getColumnModel().getColumn(2).setMaxWidth(50);
+        }
+    }
 
+    public void prepareSongsInPlaylist() {
+        int idx = jTable_Playlist.getSelectedRow();
+        Playlist playlist = this.playlistList.get(jTable_Playlist.convertRowIndexToModel(idx));
+        this.songList.clear();
+        this.songList.addAll(playlist.getSongCollection());
+
+        SongTableModel songsInPlaylist = new SongTableModel(this.songList);
+        jTable_playlistSongs.setModel(songsInPlaylist);
+
+        // format table and cells
+        if (jTable_playlistSongs.getColumnModel().getColumnCount() > 0) {
+            jTable_playlistSongs.getColumnModel().getColumn(0).setPreferredWidth(120);
+            jTable_playlistSongs.getColumnModel().getColumn(1).setPreferredWidth(150);
+            //jTable_playlistSongs.getColumnModel().getColumn(1).setCellRenderer(playlistArtistOrGroupRenderer);
+            jTable_playlistSongs.getColumnModel().getColumn(2).setMaxWidth(60);
+            jTable_playlistSongs.getColumnModel().getColumn(2).setCellRenderer(titleDurationRenderer);
+        }
+}
 }

@@ -135,4 +135,22 @@ insert into app.song (ALBUM_ID, TITLE, DURATION, TRACKNR)
      select a.id, 'Take a Pebble (Conclusion)', minute('0:03:14')*60+second('0:03:14'), 2 from app.album a 
       where a.title = 'Welcome Back My Friends to the Show That Never Ends... Ladies and Gentlemen' AND DISKNUMBER=2
 
+-- Playlist
+insert into app.playlist (NAME, CREATIONDATE)
+    values ('Songs Of Fussion Love', date('2015-03-17'));
+
+-- Playlist songs
+insert into app.playlist_song (playlist_id, song_id)
+     select p.id, s.id
+       from app.playlist p, app.song s
+      where p.name = 'Songs Of Fussion Love' and s.title = 'Hoedown';
+insert into app.playlist_song (playlist_id, song_id)
+     select p.id, s.id
+       from app.playlist p, app.song s
+      where p.name = 'Songs Of Fussion Love' and s.title = 'Jerusalem';
+insert into app.playlist_song (playlist_id, song_id)
+     select p.id, s.id
+       from app.playlist p, app.song s
+      where p.name = 'Songs Of Fussion Love' and s.title = 'Here Lies Love';
+
  
