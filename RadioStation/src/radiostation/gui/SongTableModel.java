@@ -6,18 +6,23 @@ import javax.swing.table.AbstractTableModel;
 import radiostation.Song;
 
 public class SongTableModel extends AbstractTableModel {
-    private static final String[] columnNames = {"Σειρά", "Τίτλος Τραγουδιού", "Διάρκεια"};
-    private String[] header;
-    private List<Object[]> songs;
+    private static final String[] columnNames = {"Τίτλος", "Καλλιτέχνης/Συγκρότημα", "Διάρκεια"};
+    private final String[] header;
+    private final List<Object[]> songs1;
     private int songsAdded;
 
     public SongTableModel(List<Song> songs) {
         songsAdded = 0;
         this.header = columnNames;
-        this.songs = new ArrayList<>();
+        this.songs1 = new ArrayList<>();
         if( songs != null && songs.size() > 0 ){
-            for(Song song:songs){   
-                this.songs.add(new Object[]{song.getTracknr(), song.getTitle(), song.getDuration()});
+            for(Song song:songs) {   
+                this.songs1.add(new Object[]{
+                    song.getTitle(),
+                    (song.getAlbumId().getArtistId()!=null) ? song.getAlbumId().getArtistId().getArtisticname()
+                            :song.getAlbumId().getMusicgroupId().getName(), 
+                    song.getDuration()
+                });    
             }
         }
     }
@@ -34,17 +39,17 @@ public class SongTableModel extends AbstractTableModel {
 
     @Override
     public int getRowCount() {
-        return songs.size();
+        return songs1.size();
     }
 
     @Override
     public Object getValueAt(int row, int column) {
-        return songs.get(row)[column];
+        return songs1.get(row)[column];
     }
 
     @Override
     public void setValueAt(Object value, int row, int column) {
-        songs.get(row)[column] = value;
+        songs1.get(row)[column] = value;
         fireTableCellUpdated(row, column);
     }
 
@@ -54,23 +59,23 @@ public class SongTableModel extends AbstractTableModel {
     }
     
     public void addRow(){
-//        int rowsBeforeAddition = getRowCount();
-        songs.add(new Object[header.length]);
+
+        songs1.add(new Object[header.length]);
         songsAdded++;
-//        fireTableRowsInserted((rowsBeforeAddition == 0)?0:rowsBeforeAddition-1, rowsBeforeAddition);
-        fireTableRowsInserted(0, (songs.isEmpty())?0:songs.size()-1);
+
+        fireTableRowsInserted(0, (songs1.isEmpty())?0:songs1.size()-1);
     }
     
     public void deleteRow(int index){
-        if( index <= songs.size()-1 && index >= songs.size()-songsAdded ){
+        if( index <= songs1.size()-1 && index >= songs1.size()-songsAdded ){
             songsAdded--;
         }
-        songs.remove(index);
-        fireTableRowsDeleted(0, (songs.isEmpty())?0:songs.size()-1);
+        songs1.remove(index);
+        fireTableRowsDeleted(0, (songs1.isEmpty())?0:songs1.size()-1);
     }
 
     public List<Object[]> getSongs() {
-        return songs;
+        return songs1;
     }
 
     public int getSongsAdded() {
