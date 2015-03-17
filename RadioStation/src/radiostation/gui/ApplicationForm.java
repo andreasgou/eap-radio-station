@@ -19,6 +19,7 @@ import javax.swing.event.ListSelectionListener;
 import radiostation.Album;
 import radiostation.Artist;
 import radiostation.MusicGroup;
+import radiostation.Playlist;
 import radiostation.Song;
 import radiostation.jpa.ArtistJpaController;
 import radiostation.jpa.MusicGroupJpaController;
@@ -238,11 +239,11 @@ public class ApplicationForm extends javax.swing.JFrame {
         jLabel30 = new javax.swing.JLabel();
         jTF_songlist_description = new javax.swing.JTextField();
         jLabel31 = new javax.swing.JLabel();
-        jFTF_songlist_datecreated = new javax.swing.JFormattedTextField();
         jScrollPane2 = new javax.swing.JScrollPane();
         jTable_playlistSongs = new javax.swing.JTable();
         jButton_AddSong = new javax.swing.JButton();
         jButton_DeleteSong = new javax.swing.JButton();
+        jFTF_songlist_datecreated = new com.toedter.calendar.JDateChooser();
 
         artistRenderer.setText("artistRenderer1");
 
@@ -612,7 +613,7 @@ public class ApplicationForm extends javax.swing.JFrame {
                 .addGroup(jPanel_ArtistPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel3)
                     .addComponent(jCAL_artist_birthdate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 6, Short.MAX_VALUE)
                 .addGroup(jPanel_ArtistPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel13)
                     .addComponent(jRB_male)
@@ -1565,14 +1566,17 @@ public class ApplicationForm extends javax.swing.JFrame {
         jPanel_SongMgr.add(jButton_SongLists_GoMenu, new org.netbeans.lib.awtextra.AbsoluteConstraints(690, 570, -1, -1));
 
         jTable_Playlist.setColumnSelectionAllowed(true);
+        jTable_Playlist.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
 
         jTableBinding = org.jdesktop.swingbinding.SwingBindings.createJTableBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, playlistList, jTable_Playlist);
         columnBinding = jTableBinding.addColumnBinding(org.jdesktop.beansbinding.ELProperty.create("${name}"));
         columnBinding.setColumnName("Περιγραφή");
         columnBinding.setColumnClass(String.class);
+        columnBinding.setEditable(false);
         columnBinding = jTableBinding.addColumnBinding(org.jdesktop.beansbinding.ELProperty.create("${creationdate}"));
         columnBinding.setColumnName("Ημερομηνία Δημιουργίας");
         columnBinding.setColumnClass(java.util.Date.class);
+        columnBinding.setEditable(false);
         bindingGroup.addBinding(jTableBinding);
         jTableBinding.bind();
         jScrollPane11.setViewportView(jTable_Playlist);
@@ -1614,6 +1618,11 @@ public class ApplicationForm extends javax.swing.JFrame {
         jButton_ExportXML.setText("Εξαγωγή σε");
         jButton_ExportXML.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jButton_ExportXML.setVerticalTextPosition(javax.swing.SwingConstants.TOP);
+        jButton_ExportXML.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton_ExportXMLActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel_playlistCRUD_edit1Layout = new javax.swing.GroupLayout(jPanel_playlistCRUD_edit1);
         jPanel_playlistCRUD_edit1.setLayout(jPanel_playlistCRUD_edit1Layout);
@@ -1659,7 +1668,7 @@ public class ApplicationForm extends javax.swing.JFrame {
 
         jPanel_playlistCRUD_cmd.add(jPanel_playlistCRUD_edit1, "card2");
 
-        jPanel_playlistCRUD_edit2.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Αναζήτηση", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, null, new java.awt.Color(0, 0, 255)));
+        jPanel_playlistCRUD_edit2.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Αναζήτηση", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 0, 11), new java.awt.Color(0, 0, 255))); // NOI18N
 
         jTable_Available_Songs.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
         jTable_Available_Songs.setModel(new javax.swing.table.DefaultTableModel(
@@ -1746,11 +1755,6 @@ public class ApplicationForm extends javax.swing.JFrame {
 
         jLabel31.setText("Ημ/νια Δημιουργίας:");
 
-        jFTF_songlist_datecreated.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.DateFormatter(java.text.DateFormat.getDateInstance(java.text.DateFormat.LONG))));
-
-        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, jTable_Playlist, org.jdesktop.beansbinding.ELProperty.create("${selectedElement.creationdate}"), jFTF_songlist_datecreated, org.jdesktop.beansbinding.BeanProperty.create("value"));
-        bindingGroup.addBinding(binding);
-
         org.jdesktop.beansbinding.ELProperty eLProperty = org.jdesktop.beansbinding.ELProperty.create("${selectedElement.songCollection}");
         jTableBinding = org.jdesktop.swingbinding.SwingBindings.createJTableBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, jTable_Playlist, eLProperty, jTable_playlistSongs);
         columnBinding = jTableBinding.addColumnBinding(org.jdesktop.beansbinding.ELProperty.create("${title}"));
@@ -1786,13 +1790,13 @@ public class ApplicationForm extends javax.swing.JFrame {
                     .addComponent(jLabel30)
                     .addComponent(jLabel31))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel_SongListsPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jFTF_songlist_datecreated, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jTF_songlist_description, javax.swing.GroupLayout.PREFERRED_SIZE, 245, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(jPanel_SongListsPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jTF_songlist_description, javax.swing.GroupLayout.DEFAULT_SIZE, 245, Short.MAX_VALUE)
+                    .addComponent(jFTF_songlist_datecreated, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(jPanel_SongListsPreviewLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 476, Short.MAX_VALUE)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 468, Short.MAX_VALUE)
                 .addContainerGap())
             .addGroup(jPanel_SongListsPreviewLayout.createSequentialGroup()
                 .addGap(82, 82, 82)
@@ -1809,9 +1813,9 @@ public class ApplicationForm extends javax.swing.JFrame {
                     .addComponent(jLabel30)
                     .addComponent(jTF_songlist_description, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel_SongListsPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jFTF_songlist_datecreated, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel31))
+                .addGroup(jPanel_SongListsPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel31)
+                    .addComponent(jFTF_songlist_datecreated, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 382, Short.MAX_VALUE)
                 .addGap(18, 18, 18)
@@ -1832,18 +1836,18 @@ public class ApplicationForm extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 796, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(63, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 702, Short.MAX_VALUE))
         );
 
         bindingGroup.bind();
 
-        setSize(new java.awt.Dimension(808, 668));
+        setSize(new java.awt.Dimension(885, 751));
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
@@ -2222,6 +2226,20 @@ public class ApplicationForm extends javax.swing.JFrame {
         jPanel_playlistCRUD_edit1.setVisible(true);
         jPanel_playlistCRUD_edit2.setVisible(false);
     }//GEN-LAST:event_jButton_CancelSongListActionPerformed
+
+    private void jButton_ExportXMLActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_ExportXMLActionPerformed
+        int idx = this.getjTable_Playlist().getSelectedRow();
+        Playlist playlist= this.playlistList.get(idx);
+        List <Song> songs=null;
+        /*Query q1=this.em.createNativeQuery("SELECT s.*FROM SONG s "
+                + "INNER JOIN app.PLAYLIST_SONG ps ON s.ID=ps.PLAYLIST_ID "
+                + "JOIN app.PLAYLIST p ON ps.PLAYLIST_ID=p.ID "
+                + "WHERE p.ID="+playlist.getId());//,Song.class).setParameter("id",playlist1.getId());
+        List <Song> songs2=q1.getResultList();*/
+        //ή χωρίς 
+        songs=(List)playlist.getSongCollection();
+        WriteXMLFile.WriteXMLFile(playlist ,songs);    
+    }//GEN-LAST:event_jButton_ExportXMLActionPerformed
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private radiostation.Album album1;
@@ -2294,7 +2312,7 @@ public class ApplicationForm extends javax.swing.JFrame {
     private javax.swing.JComboBox jCombo_artisttalbum_artist;
     private javax.swing.JComboBox jCombo_groupalbum_company;
     private javax.swing.JComboBox jCombo_grouptalbum_artist;
-    private javax.swing.JFormattedTextField jFTF_songlist_datecreated;
+    private com.toedter.calendar.JDateChooser jFTF_songlist_datecreated;
     private javax.swing.JLabel jL_artistalbum_diskNumber;
     private javax.swing.JLabel jL_groupalbum_diskNumber;
     private javax.swing.JLabel jLabel1;
@@ -2420,6 +2438,7 @@ public class ApplicationForm extends javax.swing.JFrame {
     private ArtistJpaController jpaArtist;
     private MusicGroupJpaController jpaMusicGroup;
     private AlbumJpaController jpaGroupAlbum;
+    private WriteXMLFile writeXML;
     private Object clonedObj;
     private java.util.List<radiostation.Song> songsToRemoveList;
     private final List<String> sex = new ArrayList(Arrays.asList("M","F"));
@@ -2553,6 +2572,9 @@ public class ApplicationForm extends javax.swing.JFrame {
     public javax.swing.JTable getjTable_Groups() {
         return jTable_Groups;
     }
+    public javax.swing.JTable getjTable_Playlist() {
+        return jTable_Playlist;
+    }
     public javax.swing.JTable getjTable_AlbumGroups() {
         return jTable_AlbumGroups;
     }
@@ -2598,6 +2620,10 @@ public class ApplicationForm extends javax.swing.JFrame {
     public List<MusicGroup> getMusicGroupList() {
         return this.musicGroupList;
     }
+    public List<Playlist> getPlaylistList() {
+        return this.playlistList;
+    }
+    
     public java.util.List<radiostation.Song> getSongList() {
         return songList;
     }
@@ -2624,6 +2650,9 @@ public class ApplicationForm extends javax.swing.JFrame {
     }
     public javax.swing.JTextField getjTF_groupalbum_title() {
         return this.jTF_groupalbum_title;
+    }
+    public javax.swing.JTextField getjTF_songlist_description() {
+        return this.jTF_songlist_description;
     }
     public javax.swing.JTextField getjTF_artistalbum_title() {
         return this.jTF_artistalbum_title;
@@ -2720,7 +2749,7 @@ public class ApplicationForm extends javax.swing.JFrame {
         }
     }
 
-    private void readSongsForPlaylist(String string) {
+    public void readSongsForPlaylist(String string) {
         String criteria = "%" + jTF_song_search.getText().toString().trim() + "%";
         Query query = this.em.createNativeQuery(
             "SELECT s.* " 
@@ -2737,6 +2766,9 @@ public class ApplicationForm extends javax.swing.JFrame {
         
         List<Song>songs = query.getResultList();
         SongTableModel songsFiltered = new SongTableModel(songs);
-        jTable_Available_Songs.setModel(songsFiltered);    }
-
+        jTable_Available_Songs.setModel(songsFiltered);    
+    
+    }      
+    
+    
 }
