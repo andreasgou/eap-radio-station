@@ -198,7 +198,7 @@ public class PlaylistJpaController implements Serializable {
             form.setClonedObj(playlist.clone());
             // enable edit form 
             form.setSongsToRemoveList(new ArrayList<Song>());
-            form.setSongList((List)playlist.getSongCollection());
+            form.setSongInAlbumGroupList((List)playlist.getSongCollection());
 
             // Initialize search list for songs
             List<Song>songs = readSongsForPlaylist(form.getjTF_song_search().getText().toString().trim(), form);
@@ -335,7 +335,6 @@ public class PlaylistJpaController implements Serializable {
         Playlist playlist = form.getPlaylist();
         playlist.getSongCollection().add(song);
         // append to GUI control's bounded list
-        //form.getSongList().add(song);
         ((SongTableModel)form.getjTable_PlaylistSongs().getModel()).addSong(song);
     }
 
@@ -345,7 +344,7 @@ public class PlaylistJpaController implements Serializable {
         } else {
             javax.swing.JTable targetList = form.getjTable_PlaylistSongs();
             int idx = targetList.getSelectedRow();
-            Song song = form.getSongList().get(targetList.convertRowIndexToModel(idx));
+            Song song = form.getSongInAlbumGroupList().get(targetList.convertRowIndexToModel(idx));
             form.getPlaylist().getSongCollection().remove(song);
             ((SongTableModel)form.getjTable_PlaylistSongs().getModel()).deleteRow(idx);
         }
@@ -365,8 +364,8 @@ public class PlaylistJpaController implements Serializable {
         int idx = sourceList.getRowCount()-1;
         sourceList.setRowSelectionInterval(idx, idx);
         // reset the list
-        form.getSongList().clear();
-        SongTableModel songsInPlaylist = new SongTableModel(form.getSongList());
+        form.getSongInAlbumGroupList().clear();
+        SongTableModel songsInPlaylist = new SongTableModel(form.getSongInAlbumGroupList());
         form.getjTable_PlaylistSongs().setModel(songsInPlaylist);
 
         // Initialize search list for songs

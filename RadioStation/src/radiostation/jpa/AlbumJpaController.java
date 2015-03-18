@@ -48,9 +48,6 @@ public class AlbumJpaController implements Serializable {
         if (album.getAlbumCollection() == null) {
             album.setAlbumCollection(new ArrayList<Album>());
         }
-        if (album.getSongCollection() == null) {
-            album.setSongCollection(new ArrayList<Song>());
-        }
         EntityManager em = null;
         try {
             em = getEntityManager();
@@ -379,7 +376,12 @@ public class AlbumJpaController implements Serializable {
         album1.setAlbumCollection(new ArrayList<Album>());
         
         // add the new entry to the table
-        form.getAlbumList().add(album1);
+        //form.getAlbumList().add(album1);
+        if (sourceList.equals(form.getjTable_AlbumArtists())) {
+            form.getArtistAlbumList().add(album1);
+        } else {
+            form.getGroupAlbumList().add(album1);
+        }
         int idx = sourceList.getRowCount()-1;
         sourceList.setRowSelectionInterval(idx, idx);
         addSongInAlbum(form, sourceList);
@@ -395,26 +397,28 @@ public class AlbumJpaController implements Serializable {
         }
     }
 
-   /* public void destroyAlbum(ApplicationForm form) {
-        if (form. getjTable_AlbumGroups().getSelectedRow() < 0) {
+    public void destroyAlbum(ApplicationForm form, javax.swing.JTable sourceList) {
+        if (sourceList.getSelectedRow() < 0) {
             Utility.msgWarning(form, "Δεν έχετε επιλέξει εγγραφή για διαγραφή", "Επεξεργασία Αλμπουμ");
             return;
         }
         try {
-            int idx = form. getjTable_AlbumGroups().getSelectedRow();
+            int idx = sourceList.getSelectedRow();
             Album album1 = form.getAlbumList().get(idx);
             int ans = Utility.msgPrompt(form, album1.getTitle()+ "\n\nΕίσαι σίγουρος για τη διαγραφή?", "Διαγραφή Αλμπουμ");
             if (ans == 0) {
                 form.getAlbumList().remove(album1);
                 this.destroy(album1.getId());
                 Utility.msgInfo(form, "Η διαγραφή ολοκληρώθηκε επιτυχώς!");
-                form. getjTable_AlbumGroups().setRowSelectionInterval(idx-1, idx-1);
+                sourceList.setRowSelectionInterval(idx-1, idx-1);
             }
             
         } catch (NonexistentEntityException ex) {
             Logger.getLogger(ApplicationForm.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IllegalOrphanException ex) {
+            Logger.getLogger(AlbumJpaController.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }*/
+    }
 
     public void editAlbum(ApplicationForm form, javax.swing.JTable sourceList) {
         if (sourceList.getSelectedRow() < 0) {
@@ -554,13 +558,16 @@ public class AlbumJpaController implements Serializable {
         Song songToAlbum =  new Song(null, 0, (short)(row+1));
         List songInAlbumList = (List)album1.getSongCollection();
         songInAlbumList.add (songToAlbum);
-        // append to GUI control's bounded list
-        form.getSongList().add(songToAlbum);
         
-        if (sourceList.equals(form.getjTable_AlbumArtists()))
+        if (sourceList.equals(form.getjTable_AlbumArtists())) {
+            // append to GUI control's bounded list
+            form.getSongInAlbumArtistList().add(songToAlbum);
             targetList = form.getjTable_ArtistAlbumSongs();
-        else
+        } else {
+            // append to GUI control's bounded list
+            form.getSongInAlbumGroupList().add(songToAlbum);
             targetList = form.getjTable_GroupAlbumSongs();
+        }
         // ensure we can select cells
         targetList.setColumnSelectionAllowed(true);
         // set focus on table
@@ -573,18 +580,22 @@ public class AlbumJpaController implements Serializable {
 
     public void removeSongFromAlbum(ApplicationForm form, javax.swing.JTable sourceList) {
         javax.swing.JTable targetList;
+        List<radiostation.Song> songList = null;
         if (sourceList.getSelectedRow() < 0) {
             Utility.msgWarning(form, "Δεν έχετε επιλέξει τραγούδι για αφαίρεση", "Επεξεργασία άλμπουμ");
         } else {
-            if (sourceList.equals(form.getjTable_AlbumArtists()))
+            if (sourceList.equals(form.getjTable_AlbumArtists())) {
                 targetList = form.getjTable_ArtistAlbumSongs();
-            else
+                songList = form.getSongInAlbumArtistList();
+            } else {
                 targetList = form.getjTable_GroupAlbumSongs();
+                songList = form.getSongInAlbumGroupList();
+            }
             int idx = targetList.getSelectedRow();
-            Song song = form.getSongList().get(targetList.convertRowIndexToModel(idx));
+            Song song = songList.get(targetList.convertRowIndexToModel(idx));
             int ans = Utility.msgPrompt(form, song.getTitle()+ "\n\nΕίσαι σίγουρος για τη διαγραφή?", "Διαγραφή Τραγουδιού");
             if (ans == 0) {
-                form.getSongList().remove(song);
+                songList.remove(song);
                 //List songInAlbumList = (List)form.getAlbum().getSongCollection();
                 Album album = form.getAlbum();
                 if (album.isLongPlay()) {
