@@ -18,7 +18,6 @@ import radiostation.Album;
 import radiostation.Song;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -571,7 +570,6 @@ public class AlbumJpaController implements Serializable {
         Song songToAlbum =  new Song(null, 0, (short)(row+1));
         List songInAlbumList = (List)album1.getSongCollection();
         songInAlbumList.add (songToAlbum);
-        songToAlbum.setAlbumId(album1);
         
         if (sourceList.equals(form.getjTable_AlbumArtists())) {
             // append to GUI control's bounded list
