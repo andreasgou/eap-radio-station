@@ -32,7 +32,7 @@ import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
- * @author user
+ * @author Omada-3
  */
 @Entity
 @Table(name = "ALBUM")
@@ -237,6 +237,9 @@ public class Album implements Serializable, Cloneable {
         changeSupport.removePropertyChangeListener(listener);
     }
     
+    /*
+     * Clone object in required 
+    */
     @Override
     public Object clone() throws CloneNotSupportedException {
         Object clone = super.clone();
