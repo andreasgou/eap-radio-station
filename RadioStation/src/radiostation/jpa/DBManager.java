@@ -2,13 +2,14 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package radiostation;
+package radiostation.jpa;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 
 /**
  *
- * @author theo
+ * @author gounaris
  */
 public class DBManager {
     private static DBManager instance;
@@ -26,5 +27,9 @@ public class DBManager {
             DBManager.instance = new DBManager(pu_name);
         }
         return DBManager.pu;
+    }
+    
+    public static EntityManagerFactory createEmFactory(String pu_name) {
+        return javax.persistence.Persistence.createEntityManagerFactory(pu_name);
     }
 }

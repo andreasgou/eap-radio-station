@@ -5,6 +5,7 @@
  */
 package radiostation;
 
+import radiostation.jpa.DBManager;
 import radiostation.gui.ApplicationForm;
 
 /**
