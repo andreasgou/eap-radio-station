@@ -145,7 +145,6 @@
         <Property name="observable" type="boolean" value="true"/>
       </Properties>
       <AuxValues>
-        <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="java.beans.Beans.isDesignTime() ? java.util.Collections.emptyList() : artistAlbumQuery.getResultList()"/>
         <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;radiostation.Album&gt;"/>
       </AuxValues>
     </Component>
@@ -172,7 +171,18 @@
         <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;radiostation.MusicProductionCompany&gt;"/>
       </AuxValues>
     </Component>
-    <Component class="java.util.List" name="songList">
+    <Component class="java.util.List" name="songInAlbumArtistList">
+      <Properties>
+        <Property name="query" type="java.lang.Object" editor="org.netbeans.modules.form.j2ee.J2EEPropertyModifier$QueryBeanProperty$QueryEditor">
+          <ComponentRef name="songQuery"/>
+        </Property>
+        <Property name="observable" type="boolean" value="true"/>
+      </Properties>
+      <AuxValues>
+        <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;radiostation.Song&gt;"/>
+      </AuxValues>
+    </Component>
+    <Component class="java.util.List" name="songInAlbumGroupList">
       <Properties>
         <Property name="query" type="java.lang.Object" editor="org.netbeans.modules.form.j2ee.J2EEPropertyModifier$QueryBeanProperty$QueryEditor">
           <ComponentRef name="songQuery"/>
@@ -1034,6 +1044,9 @@
                                 </Column>
                               </TableColumnModel>
                             </Property>
+                            <Property name="selectionModel" type="javax.swing.ListSelectionModel" editor="org.netbeans.modules.form.editors2.JTableSelectionModelEditor">
+                              <JTableSelectionModel selectionMode="0"/>
+                            </Property>
                             <Property name="tableHeader" type="javax.swing.table.JTableHeader" editor="org.netbeans.modules.form.editors2.JTableHeaderEditor">
                               <TableHeader reorderingAllowed="true" resizingAllowed="true"/>
                             </Property>
@@ -1041,7 +1054,7 @@
                           <BindingProperties>
                             <BindingProperty name="elements" source="artistAlbumList" target="jTable_AlbumArtists" targetPath="elements" updateStrategy="0" immediately="true">
                               <Subbinding sourcePath="${title}">
-                                <BindingParameter name="NAME" value="&#x3a4;&#x3af;&#x3c4;&#x3bb;&#x3bf;&#x3b9;"/>
+                                <BindingParameter name="NAME" value="&#x3a4;&#x3af;&#x3c4;&#x3bb;&#x3bf;&#x3c2; &#x391;&#x3bb;&#x3bc;&#x3c0;&#x3bf;&#x3c5;&#x3bc;"/>
                                 <BindingParameter name="javax.swing.binding.ParameterKeys.COLUMN_CLASS" value="String.class"/>
                               </Subbinding>
                             </BindingProperty>
@@ -1052,6 +1065,7 @@
                           <AuxValues>
                             <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new javax.swing.JTable()"/>
                             <AuxValue name="JavaCodeGenerator_ListenersCodePost" type="java.lang.String" value="jTable_AlbumArtists.getSelectionModel().addListSelectionListener(new ListSelectionListener(){&#xa;        public void valueChanged(ListSelectionEvent evt) {&#xa;            // do some actions here, for example&#xa;            // print first column value from selected row&#xa;            jTable_AlbumArtistsRowSelectionChanged(evt);&#xa;        }&#xa;    });"/>
+                            <AuxValue name="JavaCodeGenerator_SerializeTo" type="java.lang.String" value="ApplicationForm_jTable_AlbumArtists"/>
                           </AuxValues>
                         </Component>
                       </SubComponents>
@@ -1229,7 +1243,7 @@
                           </Properties>
                           <BindingProperties>
                             <BindingProperty name="elements" source="artistList" target="jCombo_artisttalbum_artist" targetPath="elements" updateStrategy="0" immediately="false"/>
-                            <BindingProperty name="selectedItem" source="jTable_AlbumArtists" sourcePath="${selectedElement.artistId.artisticname}" target="jCombo_artisttalbum_artist" targetPath="selectedItem" updateStrategy="0" immediately="false"/>
+                            <BindingProperty name="selectedItem" source="jTable_AlbumArtists" sourcePath="${selectedElement.artistId}" target="jCombo_artisttalbum_artist" targetPath="selectedItem" updateStrategy="0" immediately="false"/>
                           </BindingProperties>
                         </Component>
                         <Component class="javax.swing.JLabel" name="jLabel28">
@@ -1245,7 +1259,7 @@
                           </Properties>
                           <BindingProperties>
                             <BindingProperty name="elements" source="productionCompanyList" target="jCombo_artistalbum_company" targetPath="elements" updateStrategy="0" immediately="false"/>
-                            <BindingProperty name="selectedItem" source="jTable_AlbumArtists" sourcePath="${selectedElement.companyId.name}" target="jCombo_artistalbum_company" targetPath="selectedItem" updateStrategy="0" immediately="false"/>
+                            <BindingProperty name="selectedItem" source="jTable_AlbumArtists" sourcePath="${selectedElement.companyId}" target="jCombo_artistalbum_company" targetPath="selectedItem" updateStrategy="0" immediately="false"/>
                           </BindingProperties>
                         </Component>
                         <Component class="javax.swing.JLabel" name="jLabel29">
@@ -1352,17 +1366,14 @@
                                 </Property>
                               </Properties>
                               <BindingProperties>
-                                <BindingProperty name="elements" source="songList" target="jTable_ArtistAlbumSongs" targetPath="elements" updateStrategy="0" immediately="true">
+                                <BindingProperty name="elements" source="songInAlbumArtistList" target="jTable_ArtistAlbumSongs" targetPath="elements" updateStrategy="0" immediately="true">
                                   <Subbinding sourcePath="${tracknr}">
-                                    <BindingParameter name="NAME" value="&#x3a3;&#x3b5;&#x3b9;&#x3c1;&#x3ac;"/>
                                     <BindingParameter name="javax.swing.binding.ParameterKeys.COLUMN_CLASS" value="Short.class"/>
                                   </Subbinding>
                                   <Subbinding sourcePath="${title}">
-                                    <BindingParameter name="NAME" value="&#x3a4;&#x3af;&#x3c4;&#x3bb;&#x3bf;&#x3c2; &#x3a4;&#x3c1;&#x3b1;&#x3b3;&#x3bf;&#x3c5;&#x3b4;&#x3b9;&#x3bf;&#x3cd;"/>
                                     <BindingParameter name="javax.swing.binding.ParameterKeys.COLUMN_CLASS" value="String.class"/>
                                   </Subbinding>
                                   <Subbinding sourcePath="${duration}">
-                                    <BindingParameter name="NAME" value="&#x394;&#x3b9;&#x3ac;&#x3c1;&#x3ba;&#x3b5;&#x3b9;&#x3b1;"/>
                                     <BindingParameter name="javax.swing.binding.ParameterKeys.COLUMN_CLASS" value="Integer.class"/>
                                   </Subbinding>
                                 </BindingProperty>
@@ -1947,6 +1958,7 @@
                           <BindingProperties>
                             <BindingProperty name="elements" source="groupAlbumList" target="jTable_AlbumGroups" targetPath="elements" updateStrategy="0" immediately="true">
                               <Subbinding sourcePath="${title}">
+                                <BindingParameter name="NAME" value="&#x3a4;&#x3af;&#x3c4;&#x3bb;&#x3bf;&#x3c2; &#x391;&#x3bb;&#x3bc;&#x3c0;&#x3bf;&#x3c5;&#x3bc;"/>
                                 <BindingParameter name="javax.swing.binding.ParameterKeys.COLUMN_CLASS" value="String.class"/>
                               </Subbinding>
                             </BindingProperty>
@@ -2259,7 +2271,7 @@
                                 </Property>
                               </Properties>
                               <BindingProperties>
-                                <BindingProperty name="elements" source="songList" target="jTable_GroupAlbumSongs" targetPath="elements" updateStrategy="0" immediately="true">
+                                <BindingProperty name="elements" source="songInAlbumGroupList" target="jTable_GroupAlbumSongs" targetPath="elements" updateStrategy="0" immediately="true">
                                   <Subbinding sourcePath="${tracknr}">
                                     <BindingParameter name="NAME" value="Tracknr"/>
                                     <BindingParameter name="javax.swing.binding.ParameterKeys.COLUMN_CLASS" value="Short.class"/>

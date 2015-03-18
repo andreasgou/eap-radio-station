@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.EntityManager;
-import javax.persistence.Query;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -74,10 +73,11 @@ public class ApplicationForm extends javax.swing.JFrame {
         artistList = java.beans.Beans.isDesignTime() ? java.util.Collections.emptyList() : org.jdesktop.observablecollections.ObservableCollections.observableList(artistQuery.getResultList());
         musicGroupList = java.beans.Beans.isDesignTime() ? java.util.Collections.emptyList() : org.jdesktop.observablecollections.ObservableCollections.observableList(musicGroupQuery.getResultList());
         artistInGroupList = java.beans.Beans.isDesignTime() ? java.util.Collections.emptyList() : org.jdesktop.observablecollections.ObservableCollections.observableList((List)new ArrayList<Artist>());
-        artistAlbumList = java.beans.Beans.isDesignTime() ? java.util.Collections.emptyList() : artistAlbumQuery.getResultList();
+        artistAlbumList = java.beans.Beans.isDesignTime() ? java.util.Collections.emptyList() : org.jdesktop.observablecollections.ObservableCollections.observableList(artistAlbumQuery.getResultList());
         groupAlbumList = java.beans.Beans.isDesignTime() ? java.util.Collections.emptyList() : org.jdesktop.observablecollections.ObservableCollections.observableList(groupAlbumQuery.getResultList());
         productionCompanyList = java.beans.Beans.isDesignTime() ? java.util.Collections.emptyList() : org.jdesktop.observablecollections.ObservableCollections.observableList(productionCompanyQuery.getResultList());
-        songList = java.beans.Beans.isDesignTime() ? java.util.Collections.emptyList() : org.jdesktop.observablecollections.ObservableCollections.observableList(songQuery.getResultList());
+        songInAlbumArtistList = java.beans.Beans.isDesignTime() ? java.util.Collections.emptyList() : org.jdesktop.observablecollections.ObservableCollections.observableList(songQuery.getResultList());
+        songInAlbumGroupList = java.beans.Beans.isDesignTime() ? java.util.Collections.emptyList() : org.jdesktop.observablecollections.ObservableCollections.observableList(songQuery.getResultList());
         playlistList = java.beans.Beans.isDesignTime() ? java.util.Collections.emptyList() : org.jdesktop.observablecollections.ObservableCollections.observableList(playlistQuery.getResultList());
         artist1 = new radiostation.Artist();
         musicGroup1 = new radiostation.MusicGroup();
@@ -714,9 +714,11 @@ public class ApplicationForm extends javax.swing.JFrame {
         jPanel_ArtistsAlbums.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Αλμπουμ Καλλιτεχνών", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Arial Narrow", 0, 24), new java.awt.Color(255, 0, 102))); // NOI18N
         jPanel_ArtistsAlbums.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
+        jTable_AlbumArtists.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+
         jTableBinding = org.jdesktop.swingbinding.SwingBindings.createJTableBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, artistAlbumList, jTable_AlbumArtists);
         columnBinding = jTableBinding.addColumnBinding(org.jdesktop.beansbinding.ELProperty.create("${title}"));
-        columnBinding.setColumnName("Τίτλοι");
+        columnBinding.setColumnName("Τίτλος Αλμπουμ");
         columnBinding.setColumnClass(String.class);
         bindingGroup.addBinding(jTableBinding);
         jTableBinding.bind();
@@ -755,7 +757,7 @@ public class ApplicationForm extends javax.swing.JFrame {
 
         jComboBoxBinding = org.jdesktop.swingbinding.SwingBindings.createJComboBoxBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, artistList, jCombo_artisttalbum_artist);
         bindingGroup.addBinding(jComboBoxBinding);
-        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, jTable_AlbumArtists, org.jdesktop.beansbinding.ELProperty.create("${selectedElement.artistId.artisticname}"), jCombo_artisttalbum_artist, org.jdesktop.beansbinding.BeanProperty.create("selectedItem"));
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, jTable_AlbumArtists, org.jdesktop.beansbinding.ELProperty.create("${selectedElement.artistId}"), jCombo_artisttalbum_artist, org.jdesktop.beansbinding.BeanProperty.create("selectedItem"));
         bindingGroup.addBinding(binding);
 
         jLabel28.setText("Εταιρεία Παραγωγής:");
@@ -764,7 +766,7 @@ public class ApplicationForm extends javax.swing.JFrame {
 
         jComboBoxBinding = org.jdesktop.swingbinding.SwingBindings.createJComboBoxBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, productionCompanyList, jCombo_artistalbum_company);
         bindingGroup.addBinding(jComboBoxBinding);
-        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, jTable_AlbumArtists, org.jdesktop.beansbinding.ELProperty.create("${selectedElement.companyId.name}"), jCombo_artistalbum_company, org.jdesktop.beansbinding.BeanProperty.create("selectedItem"));
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, jTable_AlbumArtists, org.jdesktop.beansbinding.ELProperty.create("${selectedElement.companyId}"), jCombo_artistalbum_company, org.jdesktop.beansbinding.BeanProperty.create("selectedItem"));
         bindingGroup.addBinding(binding);
 
         jLabel29.setText("Ημερ./νία Κυκλοφορίας:");
@@ -817,15 +819,15 @@ public class ApplicationForm extends javax.swing.JFrame {
         jTable_ArtistAlbumSongs.setColumnSelectionAllowed(true);
         jTable_ArtistAlbumSongs.getTableHeader().setReorderingAllowed(false);
 
-        jTableBinding = org.jdesktop.swingbinding.SwingBindings.createJTableBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, songList, jTable_ArtistAlbumSongs);
+        jTableBinding = org.jdesktop.swingbinding.SwingBindings.createJTableBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, songInAlbumArtistList, jTable_ArtistAlbumSongs);
         columnBinding = jTableBinding.addColumnBinding(org.jdesktop.beansbinding.ELProperty.create("${tracknr}"));
-        columnBinding.setColumnName("Σειρά");
+        columnBinding.setColumnName("Tracknr");
         columnBinding.setColumnClass(Short.class);
         columnBinding = jTableBinding.addColumnBinding(org.jdesktop.beansbinding.ELProperty.create("${title}"));
-        columnBinding.setColumnName("Τίτλος Τραγουδιού");
+        columnBinding.setColumnName("Title");
         columnBinding.setColumnClass(String.class);
         columnBinding = jTableBinding.addColumnBinding(org.jdesktop.beansbinding.ELProperty.create("${duration}"));
-        columnBinding.setColumnName("Διάρκεια");
+        columnBinding.setColumnName("Duration");
         columnBinding.setColumnClass(Integer.class);
         bindingGroup.addBinding(jTableBinding);
         jTableBinding.bind();
@@ -1240,7 +1242,7 @@ public class ApplicationForm extends javax.swing.JFrame {
 
         jTableBinding = org.jdesktop.swingbinding.SwingBindings.createJTableBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, groupAlbumList, jTable_AlbumGroups);
         columnBinding = jTableBinding.addColumnBinding(org.jdesktop.beansbinding.ELProperty.create("${title}"));
-        columnBinding.setColumnName("Title");
+        columnBinding.setColumnName("Τίτλος Αλμπουμ");
         columnBinding.setColumnClass(String.class);
         bindingGroup.addBinding(jTableBinding);
         jTableBinding.bind();
@@ -1341,7 +1343,7 @@ public class ApplicationForm extends javax.swing.JFrame {
         jTable_GroupAlbumSongs.setColumnSelectionAllowed(true);
         jTable_GroupAlbumSongs.getTableHeader().setReorderingAllowed(false);
 
-        jTableBinding = org.jdesktop.swingbinding.SwingBindings.createJTableBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, songList, jTable_GroupAlbumSongs);
+        jTableBinding = org.jdesktop.swingbinding.SwingBindings.createJTableBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, songInAlbumGroupList, jTable_GroupAlbumSongs);
         columnBinding = jTableBinding.addColumnBinding(org.jdesktop.beansbinding.ELProperty.create("${tracknr}"));
         columnBinding.setColumnName("Tracknr");
         columnBinding.setColumnClass(Short.class);
@@ -1570,6 +1572,8 @@ public class ApplicationForm extends javax.swing.JFrame {
             }
         });
         jPanel_SongMgr.add(jButton_SongLists_GoMenu, new org.netbeans.lib.awtextra.AbsoluteConstraints(690, 570, -1, -1));
+
+        jTable_Playlist.setColumnSelectionAllowed(true);
 
         jTableBinding = org.jdesktop.swingbinding.SwingBindings.createJTableBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, playlistList, jTable_Playlist);
         columnBinding = jTableBinding.addColumnBinding(org.jdesktop.beansbinding.ELProperty.create("${name}"));
@@ -1957,7 +1961,7 @@ public class ApplicationForm extends javax.swing.JFrame {
                 jSP_artistalbum_diskNumber.setVisible(false);
                 jL_artistalbum_diskNumber.setVisible(false);
                 jButton_artistalbum_addDisk.setVisible(false);
-                this.songList.clear();
+                this.songInAlbumGroupList.clear();
             } else {
                 prepareArtistAlbumSongList();
             }
@@ -1988,7 +1992,7 @@ public class ApplicationForm extends javax.swing.JFrame {
                 jSP_groupalbum_diskNumber.setVisible(false);
                 jL_groupalbum_diskNumber.setVisible(false);
                 jButton_groupalbum_addDisk.setVisible(false);
-                this.songList.clear();
+                this.songInAlbumGroupList.clear();
             } else {
                 prepareGroupAlbumSongList();
             }
@@ -2095,7 +2099,7 @@ public class ApplicationForm extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton_EditGroupAlbumActionPerformed
 
     private void jButton_DeleteGroupAlbumActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_DeleteGroupAlbumActionPerformed
-        // TODO add your handling code here:
+        this.jpaGroupAlbum.destroyAlbum(this, jTable_AlbumGroups);
     }//GEN-LAST:event_jButton_DeleteGroupAlbumActionPerformed
 
     private void jButton_groupAlbumStoreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_groupAlbumStoreActionPerformed
@@ -2134,9 +2138,9 @@ public class ApplicationForm extends javax.swing.JFrame {
         // The event is fired even if we change the Album selection and not only the disk selector
         Album album = (Album)groupAlbumList.get(jTable_AlbumGroups.convertRowIndexToModel(jTable_AlbumGroups.getSelectedRow()));
         if (album.isLongPlay()) {
-            this.songList.clear();
+            this.songInAlbumGroupList.clear();
             for (Song song : album.getSongCollection(((Integer)jSP_groupalbum_diskNumber.getValue()).intValue())) {
-                this.songList.add(song);
+                this.songInAlbumGroupList.add(song);
             }
         }
     }//GEN-LAST:event_jSP_groupalbum_diskNumberStateChanged
@@ -2192,9 +2196,9 @@ public class ApplicationForm extends javax.swing.JFrame {
         // The event is fired even if we change the Album selection and not only the disk selector
         Album album = (Album)groupAlbumList.get(jTable_AlbumArtists.convertRowIndexToModel(jTable_AlbumArtists.getSelectedRow()));
         if (album.isLongPlay()) {
-            this.songList.clear();
+            this.songInAlbumGroupList.clear();
             for (Song song : album.getSongCollection(((Integer)jSP_artistalbum_diskNumber.getValue()).intValue())) {
-                this.songList.add(song);
+                this.songInAlbumGroupList.add(song);
             }
         }
     }//GEN-LAST:event_jSP_artistalbum_diskNumberStateChanged
@@ -2231,7 +2235,7 @@ public class ApplicationForm extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton_EditArtistAlbumActionPerformed
 
     private void jButton_DeleteArtistAlbumActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_DeleteArtistAlbumActionPerformed
-        // TODO add your handling code here:
+        this.jpaGroupAlbum.destroyAlbum(this, jTable_AlbumArtists);
     }//GEN-LAST:event_jButton_DeleteArtistAlbumActionPerformed
 
     private void jButton_artistAlbumStoreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_artistAlbumStoreActionPerformed
@@ -2467,7 +2471,8 @@ public class ApplicationForm extends javax.swing.JFrame {
     private radiostation.gui.ProductionCompanyRenderer productionCompanyRenderer;
     private javax.persistence.EntityManager radioStationPUEntityManager;
     private radiostation.Song song1;
-    private java.util.List<radiostation.Song> songList;
+    private java.util.List<radiostation.Song> songInAlbumArtistList;
+    private java.util.List<radiostation.Song> songInAlbumGroupList;
     private javax.persistence.Query songQuery;
     private radiostation.gui.TitleDurationRenderer titleDurationRenderer;
     private org.jdesktop.beansbinding.BindingGroup bindingGroup;
@@ -2693,11 +2698,17 @@ public class ApplicationForm extends javax.swing.JFrame {
     public List<MusicGroup> getMusicGroupList() {
         return this.musicGroupList;
     }
-    public java.util.List<radiostation.Song> getSongList() {
-        return songList;
+    public java.util.List<radiostation.Song> getSongInAlbumGroupList() {
+        return songInAlbumGroupList;
     }
-    public void setSongList(java.util.List<radiostation.Song> songList) {
-        this.songList = songList;
+    public void setSongInAlbumGroupList(java.util.List<radiostation.Song> songList) {
+        this.songInAlbumGroupList = songList;
+    }
+    public java.util.List<radiostation.Song> getSongInAlbumArtistList() {
+        return songInAlbumArtistList;
+    }
+    public void setSongInAlbumArtistList(java.util.List<radiostation.Song> songList) {
+        this.songInAlbumArtistList = songList;
     }
     public java.util.List<radiostation.Song> getSongsToRemoveList() {
         return this.songsToRemoveList;
@@ -2716,6 +2727,12 @@ public class ApplicationForm extends javax.swing.JFrame {
     }
     public void setPlaylist(Playlist playlist) {
         this.playlist1 = playlist;
+    }
+    public List<Album> getArtistAlbumList() {
+        return this.artistAlbumList;
+    }
+    public List<Album> getGroupAlbumList() {
+        return this.groupAlbumList;
     }
     public List<Album> getAlbumList() {
         if (jPanel_ArtistsAlbums.isVisible())
@@ -2772,9 +2789,9 @@ public class ApplicationForm extends javax.swing.JFrame {
     public void prepareGroupAlbumSongList() {
         // refresh the song list
         Album album = (Album)groupAlbumList.get(jTable_AlbumGroups.getSelectedRow());
-        this.songList.clear();
+        this.songInAlbumGroupList.clear();
         for (Song song : album.getSongCollection(album.getDisknumber())) {
-            this.songList.add(song);
+            this.songInAlbumGroupList.add(song);
         }
 
         // prepare GUI spinner for LP album type or not
@@ -2801,9 +2818,9 @@ public class ApplicationForm extends javax.swing.JFrame {
     public void prepareArtistAlbumSongList() {
         // refresh the song list
         Album album = (Album)artistAlbumList.get(jTable_AlbumArtists.getSelectedRow());
-        this.songList.clear();
+        this.songInAlbumArtistList.clear();
         for (Song song : album.getSongCollection(album.getDisknumber())) {
-            this.songList.add(song);
+            this.songInAlbumArtistList.add(song);
         }
 
         // prepare GUI spinner for LP album type or not
@@ -2841,10 +2858,10 @@ public class ApplicationForm extends javax.swing.JFrame {
     public void prepareSongsInPlaylist() {
         int idx = jTable_Playlist.getSelectedRow();
         Playlist playlist = this.playlistList.get(jTable_Playlist.convertRowIndexToModel(idx));
-        this.songList.clear();
-        this.songList.addAll(playlist.getSongCollection());
+        this.songInAlbumGroupList.clear();
+        this.songInAlbumGroupList.addAll(playlist.getSongCollection());
 
-        SongTableModel songsInPlaylist = new SongTableModel(this.songList);
+        SongTableModel songsInPlaylist = new SongTableModel(this.songInAlbumGroupList);
         jTable_playlistSongs.setModel(songsInPlaylist);
 
         // format table and cells
