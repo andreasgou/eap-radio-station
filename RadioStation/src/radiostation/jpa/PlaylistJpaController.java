@@ -13,6 +13,7 @@ import javax.persistence.criteria.Root;
 import radiostation.Song;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -31,13 +32,13 @@ import radiostation.jpa.exceptions.NonexistentEntityException;
  */
 public class PlaylistJpaController implements Serializable {
 
-    public PlaylistJpaController(EntityManager em) {
-        this.em = em;
+    public PlaylistJpaController(EntityManagerFactory emf) {
+        this.emf = emf;
     }
-    private EntityManager em = null;
+    private EntityManagerFactory emf = null;
 
     public EntityManager getEntityManager() {
-        return em;
+        return emf.createEntityManager();
     }
 
     public void create(Playlist playlist) {
@@ -197,7 +198,6 @@ public class PlaylistJpaController implements Serializable {
             form.setClonedObj(playlist.clone());
             // enable edit form 
             form.setSongsToRemoveList(new ArrayList<Song>());
-            form.setEditablePlaylistForm(true, false);
             form.setSongList((List)playlist.getSongCollection());
 
             // Initialize search list for songs
@@ -205,6 +205,7 @@ public class PlaylistJpaController implements Serializable {
             SongTableModel songsFiltered = new SongTableModel(songs);
             form.getjTable_Available_Songs().setModel(songsFiltered);
             form.prepareSongsForPlaylist();
+            form.setEditablePlaylistForm(true, false);
 
         } catch (CloneNotSupportedException ex) {
             Logger.getLogger(ApplicationForm.class.getName()).log(Level.SEVERE, null, ex);
@@ -212,8 +213,10 @@ public class PlaylistJpaController implements Serializable {
     }
 
     public List<Song> readSongsForPlaylist(String filter, ApplicationForm form) {
+        List<Song> results = null;
+        EntityManager em = getEntityManager();
         String criteria = "%" + filter + "%";
-        Query query = this.em.createNativeQuery(
+        Query query = em.createNativeQuery(
             "SELECT s.* " 
                 + "FROM app.SONG s "
                 + "INNER JOIN app.ALBUM al ON al.ID=s.ALBUM_ID "
@@ -226,7 +229,11 @@ public class PlaylistJpaController implements Serializable {
          .setParameter(3, criteria)
          .setParameter(4, criteria);
         
-        return query.getResultList();
+        results = query.getResultList();
+        if (em != null) {
+            em.close();
+        }
+        return results;
     }
 
     public void commitPlaylist(ApplicationForm form) {
@@ -290,7 +297,7 @@ public class PlaylistJpaController implements Serializable {
             // cancel from existing entry
             playlist.restore((Playlist)form.getClonedObj());
             idx = sourceList.getSelectedRow();
-            //form.getPlaylistList().set(idx, playlist);
+            form.getPlaylistList().set(idx, playlist);
             // reset selection
             sourceList.clearSelection();
             sourceList.setRowSelectionInterval(idx, idx);
@@ -298,17 +305,37 @@ public class PlaylistJpaController implements Serializable {
         form.setEditablePlaylistForm(false, false);
     }
 
+    public void destroyGroup(ApplicationForm form) {
+        if (form.getjTable_Playlist().getSelectedRow() < 0) {
+            Utility.msgWarning(form, "Δεν έχετε επιλέξει εγγραφή για διαγραφή", "Επεξεργασία συγκροτήματος");
+            return;
+        }
+        try {
+            int idx = form.getjTable_Playlist().getSelectedRow();
+            Playlist playlist = form.getPlaylistList().get(idx);
+            int ans = Utility.msgPrompt(form, playlist.getName() + "\n\nΕίσαι σίγουρος για τη διαγραφή?", "Διαγραφή Λίστας Τραγουδιών");
+            if (ans == 0) {
+                form.getPlaylistList().remove(playlist);
+                this.destroy(playlist.getId());
+                Utility.msgInfo(form, "Η διαγραφή ολοκληρώθηκε επιτυχώς!");
+                form.getjTable_Playlist().setRowSelectionInterval(idx-1, idx-1);
+            }
+            
+        } catch (NonexistentEntityException ex) {
+            Logger.getLogger(ApplicationForm.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
     public void addSongInPlaylist(ApplicationForm form) {
-        Playlist playlist = form.getPlaylist();
-        int idx = form.getjTable_Available_Songs().getSelectedRow();
         // Pick the selected SongTableModel from the list
         SongTableModel stm = (SongTableModel)form.getjTable_Available_Songs().getModel();
         // retrieve the song
+        int idx = form.getjTable_Available_Songs().getSelectedRow();
         Song song = stm.getSongsModel().get(form.getjTable_Available_Songs().convertRowIndexToModel(idx));
         // and add it to the playlist
+        Playlist playlist = form.getPlaylist();
         playlist.getSongCollection().add(song);
         // append to GUI control's bounded list
-        form.getSongList().add(song);
+        //form.getSongList().add(song);
         ((SongTableModel)form.getjTable_PlaylistSongs().getModel()).addSong(song);
     }
 
@@ -331,6 +358,7 @@ public class PlaylistJpaController implements Serializable {
         form.setPlaylist(playlist);
         // init object
         playlist.setName("<New Playlist>");
+        playlist.setCreationdate(new Date());
         playlist.setSongCollection(new ArrayList<Song>());
         // add the new entry to the table
         form.getPlaylistList().add(playlist);
@@ -340,7 +368,13 @@ public class PlaylistJpaController implements Serializable {
         form.getSongList().clear();
         SongTableModel songsInPlaylist = new SongTableModel(form.getSongList());
         form.getjTable_PlaylistSongs().setModel(songsInPlaylist);
-        form.setEditablePlaylistForm(true, true);
+
+        // Initialize search list for songs
+        List<Song>songs = readSongsForPlaylist(form.getjTF_song_search().getText().toString().trim(), form);
+        SongTableModel songsFiltered = new SongTableModel(songs);
+        form.getjTable_Available_Songs().setModel(songsFiltered);
+        form.prepareSongsForPlaylist();
+        form.setEditablePlaylistForm(true, false);
     }
     
 }

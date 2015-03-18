@@ -24,6 +24,7 @@ import radiostation.Song;
 import radiostation.jpa.ArtistJpaController;
 import radiostation.jpa.MusicGroupJpaController;
 import radiostation.jpa.AlbumJpaController;
+import radiostation.jpa.DBManager;
 import radiostation.jpa.PlaylistJpaController;
 /**
  *
@@ -38,7 +39,7 @@ public class ApplicationForm extends javax.swing.JFrame {
         this.jpaArtist = new ArtistJpaController(em);
         this.jpaMusicGroup = new MusicGroupJpaController(em);
         this.jpaGroupAlbum=new AlbumJpaController(em); 
-        this.jpaPlaylist = new PlaylistJpaController(em);
+        this.jpaPlaylist = new PlaylistJpaController(DBManager.createEmFactory("RadioStationPU"));
         initComponents();
         setEditableArtistForm(false, false);
         setEditableGroupForm(false, false);
@@ -2011,7 +2012,7 @@ public class ApplicationForm extends javax.swing.JFrame {
     }//GEN-LAST:event_jTF_playlist_descriptionActionPerformed
 
     private void jButton_DeleteSongListActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_DeleteSongListActionPerformed
-        // TODO add your handling code here:
+        this.jpaPlaylist.destroyGroup(this);
     }//GEN-LAST:event_jButton_DeleteSongListActionPerformed
 
     private void jButton_SongLists_GoMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_SongLists_GoMenuActionPerformed
