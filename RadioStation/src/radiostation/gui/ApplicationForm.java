@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.EntityManager;
+import javax.swing.JOptionPane;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -1641,6 +1642,11 @@ public class ApplicationForm extends javax.swing.JFrame {
         jButton_ExportXML.setText("Εξαγωγή σε");
         jButton_ExportXML.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jButton_ExportXML.setVerticalTextPosition(javax.swing.SwingConstants.TOP);
+        jButton_ExportXML.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton_ExportXMLActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel_playlistCRUD_edit1Layout = new javax.swing.GroupLayout(jPanel_playlistCRUD_edit1);
         jPanel_playlistCRUD_edit1.setLayout(jPanel_playlistCRUD_edit1Layout);
@@ -2282,6 +2288,16 @@ public class ApplicationForm extends javax.swing.JFrame {
     private void jButton_DeletePlaylistSongActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_DeletePlaylistSongActionPerformed
         this.jpaPlaylist.removeSongFromPlaylist(this, jTable_playlistSongs);
     }//GEN-LAST:event_jButton_DeletePlaylistSongActionPerformed
+
+    private void jButton_ExportXMLActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_ExportXMLActionPerformed
+        int idx = this.getjTable_Playlist().getSelectedRow();
+        String fileName = null;
+        Playlist playlist= this.playlistList.get(idx);
+        List <Song> songs=null;
+        songs=(List)playlist.getSongCollection();
+        String filename=JOptionPane.showInputDialog ( "Δώστε το όνομα αρχείου που θέλετε για το xml" );
+        writeXML.WriteXMLFile(filename,playlist ,songs);    
+    }//GEN-LAST:event_jButton_ExportXMLActionPerformed
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private radiostation.Album album1;
@@ -2484,6 +2500,7 @@ public class ApplicationForm extends javax.swing.JFrame {
     private MusicGroupJpaController jpaMusicGroup;
     private AlbumJpaController jpaGroupAlbum;
     private PlaylistJpaController jpaPlaylist;
+    private WriteXMLFile writeXML;
     private Object clonedObj;
     private java.util.List<radiostation.Song> songsToRemoveList;
     private final List<String> sex = new ArrayList(Arrays.asList("M","F"));
