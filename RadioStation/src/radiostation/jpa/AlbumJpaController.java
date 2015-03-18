@@ -282,17 +282,23 @@ public class AlbumJpaController implements Serializable {
             } catch (EntityNotFoundException enfe) {
                 throw new NonexistentEntityException("The album with id " + id + " no longer exists.", enfe);
             }
-            List<String> illegalOrphanMessages = null;
-            Collection<Song> songCollectionOrphanCheck = album.getSongCollection();
-            for (Song songCollectionOrphanCheckSong : songCollectionOrphanCheck) {
-                if (illegalOrphanMessages == null) {
-                    illegalOrphanMessages = new ArrayList<String>();
-                }
-                illegalOrphanMessages.add("This Album (" + album + ") cannot be destroyed since the Song " + songCollectionOrphanCheckSong + " in its songCollection field has a non-nullable albumId field.");
+            // Destroy removed songs
+            Collection<Song> songCollectionForDeletion = album.getSongCollection();
+            for (Song songCollectionSongToDetach : songCollectionForDeletion) {
+                // Remove song from album
+                em.remove(songCollectionSongToDetach);
             }
-            if (illegalOrphanMessages != null) {
-                throw new IllegalOrphanException(illegalOrphanMessages);
-            }
+//            List<String> illegalOrphanMessages = null;
+//            Collection<Song> songCollectionOrphanCheck = album.getSongCollection();
+//            for (Song songCollectionOrphanCheckSong : songCollectionOrphanCheck) {
+//                if (illegalOrphanMessages == null) {
+//                    illegalOrphanMessages = new ArrayList<String>();
+//                }
+//                illegalOrphanMessages.add("This Album (" + album + ") cannot be destroyed since the Song " + songCollectionOrphanCheckSong + " in its songCollection field has a non-nullable albumId field.");
+//            }
+//            if (illegalOrphanMessages != null) {
+//                throw new IllegalOrphanException(illegalOrphanMessages);
+//            }
             Artist artistId = album.getArtistId();
             if (artistId != null) {
                 artistId.getAlbumCollection().remove(album);
@@ -466,6 +472,12 @@ public class AlbumJpaController implements Serializable {
                 if (song.getTitle().trim().equals("")) {
                     Utility.msgWarning(form, "Υπάρχουν τραγούδια χωρίς τίτλο στο άλμουμ.", "Επεξεργασία άλμπουμ");
                     return;
+                }
+                for (Song songDuplicates : album1.getSongCollection()) {
+                    if (!song.equals(songDuplicates) && song.getTitle().trim().equals(songDuplicates.getTitle().trim())) {
+                        Utility.msgWarning(form, "Υπάρχουν τραγούδια με τον ίδιο τίτλο στο άλμουμ.", "Επεξεργασία άλμπουμ");
+                        return;
+                    }
                 }
             }
             // Mark child albums with no songs            

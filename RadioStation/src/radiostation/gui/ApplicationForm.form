@@ -145,7 +145,6 @@
         <Property name="observable" type="boolean" value="true"/>
       </Properties>
       <AuxValues>
-        <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="java.beans.Beans.isDesignTime() ? java.util.Collections.emptyList() : artistAlbumQuery.getResultList()"/>
         <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;radiostation.Album&gt;"/>
       </AuxValues>
     </Component>
@@ -1055,6 +1054,7 @@
                           <BindingProperties>
                             <BindingProperty name="elements" source="artistAlbumList" target="jTable_AlbumArtists" targetPath="elements" updateStrategy="0" immediately="true">
                               <Subbinding sourcePath="${title}">
+                                <BindingParameter name="NAME" value="&#x3a4;&#x3af;&#x3c4;&#x3bb;&#x3bf;&#x3c2; &#x391;&#x3bb;&#x3bc;&#x3c0;&#x3bf;&#x3c5;&#x3bc;"/>
                                 <BindingParameter name="javax.swing.binding.ParameterKeys.COLUMN_CLASS" value="String.class"/>
                               </Subbinding>
                             </BindingProperty>
@@ -1243,7 +1243,7 @@
                           </Properties>
                           <BindingProperties>
                             <BindingProperty name="elements" source="artistList" target="jCombo_artisttalbum_artist" targetPath="elements" updateStrategy="0" immediately="false"/>
-                            <BindingProperty name="selectedItem" source="jTable_AlbumArtists" sourcePath="${selectedElement.artistId.artisticname}" target="jCombo_artisttalbum_artist" targetPath="selectedItem" updateStrategy="0" immediately="false"/>
+                            <BindingProperty name="selectedItem" source="jTable_AlbumArtists" sourcePath="${selectedElement.artistId}" target="jCombo_artisttalbum_artist" targetPath="selectedItem" updateStrategy="0" immediately="false"/>
                           </BindingProperties>
                         </Component>
                         <Component class="javax.swing.JLabel" name="jLabel28">
@@ -1259,7 +1259,7 @@
                           </Properties>
                           <BindingProperties>
                             <BindingProperty name="elements" source="productionCompanyList" target="jCombo_artistalbum_company" targetPath="elements" updateStrategy="0" immediately="false"/>
-                            <BindingProperty name="selectedItem" source="jTable_AlbumArtists" sourcePath="${selectedElement.companyId.name}" target="jCombo_artistalbum_company" targetPath="selectedItem" updateStrategy="0" immediately="false"/>
+                            <BindingProperty name="selectedItem" source="jTable_AlbumArtists" sourcePath="${selectedElement.companyId}" target="jCombo_artistalbum_company" targetPath="selectedItem" updateStrategy="0" immediately="false"/>
                           </BindingProperties>
                         </Component>
                         <Component class="javax.swing.JLabel" name="jLabel29">

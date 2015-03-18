@@ -359,14 +359,18 @@ public class PlaylistJpaController implements Serializable {
         playlist.setName("<New Playlist>");
         playlist.setCreationdate(new Date());
         playlist.setSongCollection(new ArrayList<Song>());
+
+        // reset the list
+        form.setSongInAlbumGroupList((List)playlist.getSongCollection());
+        //form.getSongInAlbumGroupList().clear();
+        SongTableModel songsInPlaylist = new SongTableModel(form.getSongInAlbumGroupList());
+        form.getjTable_PlaylistSongs().setModel(songsInPlaylist);
+
         // add the new entry to the table
         form.getPlaylistList().add(playlist);
         int idx = sourceList.getRowCount()-1;
         sourceList.setRowSelectionInterval(idx, idx);
-        // reset the list
-        form.getSongInAlbumGroupList().clear();
-        SongTableModel songsInPlaylist = new SongTableModel(form.getSongInAlbumGroupList());
-        form.getjTable_PlaylistSongs().setModel(songsInPlaylist);
+        //form.prepareSongsInPlaylist();
 
         // Initialize search list for songs
         List<Song>songs = readSongsForPlaylist(form.getjTF_song_search().getText().toString().trim(), form);
