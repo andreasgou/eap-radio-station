@@ -23,6 +23,7 @@ import javax.xml.transform.TransformerConfigurationException;
 import radiostation.Playlist;
 import radiostation.Song;
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -42,7 +43,7 @@ public class WriteXMLFile {
         return em;
     }
     
-    public static void WriteXMLFile(Playlist playlist, List<Song>songs ){
+    public static void WriteXMLFile(String fileName,Playlist playlist, List<Song>songs ){
     
         try {
  
@@ -68,7 +69,7 @@ public class WriteXMLFile {
                     //create
                     Element song=doc.createElement("song");
                     rootElement.appendChild(song);
-                    //set attributes
+                    //set childElements
                     
                     Element songId = doc.createElement("id");
                     songId.appendChild(doc.createTextNode(s.getId().toString()));
@@ -87,30 +88,23 @@ public class WriteXMLFile {
                     songTrackNr.appendChild(doc.createTextNode(Integer.toString(s.getTracknr())));
                     song.appendChild(songTrackNr);
                         }
+                //create xml 
                 TransformerFactory transformerFactory = TransformerFactory.newInstance();
 		Transformer transformer = transformerFactory.newTransformer();
 		DOMSource source = new DOMSource(doc);    
                 
-                StreamResult result = new StreamResult(new File("D:\\file.xml"));
+                StreamResult result = new StreamResult(new File("D:\\"+fileName+".xml"));
+ 		transformer.transform(source, result);
+                //message to user
+		JOptionPane.showMessageDialog (null, "File saved in drive D!", "ΣΥΓΧΑΡΗΤΗΡΙΑ", JOptionPane.PLAIN_MESSAGE);
  
-		
- 
-		transformer.transform(source, result);
-                
-		System.out.println("File saved!");
- 
-                
-                
-                
-		
-}       catch (ParserConfigurationException ex) {
-            Logger.getLogger(WriteXMLFile.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (TransformerConfigurationException ex) {
-            Logger.getLogger(WriteXMLFile.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (TransformerException ex) {
-            Logger.getLogger(WriteXMLFile.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    
-	  }
+            }       catch (ParserConfigurationException ex) {
+                        Logger.getLogger(WriteXMLFile.class.getName()).log(Level.SEVERE, null, ex);
+            }       catch (TransformerConfigurationException ex) {
+                        Logger.getLogger(WriteXMLFile.class.getName()).log(Level.SEVERE, null, ex);
+            }       catch (TransformerException ex) {
+                        Logger.getLogger(WriteXMLFile.class.getName()).log(Level.SEVERE, null, ex);
+            }
+    }
 	
 }
