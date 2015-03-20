@@ -136,7 +136,7 @@ public class Song implements Serializable, Cloneable {
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
+        hash += (id != null ? id.hashCode() : (title != null ? title.hashCode() : 0));
         return hash;
     }
 
@@ -147,9 +147,9 @@ public class Song implements Serializable, Cloneable {
             return false;
         }
         Song other = (Song) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id)) &&
+                (this.title == null && other.title != null) || (this.title != null && !this.title.equals(other.title)))
             return false;
-        }
         return true;
     }
 
@@ -170,4 +170,5 @@ public class Song implements Serializable, Cloneable {
     public Object clone() throws CloneNotSupportedException {
         return super.clone();
     }
+    
 }

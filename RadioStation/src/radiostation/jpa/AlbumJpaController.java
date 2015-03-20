@@ -608,7 +608,6 @@ public class AlbumJpaController implements Serializable {
             int ans = Utility.msgPrompt(form, song.getTitle()+ "\n\nΕίσαι σίγουρος για τη διαγραφή?", "Διαγραφή Τραγουδιού");
             if (ans == 0) {
                 songList.remove(song);
-                //List songInAlbumList = (List)form.getAlbum().getSongCollection();
                 Album album = form.getAlbum();
                 if (album.isLongPlay()) {
                     if (sourceList.equals(form.getjTable_AlbumArtists()))
